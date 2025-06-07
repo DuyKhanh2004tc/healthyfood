@@ -16,11 +16,15 @@
                 <div class="txt_field">
                     <input type="password" name="password" placeholder="Password" required />
                 </div>
+                <c:if test="${not empty loginError}">
+                            <div style="color:red">${loginError}</div>
+                        </c:if>
                 <input type="submit" value="Login">
                 <div class="auth-switch">
                     Don't have an account? <a href="register.jsp">Register</a>
                 </div>
             </form>
         </div>
+        
     </body>
 </html>

@@ -16,13 +16,10 @@ public class DAOUser {
     private Connection con;
     private String status = "OK";
 
-    public DAOUser() {
-        if (INSTANCE == null) {
-            con = new DBContext().connect;
-        } else {
-            INSTANCE = this;
-        }
-    }
+       public DAOUser() {
+    con = new DBContext().connect;
+}
+
 
     public ArrayList<User> getUser() {
         ArrayList<User> userList = new ArrayList<>();
