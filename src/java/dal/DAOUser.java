@@ -265,7 +265,47 @@ public class DAOUser {
     public String getStatus() {
         return status;
     }
+    public boolean addAccountByRole(User user) {
+        String sql = "INSERT INTO Users (name, email, password, phone, dob, address, gender, role_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try {
+            if (con == null) {
+                status = "Error: Database connection is null";
+                return false;
+            }
 
+            // Kiểm tra email đã tồn tại
+            if (checkEmailExists(user.getEmail(), 0)) { // 0 vì đây là tài khoản mới, không có ID
+                status = "Error: Email already exists";
+                return false;
+            }
+
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getPassword());
+            ps.setString(4, user.getPhone());
+            ps.setDate(5, user.getDob());
+            ps.setString(6, user.getAddress());
+            ps.setBoolean(7, user.isGender());
+            ps.setInt(8, user.getRole().getId());
+            ps.setTimestamp(9, new Timestamp(System.currentTimeMillis())); // Thời gian tạo hiện tại
+
+            int rowsAffected = ps.executeUpdate();
+            ps.close();
+
+            if (rowsAffected > 0) {
+                status = "OK: User added successfully with role ID " + user.getRole().getId();
+                return true;
+            } else {
+                status = "Error: Failed to add user";
+                return false;
+            }
+        } catch (SQLException e) {
+            status = "Error at addAccountByRole: " + e.getMessage();
+            System.err.println(status);
+            return false;
+        }
+    }
     public static void main(String[] args) {
         ArrayList<User> ulist = DAOUser.INSTANCE.getUsersByRoleId(6);
         for (int i = 0; i < ulist.size(); i++) {

@@ -129,7 +129,7 @@
                     </tbody>
                 </table>
                 <div>
-                    <a href="AddUser?roleId=${roleId}" class="btn">ADD</a>
+                    <a href="AddAccount?roleId=${roleId}" class="btn">ADD</a>
                 </div>
                 <div class="pagination">
                     <c:if test="${currentPage > 1}">
