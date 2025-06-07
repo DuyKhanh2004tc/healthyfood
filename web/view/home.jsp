@@ -29,63 +29,82 @@
                             <table border="1">
                                 <b>Price Filter:</b>
                                 <tr>
-                                <td>Min price:</td>
-                                <td><input type="number" name="minPrice" value="${minPrice}" min="0" max="1000" placeholder="Enter min price"></td>
-                                </tr>
-                                <tr>
+                                    <td>Min price:</td>
+                                    <td><input type="number" name="minPrice" value="${minPrice}" min="0" max="1000" placeholder="Enter min price"></td>
+                            </tr>
+                            <tr>
                                 <td>Max price:</td>
                                 <td><input type="number" name="maxPrice" value="${maxPrice}" min="0" max="1000" placeholder="Enter max price"></td>
-                                </tr>
+                            </tr>
 
-                            </table>
-                                        <c:if test="${not empty eMessage}">
-                                            <div style="color:red">${eMessage}</div>
-                                        </c:if>
+                        </table>
+                        <c:if test="${not empty eMessage}">
+                            <div style="color:red">${eMessage}</div>
+                        </c:if>
 
-                                        <c:if test="${not empty notFoundMessage}">
-                                            <div style="color:red">${notFoundMessage}</div>
-                                        </c:if>
-                                <input type="submit" value="Filter">
-                        </form>
-                    </div>
-                    <div>
-                        <b>Sort Product:</b>
-                        <button onclick="location.href='sortproduct?orderBy=desc'">Descending</button>
-                        <button onclick="location.href='sortproduct?orderBy=Asc'">Ascending</button>
-                    </div>
+                        <c:if test="${not empty notFoundMessage}">
+                            <div style="color:red">${notFoundMessage}</div>
+                        </c:if>
+                        <input type="submit" value="Filter">
+                    </form>
                 </div>
+                <div>
+                    <b>Sort Product:</b>
+                    <button onclick="location.href = 'sortproduct?orderBy=desc'">Descending</button>
+                    <button onclick="location.href = 'sortproduct?orderBy=Asc'">Ascending</button>
+                </div>
+            </div>
 
-                <!-- hien thi product -->
-                <div class="content-right">
-                    <div class="list-title">
-                        <h2>Product List:</h2>
+            <!-- hien thi product -->
+            <div class="content-right">
+                <div class="list-title">
+                    <h2>Product List:</h2>
                     <%  if(request.getAttribute("errorMessage")!=null){
                         String em =(String)request.getAttribute("errorMessage"); 
                     %>
-                        <h2><%= em%> </h2>
+                    <h2><%= em%> </h2>
                     <% 
                         }    
                     %>
-                    </div>
+                </div>
 
-                    <div class="product-list">                  
-                        <c:forEach items="${requestScope.productList}" var="o">
-                            <div class="card">
-                                <a href="${pageContext.request.contextPath}/productDetail?productId=${o.id}">
+                <div class="product-list">                  
+                    <c:forEach items="${requestScope.productList}" var="o">
+                        <div class="card">
+                            <a href="${pageContext.request.contextPath}/productDetail?productId=${o.id}">
                                 <img class="card-img" src="${o.imgUrl}" alt="Product Image">
-                                </a>
-                                <div class="card-body">
-                                    <p>Product: ${o.name}</p>
-                                    
-                                    <p>Price: ${o.price}</p>
-                                    <p>Stock: ${o.stock}</p>
-                                    <p>Shelf Life Hours: ${o.shelfLifeHours} hours</p>
+                            </a>
+                            <div class="card-body">
+                                <p>Product: ${o.name}</p>
+
+                                <p>Price: ${o.price}$</p>
+                                <p>Stock: ${o.stock}</p>
+                                <p>Rating: ${o.rate}</p>
+                                <div class="stars-average">
+                                    <c:set var="fullStars" value="${o.rate >= 1 ? (o.rate >= 5 ? 5 : (o.rate - o.rate % 1)) : 0}" />
+                                    <c:set var="halfStar" value="${(o.rate - fullStars) >= 0.5 ? true : false}" />
+
+                                    <c:forEach begin="1" end="5" var="i">
+                                        <c:choose>
+                                            <c:when test="${i <= fullStars}">
+                                                <span class="star full">★</span>
+                                            </c:when>
+                                            <c:when test="${i == (fullStars + 1) && halfStar}">
+                                                <span class="star half">★</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="star empty">★</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:forEach>
                                 </div>
+
                             </div>
+                        </div>
                     </c:forEach>
-                    </div>
-                </div>    
-            </div>
+                </div>
+            </div>    
+        </div>
 
 
 

@@ -30,6 +30,7 @@ public class DAOFeedback {
         }
     }
 
+
     public ArrayList getFeedbackByProductId(int productId) {
         ArrayList<Feedback> feedbackList = new ArrayList<>();
         try {
@@ -80,6 +81,7 @@ public class DAOFeedback {
         }
         return feedbackList;
     }
+    
 
     public void insertFeedback(Feedback feedback) {
         String sql = "INSERT INTO Feedback(user_id, product_id, content, created_at, rate) VALUES (?, ?, ?, ?,? )";

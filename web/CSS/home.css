@@ -101,6 +101,37 @@ body{
 .card-body{
     margin-left: 5%;
     margin-right:2%;
+    
+}
+.stars-average {
+    display: flex;
+    margin-top:-15px;
+}
+
+.star {
+    
+    font-size: 22px;
+    margin-right: 2px;
+    color: lightgray; 
+    margin-bottom: 10px;
+     
+}
+
+.star.full {
+    color: yellow;
+}
+
+.star.half {
+    background: linear-gradient(to right, yellow 50%, lightgray 50%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+     
+}
+
+.star.empty {
+    color: lightgray;
+    
 }
 
 
