@@ -24,13 +24,25 @@
 
             <div class="content-main">
                 <div class="content-left">
+
                     <div>
-                        <form action="pricefilter" method="get">
-                            <table border="1">
-                                <b>Price Filter:</b>
-                                <tr>
-                                    <td>Min price:</td>
-                                    <td><input type="number" name="minPrice" value="${minPrice}" min="0" max="1000" placeholder="Enter min price"></td>
+                        <b>Categories:</b>
+                        <select name="category" onchange="location.href='category?categoryId=' + this.value;">
+                            <option value="0">All Products</option>
+                        <c:forEach items="${requestScope.categoryList}" var="o">
+                            <option value="${o.id}"<c:if test="${param.categoryId == o.id}">selected</c:if>>${o.name}</option>
+                        </c:forEach>    
+                    </select>
+
+                    </div>
+
+                <div>
+                    <form action="pricefilter" method="get">
+                        <table border="1">
+                            <b>Price Filter:</b>
+                            <tr>
+                                <td>Min price:</td>
+                                <td><input type="number" name="minPrice" value="${minPrice}" min="0" max="1000" placeholder="Enter min price"></td>
                             </tr>
                             <tr>
                                 <td>Max price:</td>

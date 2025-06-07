@@ -29,39 +29,76 @@ public class DAOProduct {
     }
 
     public List<Product> getAllProduct() {
-    List<Product> productList = new ArrayList<>();
-    String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, " +
-                 "AVG(COALESCE(f.rate, p.rate)) AS average_rate, c.id AS category_id, c.name AS category_name " +
-                 "FROM Product p " +
-                 "INNER JOIN Category c ON p.category_id = c.id " +
-                 "LEFT JOIN Feedback f ON p.id = f.product_id " +
-                 "GROUP BY p.id, p.name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, c.id, c.name";
-    try {
-        PreparedStatement st = con.prepareStatement(sql);
-        ResultSet rs = st.executeQuery();
-        while (rs.next()) {
-            Product p = new Product();
-            p.setId(rs.getInt("product_id"));
-            p.setName(rs.getString("product_name"));
-            p.setDescription(rs.getString("description"));
-            p.setPrice(rs.getDouble("price"));
-            p.setStock(rs.getInt("stock"));
-            p.setImgUrl(rs.getString("image_url"));
-            p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
-            p.setRate(rs.getDouble("average_rate"));
+        List<Product> productList = new ArrayList<>();
+        String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, "
+                + "AVG(COALESCE(f.rate, p.rate)) AS average_rate, c.id AS category_id, c.name AS category_name "
+                + "FROM Product p "
+                + "INNER JOIN Category c ON p.category_id = c.id "
+                + "LEFT JOIN Feedback f ON p.id = f.product_id "
+                + "GROUP BY p.id, p.name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, c.id, c.name";
+        try {
+            PreparedStatement st = con.prepareStatement(sql);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                Product p = new Product();
+                p.setId(rs.getInt("product_id"));
+                p.setName(rs.getString("product_name"));
+                p.setDescription(rs.getString("description"));
+                p.setPrice(rs.getDouble("price"));
+                p.setStock(rs.getInt("stock"));
+                p.setImgUrl(rs.getString("image_url"));
+                p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
+                p.setRate(rs.getDouble("average_rate"));
 
-            Category c = new Category();
-            c.setId(rs.getInt("category_id"));
-            c.setName(rs.getString("category_name"));
+                Category c = new Category();
+                c.setId(rs.getInt("category_id"));
+                c.setName(rs.getString("category_name"));
 
-            p.setCategory(c);
-            productList.add(p);
+                p.setCategory(c);
+                productList.add(p);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace(); 
+        return productList;
     }
-    return productList;
-}
+
+    public List<Product> getProductByCategory(int categoryId) {
+        List<Product> productList = new ArrayList<>();
+        String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, "
+                + "AVG(COALESCE(f.rate, p.rate)) AS average_rate, c.id AS category_id, c.name AS category_name "
+                + "FROM Product p "
+                + "INNER JOIN Category c ON p.category_id = c.id "
+                + "LEFT JOIN Feedback f ON p.id = f.product_id "
+                + "WHERE p.category_id = ? "
+                + "GROUP BY p.id, p.name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, c.id, c.name";
+        try {
+            PreparedStatement st = con.prepareStatement(sql);
+            st.setInt(1, categoryId);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                Product p = new Product();
+                p.setId(rs.getInt("product_id"));
+                p.setName(rs.getString("product_name"));
+                p.setDescription(rs.getString("description"));
+                p.setPrice(rs.getDouble("price"));
+                p.setStock(rs.getInt("stock"));
+                p.setImgUrl(rs.getString("image_url"));
+                p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
+                p.setRate(rs.getDouble("average_rate"));
+
+                Category c = new Category();
+                c.setId(rs.getInt("category_id"));
+                c.setName(rs.getString("category_name"));
+
+                p.setCategory(c);
+                productList.add(p);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productList;
+    }
 
     public List<Product> searchProduct(String namesearch) {
         List<Product> productList = new ArrayList<>();
