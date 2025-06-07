@@ -47,6 +47,8 @@
     <servlet>
         <servlet-name>CategoryServlet</servlet-name>
         <servlet-class>controller.CategoryServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>controller.LoginServlet</servlet-class>
     </servlet>
