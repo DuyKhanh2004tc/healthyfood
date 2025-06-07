@@ -4,7 +4,6 @@
  */
 
 package controller;
-
 import dal.DAOCategory;
 import dal.DAOProduct;
 import java.io.IOException;
