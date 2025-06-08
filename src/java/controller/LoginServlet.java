@@ -75,38 +75,44 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         if (request.getParameter("email") != null && request.getParameter("password") != null) {
             DAOUser dao = new DAOUser();
-            List<User> user = dao.getUser();
+            List<User> userList = dao.getUser();
 
             try {
                 String email = request.getParameter("email");
                 String password = request.getParameter("password");
+
                 if (password.length() >= 8 && password.length() <= 32) {
-                    for (User u : user) {
+                    User matchedUser = null;
+
+                    for (User u : userList) {
                         if (u.getEmail().equals(email) && u.getPassword().equals(password)) {
-                            HttpSession session = request.getSession();
-                            session.setAttribute("user", u);
-                            if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 4 || u.getRole().getId() == 5) {
-                               
-                                response.sendRedirect("home");
-                                
-                                return;
-                            } else if (u.getRole().getId() == 1) {
-                                response.sendRedirect("HomeAdmin");
-                                return;
-                            } else {
-                                response.sendRedirect("home");
-                                return;
-                            }
-                        }
-                        if (u == null || u.getEmail() == null || u.getPassword() == null
-                                || !email.equals(u.getEmail()) || !password.equals(u.getPassword())) {
-                            request.setAttribute("loginError", "Wrong email or password.Input again.");
-                            request.getRequestDispatcher("/view/login.jsp").forward(request, response);
+                            matchedUser = u;
+                            break;
                         }
                     }
+
+                    if (matchedUser != null) {
+                        HttpSession session = request.getSession();
+                        session.setAttribute("user", matchedUser);
+
+                        if (matchedUser.getRole().getId() == 1) {
+                            response.sendRedirect("HomeAdmin");
+                        } else {
+                            response.sendRedirect("home");
+                        }
+                        return;
+                    } else {
+                        request.setAttribute("loginError", "Wrong email or password. Input again.");
+                        request.getRequestDispatcher("/view/login.jsp").forward(request, response);
+                    }
+                } else {
+                    request.setAttribute("loginError", "Password must be between 8 and 32 characters.");
+                    request.getRequestDispatcher("/view/login.jsp").forward(request, response);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                request.setAttribute("loginError", "An error occurred. Please try again.");
+                request.getRequestDispatcher("/view/login.jsp").forward(request, response);
             }
         }
     }

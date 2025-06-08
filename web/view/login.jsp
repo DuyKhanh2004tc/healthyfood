@@ -17,7 +17,7 @@
                     <input type="password" name="password" placeholder="Password" required />
                 </div>
                 <c:if test="${not empty loginError}">
-                            <div style="color:red">${loginError}</div>
+                            <div class="error-message">${loginError}</div>
                         </c:if>
                 <input type="submit" value="Login">
                 <div class="auth-switch">
