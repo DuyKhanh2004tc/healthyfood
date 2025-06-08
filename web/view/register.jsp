@@ -10,7 +10,7 @@
     <body>
         <div class="center">
             <h1>Register</h1>
-            <form action="" method="POST">
+            <form action="register" method="POST">
 
                 <div class="txt_field">
                     <input type="text" name="fullname" placeholder="Fullname" required />
@@ -23,22 +23,22 @@
                 <div class="txt_field">
                     <input type="text" name="numberphone" placeholder="Phone number" pattern="(0|\+84)[0-9]{9}" required />
                 </div>
+                
+                <div class="txt_field">
+                    <label for="dateofbirth">Date of Birth:</label>
+                    <input type="date" name="dateofbirth" id="dateofbirth" required />
+                </div>
 
                 <div class="txt_field">
-                    <input type="text" name="location" placeholder="Location" required />
+                    <input type="text" name="address" placeholder="Address" required />
                 </div>
 
                 <div class="txt_field gender-group">
                     <label>Gender:</label>
                     <div class="radio-options">
-                        <label><input type="radio" name="gender" value="0" required /> Male</label>
-                        <label><input type="radio" name="gender" value="1" /> Female</label>
+                        <label><input type="radio" name="gender" value="0" required /> Female</label>
+                        <label><input type="radio" name="gender" value="1" /> Male</label>
                     </div>
-                </div>
-
-                <div class="txt_field">
-                    <label for="dateofbirth">Date of Birth:</label>
-                    <input type="date" name="dateofbirth" id="dateofbirth" required />
                 </div>
 
                 <div class="txt_field">
