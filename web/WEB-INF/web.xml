@@ -56,6 +56,10 @@
         <servlet-name>RegisterServlet</servlet-name>
         <servlet-class>controller.RegisterServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>NutritionBlogServlet</servlet-name>
+        <servlet-class>controller.NutritionBlogServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeDisplayServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -99,6 +103,10 @@
     <servlet-mapping>
         <servlet-name>RegisterServlet</servlet-name>
         <url-pattern>/register</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>NutritionBlogServlet</servlet-name>
+        <url-pattern>/nutritionBlog</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>
