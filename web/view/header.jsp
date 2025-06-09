@@ -15,12 +15,14 @@
     <body>
         <div class="header">
             <div class="logo">
+                <a href="${pageContext.request.contextPath}/home">
                 <img src="images/logo_1.png" alt="Logo Image">
+                </a>
             </div>
             <div class="header-right">
             <h2 class="shop_name">Healthy Food</h2>
             <nav class="menu">
-                <a href="${pageContext.request.contextPath}/home">Home</a>
+                
                 <a href="${pageContext.request.contextPath}/login">Login</a>
                 <a href="cart.jsp">Cart</a>
                 <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>

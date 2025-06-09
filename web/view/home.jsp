@@ -27,14 +27,14 @@
 
                     <div>
                         <b>Categories:</b>
-                        <select name="category" onchange="location.href='category?categoryId=' + this.value;">
+                        <select name="category" onchange="location.href = 'category?categoryId=' + this.value;">
                             <option value="0">All Products</option>
                         <c:forEach items="${requestScope.categoryList}" var="o">
                             <option value="${o.id}"<c:if test="${param.categoryId == o.id}">selected</c:if>>${o.name}</option>
                         </c:forEach>    
                     </select>
 
-                    </div>
+                </div>
 
                 <div>
                     <form action="pricefilter" method="get">
@@ -112,6 +112,8 @@
                                 </div>
 
                             </div>
+                            <button class="card-button" type="submit" value="addCart">🛒 Add to Cart</button>
+                            <button class="card-button" type="submit" value="buy">💰 Buy</button>
                         </div>
                     </c:forEach>
                 </div>
