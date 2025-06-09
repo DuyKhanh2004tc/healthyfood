@@ -100,8 +100,6 @@ public class RegisterServlet extends HttpServlet {
                 return;
             }
 
-            if (password.equals(confirmPassword)) {
-                if (password.length() >= 8 && password.length() <= 32) {
                     if (phoneNumber != null && phoneNumber.matches("^(0|\\+84)[0-9]{9}$")) {
                         Date dob = null;
                         if (dateOfBirth != null && !dateOfBirth.trim().isEmpty()) {
@@ -121,8 +119,16 @@ public class RegisterServlet extends HttpServlet {
                                 request.getRequestDispatcher("view/register.jsp").forward(request, response);
                                 return;
                             }
-                        }
-
+            if (!password.equals(confirmPassword)) {            }
+request.setAttribute("error", "Password and Confirm Password do not match.");
+                request.getRequestDispatcher("view/register.jsp").forward(request, response);}
+                        
+            if (password.length() <= 8 || password.length() >= 32) {
+             request.setAttribute("error", "Password must be between 8 and 32 characters long.");
+                    request.getRequestDispatcher("view/register.jsp").forward(request, response);
+                }
+                        
+                        
                         boolean genderSQL = "1".equals(gender);
 
                         User customer = new User();
@@ -146,14 +152,8 @@ public class RegisterServlet extends HttpServlet {
                         request.setAttribute("error", "Invalid phone number. It must start with 0 or +84 and contain 9 digits after.");
                         request.getRequestDispatcher("view/register.jsp").forward(request, response);
                     }
-                } else {
-                    request.setAttribute("error", "Password must be between 8 and 32 characters long.");
-                    request.getRequestDispatcher("view/register.jsp").forward(request, response);
-                }
-            } else {
-                request.setAttribute("error", "Password and Confirm Password do not match.");
-                request.getRequestDispatcher("view/register.jsp").forward(request, response);
-            }
+
+            
         } catch (Exception e) {
             request.setAttribute("error", "Error: " + e.getMessage());
             request.getRequestDispatcher("view/register.jsp").forward(request, response);
