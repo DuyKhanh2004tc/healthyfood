@@ -102,16 +102,16 @@ public class LoginServlet extends HttpServlet {
                         }
                         return;
                     } else {
-                        request.setAttribute("loginError", "Wrong email or password. Input again.");
+                        request.setAttribute("error", "Wrong email or password. Input again.");
                         request.getRequestDispatcher("/view/login.jsp").forward(request, response);
                     }
                 } else {
-                    request.setAttribute("loginError", "Password must be between 8 and 32 characters.");
+                    request.setAttribute("error", "Password must be between 8 and 32 characters.");
                     request.getRequestDispatcher("/view/login.jsp").forward(request, response);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                request.setAttribute("loginError", "An error occurred. Please try again.");
+                request.setAttribute("error", "An error occurred. Please try again.");
                 request.getRequestDispatcher("/view/login.jsp").forward(request, response);
             }
         }

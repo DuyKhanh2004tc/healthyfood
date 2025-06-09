@@ -10,7 +10,7 @@
     <body>
         <div class="center">
             <h1>Register</h1>
-            <form action="register" method="POST">
+            <form action="register" method="post">
 
                 <div class="txt_field">
                     <input type="text" name="fullname" placeholder="Fullname" required />
@@ -21,7 +21,7 @@
                 </div>
 
                 <div class="txt_field">
-                    <input type="text" name="numberphone" placeholder="Phone number" pattern="(0|\+84)[0-9]{9}" required />
+                    <input type="text" name="phonenumber" placeholder="Phone number" pattern="(0|\+84)[0-9]{9}" required />
                 </div>
                 
                 <div class="txt_field">
@@ -48,7 +48,11 @@
                 <div class="txt_field">
                     <input type="password" name="confirmpassword" placeholder="Confirm Password" required />
                 </div>
-
+                
+                <c:if test="${not empty error}">
+                            <div class="error-message">${error}</div>
+                        </c:if>
+                
                 <input type="submit" value="Register" />
                 <div class="auth-switch">
                     Already have an account? <a href="login.jsp ">Login</a>

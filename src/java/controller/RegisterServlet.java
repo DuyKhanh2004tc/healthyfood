@@ -11,11 +11,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import model.Role;
 import model.User;
 
 /**
@@ -63,6 +63,7 @@ public class RegisterServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         //rocessRequest(request, response);
+        request.getRequestDispatcher("view/register.jsp").forward(request, response);
     }
 
     /**
@@ -77,7 +78,7 @@ public class RegisterServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         //processRequest(request, response);
-
+        try {
         String fullName = request.getParameter("fullname");
         String email = request.getParameter("email");
         String phoneNumber = request.getParameter("phonenumber");
@@ -86,6 +87,8 @@ public class RegisterServlet extends HttpServlet {
         String gender = request.getParameter("gender");
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmpassword");
+        
+        HttpSession session = request.getSession(); 
         
         if(password.equals(confirmPassword)){
         DAOUser dao = new DAOUser();
@@ -123,18 +126,22 @@ public class RegisterServlet extends HttpServlet {
             customer.setGender(genderSQL);
 
 
-            boolean added = dao.addAccountByRole(customer);
+            boolean added = dao.addAccount(customer);
             if (added) {
-                //session.setAttribute("success", "User added successfully with role ID " + " at " + new java.util.Date());
-                response.sendRedirect("DisplayAccount?idRole=" + "&page=1");
+                session.setAttribute("success", "User added successfully at " + new java.util.Date());
+                response.sendRedirect("login");
             } else {
                 request.setAttribute("error", "Failed to add user: " + dao.getStatus());
-                request.getRequestDispatcher("view/addAccount.jsp").forward(request, response);
+                request.getRequestDispatcher("view/register.jsp").forward(request, response);
             }
         
     } else {
             request.setAttribute("error", "Password and Confirm Password do not match.");
-                request.getRequestDispatcher("view/register.jsp").forward(request, response);
+            request.getRequestDispatcher("view/register.jsp").forward(request, response);
+        }
+        } catch (Exception e) {
+            request.setAttribute("error", "Error: " + e.getMessage());
+            request.getRequestDispatcher("view/register.jsp").forward(request, response);
         }
 }              
          

@@ -303,6 +303,48 @@ public class DAOUser {
             return false;
         }
     }
+    
+    public boolean addAccount(User user) {
+        String sql = "INSERT INTO Users (name, email, password, phone, dob, address, gender, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try {
+            if (con == null) {
+                status = "Error: Database connection is null";
+                return false;
+            }
+
+            // Kiểm tra email đã tồn tại
+            if (checkEmailExists(user.getEmail(), -1)) { 
+                status = "Error: Email already exists";
+                return false;
+            }
+
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getPassword());
+            ps.setString(4, user.getPhone());
+            ps.setDate(5, user.getDob());
+            ps.setString(6, user.getAddress());
+            ps.setBoolean(7, user.isGender());
+            ps.setTimestamp(8, new Timestamp(System.currentTimeMillis()));
+
+            int rowsAffected = ps.executeUpdate();
+            ps.close();
+
+            if (rowsAffected > 0) {
+                status = "OK: User added successfully" ;
+                return true;
+            } else {
+                status = "Error: Failed to add user";
+                return false;
+            }
+        } catch (SQLException e) {
+            status = "Error at addAccount: " + e.getMessage();
+            System.err.println(status);
+            return false;
+        }
+    }
+    
     public static void main(String[] args) {
         ArrayList<User> ulist = DAOUser.INSTANCE.getUsersByRoleId(6);
         for (int i = 0; i < ulist.size(); i++) {
