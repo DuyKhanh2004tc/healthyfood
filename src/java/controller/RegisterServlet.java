@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpSession;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import model.User;
 
@@ -79,72 +80,85 @@ public class RegisterServlet extends HttpServlet {
             throws ServletException, IOException {
         //processRequest(request, response);
         try {
-        String fullName = request.getParameter("fullname");
-        String email = request.getParameter("email");
-        String phoneNumber = request.getParameter("phonenumber");
-        String dateOfBirth = request.getParameter("dateofbirth");
-        String address = request.getParameter("address");
-        String gender = request.getParameter("gender");
-        String password = request.getParameter("password");
-        String confirmPassword = request.getParameter("confirmpassword");
-        
-        HttpSession session = request.getSession(); 
-        
-        if(password.equals(confirmPassword)){
-        DAOUser dao = new DAOUser();
-        ArrayList<User> user = dao.getUser();
-        
-        if (dao.checkEmailExists(email, -1)) {
-                request.setAttribute("errorRegiter", "Email already exists");
+            String fullName = request.getParameter("fullname");
+            String email = request.getParameter("email");
+            String phoneNumber = request.getParameter("phonenumber");
+            String dateOfBirth = request.getParameter("dateofbirth");
+            String address = request.getParameter("address");
+            String gender = request.getParameter("gender");
+            String password = request.getParameter("password");
+            String confirmPassword = request.getParameter("confirmpassword");
+
+            HttpSession session = request.getSession();
+
+            DAOUser dao = new DAOUser();
+            ArrayList<User> user = dao.getUser();
+
+            if (dao.checkEmailExists(email, -1)) {
+                request.setAttribute("error", "Email already exists");
                 request.getRequestDispatcher("view/register.jsp").forward(request, response);
                 return;
             }
-        
-        Date dob = null;
-            if (dateOfBirth != null && !dateOfBirth.trim().isEmpty()) {
-                try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    java.util.Date parsedDate = sdf.parse(dateOfBirth);
-                    dob = new Date(parsedDate.getTime());
-                } catch (ParseException e) {
-                    request.setAttribute("error", "Invalid date format for DOB. Use YYYY-MM-DD");
+
+            if (password.equals(confirmPassword)) {
+                if (password.length() >= 8 && password.length() <= 32) {
+                    if (phoneNumber != null && phoneNumber.matches("^(0|\\+84)[0-9]{9}$")) {
+                        Date dob = null;
+                        if (dateOfBirth != null && !dateOfBirth.trim().isEmpty()) {
+                            try {
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                java.util.Date parsedDate = sdf.parse(dateOfBirth);
+                                dob = new Date(parsedDate.getTime());
+
+                                LocalDate birthDate = LocalDate.parse(dateOfBirth);
+                                if (birthDate.plusYears(13).isAfter(LocalDate.now())) {
+                                    request.setAttribute("error", "You must be at least 13 years old to register.");
+                                    request.getRequestDispatcher("view/register.jsp").forward(request, response);
+                                    return;
+                                }
+                            } catch (ParseException e) {
+                                request.setAttribute("error", "Invalid date format for DOB. Use YYYY-MM-DD");
+                                request.getRequestDispatcher("view/register.jsp").forward(request, response);
+                                return;
+                            }
+                        }
+
+                        boolean genderSQL = "1".equals(gender);
+
+                        User customer = new User();
+                        customer.setName(fullName);
+                        customer.setEmail(email);
+                        customer.setPassword(password);
+                        customer.setPhone(phoneNumber);
+                        customer.setDob(dob);
+                        customer.setAddress(address);
+                        customer.setGender(genderSQL);
+
+                        boolean added = dao.addAccount(customer);
+                        if (added) {
+                            session.setAttribute("success", "User added successfully at " + new java.util.Date());
+                            response.sendRedirect("login");
+                        } else {
+                            request.setAttribute("error", "Failed to add user: " + dao.getStatus());
+                            request.getRequestDispatcher("view/register.jsp").forward(request, response);
+                        }
+                    } else {
+                        request.setAttribute("error", "Invalid phone number. It must start with 0 or +84 and contain 9 digits after.");
+                        request.getRequestDispatcher("view/register.jsp").forward(request, response);
+                    }
+                } else {
+                    request.setAttribute("error", "Password must be between 8 and 32 characters long.");
                     request.getRequestDispatcher("view/register.jsp").forward(request, response);
-                    return;
                 }
-            }
-        
-        boolean genderSQL = "1".equals(gender);
-           
-        
-            User customer = new User();
-            customer.setName(fullName);
-            customer.setEmail(email);
-            customer.setPassword(password);
-            customer.setPhone(phoneNumber);
-            customer.setDob(dob);
-            customer.setAddress(address);
-            customer.setGender(genderSQL);
-
-
-            boolean added = dao.addAccount(customer);
-            if (added) {
-                session.setAttribute("success", "User added successfully at " + new java.util.Date());
-                response.sendRedirect("login");
             } else {
-                request.setAttribute("error", "Failed to add user: " + dao.getStatus());
+                request.setAttribute("error", "Password and Confirm Password do not match.");
                 request.getRequestDispatcher("view/register.jsp").forward(request, response);
             }
-        
-    } else {
-            request.setAttribute("error", "Password and Confirm Password do not match.");
-            request.getRequestDispatcher("view/register.jsp").forward(request, response);
-        }
         } catch (Exception e) {
             request.setAttribute("error", "Error: " + e.getMessage());
             request.getRequestDispatcher("view/register.jsp").forward(request, response);
         }
-}              
-         
+    }
 
     /**
      * Returns a short description of the servlet.

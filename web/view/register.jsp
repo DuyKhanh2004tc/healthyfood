@@ -21,7 +21,7 @@
                 </div>
 
                 <div class="txt_field">
-                    <input type="text" name="phonenumber" placeholder="Phone number" pattern="(0|\+84)[0-9]{9}" required />
+                    <input type="text" name="phonenumber" placeholder="Phone number" required />
                 </div>
                 
                 <div class="txt_field">
@@ -55,7 +55,7 @@
                 
                 <input type="submit" value="Register" />
                 <div class="auth-switch">
-                    Already have an account? <a href="login.jsp ">Login</a>
+                    Already have an account? <a href="login">Login</a>
                 </div>
 
             </form>

@@ -305,7 +305,7 @@ public class DAOUser {
     }
     
     public boolean addAccount(User user) {
-        String sql = "INSERT INTO Users (name, email, password, phone, dob, address, gender, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Users (name, email, password, phone, dob, address, gender, role_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 3, ?)";
         try {
             if (con == null) {
                 status = "Error: Database connection is null";

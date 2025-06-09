@@ -81,7 +81,7 @@ public class LoginServlet extends HttpServlet {
                 String email = request.getParameter("email");
                 String password = request.getParameter("password");
 
-                if (password.length() >= 8 && password.length() <= 32) {
+                
                     User matchedUser = null;
 
                     for (User u : userList) {
@@ -101,12 +101,8 @@ public class LoginServlet extends HttpServlet {
                             response.sendRedirect("home");
                         }
                         return;
-                    } else {
-                        request.setAttribute("error", "Wrong email or password. Input again.");
-                        request.getRequestDispatcher("/view/login.jsp").forward(request, response);
-                    }
                 } else {
-                    request.setAttribute("error", "Password must be between 8 and 32 characters.");
+                    request.setAttribute("error", "Wrong email or password. Input again.");
                     request.getRequestDispatcher("/view/login.jsp").forward(request, response);
                 }
             } catch (Exception e) {
