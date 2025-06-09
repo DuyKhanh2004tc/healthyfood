@@ -53,6 +53,10 @@
         <servlet-class>controller.LoginServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ManageProductServlet</servlet-name>
+        <servlet-class>controller.ManageProductServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>RegisterServlet</servlet-name>
         <servlet-class>controller.RegisterServlet</servlet-class>
     </servlet>
@@ -114,6 +118,10 @@
     <servlet-mapping>
         <servlet-name>SortProductServlet</servlet-name>
         <url-pattern>/sortproduct</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ManageProductServlet</servlet-name>
+        <url-pattern>/manageproduct</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>PriceFilterServlet</servlet-name>
