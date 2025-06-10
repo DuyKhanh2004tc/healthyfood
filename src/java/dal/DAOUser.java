@@ -345,6 +345,34 @@ public class DAOUser {
         }
     }
     
+    public boolean updatePassword(String email, String newPassword) {
+    String sql = "UPDATE Users SET password = ? WHERE email = ?";
+    try {
+        if (con == null) {
+            status = "Error: Database connection is null";
+            return false;
+        }
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setString(1, newPassword);
+        ps.setString(2, email);
+
+        int rowsAffected = ps.executeUpdate();
+        ps.close();
+        if (rowsAffected > 0) {
+            status = "OK: Password updated successfully for email " + email;
+            return true;
+        } else {
+            status = "Error: No user found with email " + email;
+            return false;
+        }
+    } catch (SQLException e) {
+        status = "Error at updatePassword: " + e.getMessage();
+        System.err.println(status);
+        return false;
+    }
+}
+
+    
     public static void main(String[] args) {
         ArrayList<User> ulist = DAOUser.INSTANCE.getUsersByRoleId(6);
         for (int i = 0; i < ulist.size(); i++) {

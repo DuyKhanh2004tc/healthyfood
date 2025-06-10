@@ -20,7 +20,7 @@
                             <div class="error-message">${error}</div>
                         </c:if>
                 <div class="auth-switch">
-                     <a href="/view/forgotPassword.jsp">Forgot Password?</a>        
+                     <a href="forgotPassword">Forgot Password?</a>        
                 <input type="submit" value="Login">
                 <div class="auth-switch">
                     Don't have an account? <a href="register">Register</a>
