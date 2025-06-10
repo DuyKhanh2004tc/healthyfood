@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import model.User;
+import utils.Mail;
 
 /**
  *
@@ -119,10 +120,10 @@ public class RegisterServlet extends HttpServlet {
                                 request.getRequestDispatcher("view/register.jsp").forward(request, response);
                                 return;
                             }
-            if (!password.equals(confirmPassword)) {            }
+            if (!password.equals(confirmPassword)) {            
 request.setAttribute("error", "Password and Confirm Password do not match.");
                 request.getRequestDispatcher("view/register.jsp").forward(request, response);}
-                        
+                        }
             if (password.length() <= 8 || password.length() >= 32) {
              request.setAttribute("error", "Password must be between 8 and 32 characters long.");
                     request.getRequestDispatcher("view/register.jsp").forward(request, response);
@@ -142,6 +143,8 @@ request.setAttribute("error", "Password and Confirm Password do not match.");
 
                         boolean added = dao.addAccount(customer);
                         if (added) {
+                            Mail.sendMail(email, "Registration Successful - Welcome to HealthyFood!",
+                                    "Congratulations! You have successfully registered.\nYour password:" + password);
                             session.setAttribute("success", "User added successfully at " + new java.util.Date());
                             response.sendRedirect("login");
                         } else {
