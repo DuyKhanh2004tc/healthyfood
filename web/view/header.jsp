@@ -24,6 +24,7 @@
             <nav class="menu">
                 
                 <a href="${pageContext.request.contextPath}/login">Login</a>
+                <a href="${pageContext.request.contextPath}/register">Register</a>
                 <a href="cart.jsp">Cart</a>
                 <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
                 <form action="search" method="get">                   

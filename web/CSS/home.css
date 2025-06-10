@@ -170,7 +170,7 @@ body{
     justify-content: space-between;
     padding: 0 20px;
     height:170px;
-    margin-top:-3%;
+/*    margin-top:-3%;*/
 }
 
 .footer-comment,
@@ -222,12 +222,10 @@ body{
     border-top: 1px solid #34495e;
     color: #7f8c8d;
     font-size: 13px;
-    height: 10px;
-    margin-bottom: 3px;
+/*    height: 10px;
+*/    margin-bottom: 3px;
 }
-.footer-bottom p{
-    margin-top: 5px;
-}
+
 /*Main content css*/
 .content-main{
     display:flex;

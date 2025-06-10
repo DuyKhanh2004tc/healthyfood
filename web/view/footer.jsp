@@ -22,10 +22,10 @@
                 <div class="footer-links">
                     <h4>Links:</h4>
                     <ul>
-                        <li><a href="/home">Home</a></li>
-                        <li><a href="/products">Products</a></li>
+                        <li><a href="${pageContext.request.contextPath}/home">Home</a></li>
+                        <li><a href="${pageContext.request.contextPath}/nutritionBlog">Nutrition Blogs</a></li>
                         <li><a href="https://www.facebook.com/" target="_blank">Facebook</a></li>
-                        <li><a href="https://www.youtube.com/ target="_blank">Contact</a></li>
+                        <li><a href="https://www.youtube.com/ target="_blank">Youtube</a></li>
                     </ul>
                 </div>
                 <div class="footer-contact">
