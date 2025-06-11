@@ -275,9 +275,26 @@ public class DAOProduct {
         return product;
     }
 
+    public List<Category> getAllCategories() {
+        List<Category> categoryList = new ArrayList<>();
+        String sql = "SELECT id, name FROM Category";
+        try (PreparedStatement st = con.prepareStatement(sql);
+             ResultSet rs = st.executeQuery()) {
+            while (rs.next()) {
+                Category c = new Category();
+                c.setId(rs.getInt("id"));
+                c.setName(rs.getString("name"));
+                categoryList.add(c);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "SQL Error in getAllCategories: {0}", e.getMessage());
+        }
+        return categoryList;
+    }
+
     public void insertProduct(Product product) {
         String sql = "INSERT INTO Product (name, description, price, stock, image_url, shelf_life_hours, category_id) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setString(1, product.getName());
             st.setString(2, product.getDescription());
@@ -285,7 +302,8 @@ public class DAOProduct {
             st.setInt(4, product.getStock());
             st.setString(5, product.getImgUrl());
             st.setDouble(6, product.getShelfLifeHours());
-            st.setInt(7, product.getCategory().getId());
+            
+            st.setInt(8, product.getCategory().getId());
             st.executeUpdate();
             LOGGER.log(Level.INFO, "Inserted product: {0}", product.getName());
         } catch (SQLException e) {
@@ -312,14 +330,53 @@ public class DAOProduct {
         }
     }
 
-    public void deleteProduct(int productId) {
+    public void deleteProductById(int productId) {
         String sql = "DELETE FROM Product WHERE id = ?";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setInt(1, productId);
             st.executeUpdate();
             LOGGER.log(Level.INFO, "Deleted product with ID: {0}", productId);
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "SQL Error in deleteProduct: {0}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "SQL Error in deleteProductById: {0}", e.getMessage());
         }
     }
+    
+public List<Product> searchProductsByName(String keywords) {
+    List<Product> productList = new ArrayList<>();
+    String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, "
+               + "c.id AS category_id, c.name AS category_name "
+               + "FROM Product p "
+               + "INNER JOIN Category c ON p.category_id = c.id "
+               + "WHERE p.name LIKE ?";
+    try (PreparedStatement st = con.prepareStatement(sql)) {
+        st.setString(1, "%" + (keywords != null ? keywords.trim() : "") + "%");
+        try (ResultSet rs = st.executeQuery()) {
+            while (rs.next()) {
+                Product p = new Product();
+                p.setId(rs.getInt("product_id"));
+                p.setName(rs.getString("product_name"));
+                p.setDescription(rs.getString("description"));
+                p.setPrice(rs.getDouble("price"));
+                p.setStock(rs.getInt("stock"));
+                p.setImgUrl(rs.getString("image_url"));
+                p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
+                p.setRate(rs.getDouble("rate"));
+
+                Category c = new Category();
+                c.setId(rs.getInt("category_id"));
+                c.setName(rs.getString("category_name"));
+
+                p.setCategory(c);
+                productList.add(p);
+            }
+            LOGGER.log(Level.INFO, "Retrieved {0} products for search query: {1}", new Object[]{productList.size(), keywords});
+            if (productList.isEmpty()) {
+                LOGGER.log(Level.WARNING, "No products found for search query: {0}", keywords);
+            }
+        }
+    } catch (SQLException e) {
+        LOGGER.log(Level.SEVERE, "SQL Error in searchProductsByName: {0}", e.getMessage());
+    }
+    return productList;
+}
 }

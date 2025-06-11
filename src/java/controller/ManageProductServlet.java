@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.Category;
 
 public class ManageProductServlet extends HttpServlet {
     private DAOProduct productDAO;
@@ -24,21 +25,107 @@ public class ManageProductServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            List<Product> products = productDAO.getAllProduct();
-            LOGGER.log(Level.INFO, "Fetched {0} products for ProductManager.jsp", products != null ? products.size() : 0);
-            if (products == null || products.isEmpty()) {
-                LOGGER.log(Level.WARNING, "No products returned from getAllProduct()");
-                request.setAttribute("errorMessage", "No products available to display.");
-            } else {
-                for (Product p : products) {
-                    LOGGER.log(Level.INFO, "Product: ID={0}, Name={1}, Category={2}",
-                        new Object[]{p.getId(), p.getName(), p.getCategory() != null ? p.getCategory().getName() : "null"});
-                }
+            String service = request.getParameter("service");
+            if (!productDAO.getStatus().equals("OK")) {
+                request.setAttribute("errorMessage", "Database connection failed: " + productDAO.getStatus());
+                request.getRequestDispatcher("/view/ProductManager.jsp").forward(request, response);
+                return;
             }
-            request.setAttribute("allProducts", products);
+
+            if (service == null || service.equals("list")) {
+                // List all products
+                List<Product> products = productDAO.getAllProduct();
+                LOGGER.log(Level.INFO, "Fetched {0} products for ProductManager.jsp", products != null ? products.size() : 0);
+                if (products == null || products.isEmpty()) {
+                    request.setAttribute("errorMessage", "No products available to display.");
+                }
+                request.setAttribute("allProducts", products);
+                request.getRequestDispatcher("/view/ProductManager.jsp").forward(request, response);
+            } else if (service.equals("searchByKeywords")) {
+    // Search products by name
+    String keywords = request.getParameter("keywords");
+    if (keywords == null || keywords.trim().isEmpty()) {
+        request.setAttribute("errorMessage", "Please enter a search keyword.");
+        request.setAttribute("allProducts", productDAO.getAllProduct());
+        request.getRequestDispatcher("/view/ProductManager.jsp").forward(request, response);
+        return;
+    }
+    List<Product> products = productDAO.searchProductsByName(keywords.trim());
+    LOGGER.log(Level.INFO, "Found {0} products for search query: {1}", new Object[]{products.size(), keywords});
+    if (products.isEmpty()) {
+        request.setAttribute("errorMessage", "No products found matching: " + keywords);
+    }
+    request.setAttribute("allProducts", products);
+    request.setAttribute("keywords", keywords);
+    request.getRequestDispatcher("/view/ProductManager.jsp").forward(request, response);
+} else if (service.equals("requestInsert")) {
+                // Forward to insert form
+                List<Category> categories = productDAO.getAllCategories();
+                request.setAttribute("categoryList", categories);
+                request.getRequestDispatcher("/view/InsertProduct.jsp").forward(request, response);
+            } else if (service.equals("requestUpdate")) {
+                // Forward to update form
+                int productId = Integer.parseInt(request.getParameter("productId"));
+                Product product = productDAO.getProductById(productId);
+                if (product == null) {
+                    request.setAttribute("errorMessage", "Product not found for ID: " + productId);
+                    request.getRequestDispatcher("/view/ProductManager.jsp").forward(request, response);
+                } else {
+                    request.setAttribute("product", product);
+                    request.getRequestDispatcher("/view/UpdateProduct.jsp").forward(request, response);
+                }
+            } else if (service.equals("requestDelete")) {
+                // Delete product
+                int productId = Integer.parseInt(request.getParameter("productId"));
+                productDAO.deleteProductById(productId);
+                LOGGER.log(Level.INFO, "Deleted product with ID: {0}", productId);
+                response.sendRedirect("manageproduct?service=list");
+            } else {
+                request.setAttribute("errorMessage", "Invalid service request.");
+                request.getRequestDispatcher("/view/ProductManager.jsp").forward(request, response);
+            }
+        } catch (NumberFormatException e) {
+            LOGGER.log(Level.SEVERE, "Invalid product ID format: {0}", e.getMessage());
+            request.setAttribute("errorMessage", "Invalid product ID.");
             request.getRequestDispatcher("/view/ProductManager.jsp").forward(request, response);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error processing GET request: {0}", e.getMessage());
+            request.setAttribute("errorMessage", "An error occurred: " + e.getMessage());
+            request.getRequestDispatcher("/view/error.jsp").forward(request, response);
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            String service = request.getParameter("service");
+            if (service.equals("insert")) {
+                // Insert new product
+                Product product = new Product();
+                product.setName(request.getParameter("name"));
+                product.setDescription(request.getParameter("description"));
+                product.setPrice(Double.parseDouble(request.getParameter("price")));
+                product.setStock(Integer.parseInt(request.getParameter("stock")));
+                product.setImgUrl(request.getParameter("imgUrl"));
+                product.setShelfLifeHours(Double.parseDouble(request.getParameter("shelfLifeHours")));
+                product.setRate(Double.parseDouble(request.getParameter("rate")));
+                Category category = new Category();
+                category.setId(Integer.parseInt(request.getParameter("categoryId")));
+                product.setCategory(category);
+
+                productDAO.insertProduct(product);
+                LOGGER.log(Level.INFO, "Inserted new product: {0}", product.getName());
+                response.sendRedirect("manageproduct?service=list");
+            } else {
+                request.setAttribute("errorMessage", "Invalid service request.");
+                request.getRequestDispatcher("/view/ProductManager.jsp").forward(request, response);
+            }
+        } catch (NumberFormatException e) {
+            LOGGER.log(Level.SEVERE, "Invalid input format: {0}", e.getMessage());
+            request.setAttribute("errorMessage", "Invalid input data.");
+            request.getRequestDispatcher("/view/InsertProduct.jsp").forward(request, response);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error processing POST request: {0}", e.getMessage());
             request.setAttribute("errorMessage", "An error occurred: " + e.getMessage());
             request.getRequestDispatcher("/view/error.jsp").forward(request, response);
         }
