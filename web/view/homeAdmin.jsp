@@ -7,171 +7,176 @@
         <title>Admin - Role Management</title>
         <style>
             :root {
-                --primary-color: #4A90E2; 
-                --secondary-color: #50C878;
-                --accent-color: #F7C948;
-                --text-color: #2D3748;
-                --card-bg: #FFFFFF; 
-                --background: #F3F7FA;
-                --shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-                --transition: all 0.3s ease;
-            }
+    --primary-color: #6366f1; /* Indigo for primary actions */
+    --secondary-color: #34d399; /* Emerald green for secondary elements */
+    --accent-color: #f59e0b; /* Amber for highlights */
+    --text-color: #1f2937; /* Dark gray for text */
+    --card-bg: #ffffff; /* White for cards */
+    --background: #f1f5f9; /* Light slate for body background */
+    --shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+    --transition: all 0.3s ease;
+}
 
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-            body {
-                font-family: 'Inter', Arial, sans-serif;
-                background-color: var(--background);
-                color: var(--text-color);
-                line-height: 1.6;
-            }
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    background-color: var(--background);
+    color: var(--text-color);
+    line-height: 1.6;
+}
 
-            .header {
-                background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-                padding: 15px 30px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                box-shadow: var(--shadow);
-                position: sticky;
-                top: 0;
-                z-index: 1000;
-            }
+.header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
 
-            .header a {
-                color: #FFFFFF;
-                text-decoration: none;
-                font-size: 1.5rem;
-                font-weight: 600;
-                transition: var(--transition);
-            }
+.header a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1.6rem;
+    font-weight: 700;
+    transition: var(--transition);
+}
 
-            .header a:hover {
-                color: var(--accent-color);
-            }
+.header a:hover {
+    color: var(--accent-color);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-            .header .user-info {
-                display: flex;
-                align-items: center;
-                gap: 15px;
-            }
+.header .user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
 
-            .header .user-info span {
-                color: #FFFFFF;
-                font-size: 1.1rem;
-                font-weight: 400;
-                margin-right: 10px;
-            }
+.header .user-info span {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
 
-            .welcome {
-                text-align: center;
-                margin: 40px 0;
-                padding: 20px;
-            }
+.welcome {
+    text-align: center;
+    margin: 40px 0;
+    padding: 20px;
+}
 
-            .welcome img {
-                border-radius: 50%;
-                width: 130px;
-                height: 130px;
-                object-fit: cover;
-                border: 4px solid var(--primary-color);
-                cursor: pointer;
-                transition: var(--transition);
-            }
+.welcome img {
+    border-radius: 50%;
+    width: 130px;
+    height: 130px;
+    object-fit: cover;
+    border: 4px solid var(--primary-color);
+    cursor: pointer;
+    transition: var(--transition);
+}
 
-            .welcome img:hover {
-                transform: scale(1.08);
-                box-shadow: var(--shadow);
-                border-color: var(--accent-color);
-            }
+.welcome img:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow);
+    border-color: var(--accent-color);
+}
 
-            .welcome h2 {
-                margin-top: 15px;
-                font-size: 2.2rem;
-                color: var(--text-color);
-                font-weight: 600;
-                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
-            }
+.welcome h2 {
+    margin-top: 15px;
+    font-size: 2.3rem;
+    color: var(--text-color);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
 
-            .dashboard {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 30px;
-                max-width: 1000px;
-                margin: 0 auto;
-                padding: 30px 20px;
-            }
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
 
-            .dashboard .card {
-                background: var(--card-bg);
-                border-radius: 12px;
-                padding: 25px;
-                text-align: center;
-                cursor: pointer;
-                transition: var(--transition);
-                box-shadow: var(--shadow);
-                border: 1px solid rgba(74, 144, 226, 0.1);
-            }
+.dashboard .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+}
 
-            .dashboard .card:hover {
-                transform: translateY(-8px);
-                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-                border-color: var(--primary-color);
-            }
+.dashboard .card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+    border-color: var(--primary-color);
+}
 
-            .dashboard .card img {
-                width: 50px;
-                height: 50px;
-                object-fit: contain;
-                margin-bottom: 15px;
-                filter: brightness(1.1);
-            }
+.dashboard .card img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    margin-bottom: 15px;
+    filter: brightness(1.2);
+    transition: var(--transition);
+}
 
-            .dashboard .card h3 {
-                font-size: 1.3rem;
-                color: var(--text-color);
-                font-weight: 500;
-                transition: var(--transition);
-            }
+.dashboard .card:hover img {
+    transform: scale(1.1);
+}
 
-            .dashboard .card:hover h3 {
-                color: var(--primary-color);
-            }
+.dashboard .card h3 {
+    font-size: 1.4rem;
+    color: var(--text-color);
+    font-weight: 600;
+    transition: var(--transition);
+}
 
-            @media (max-width: 768px) {
-                .header {
-                    flex-direction: column;
-                    gap: 12px;
-                    padding: 15px;
-                }
+.dashboard .card:hover h3 {
+    color: var(--primary-color);
+}
 
-                .header .user-info {
-                    flex-direction: column;
-                    gap: 8px;
-                }
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
 
-                .welcome img {
-                    width: 110px;
-                    height: 110px;
-                }
+    .header .user-info {
+        flex-direction: column;
+        gap: 10px;
+    }
 
-                .welcome h2 {
-                    font-size: 1.8rem;
-                }
+    .welcome img {
+        width: 100px;
+        height: 100px;
+    }
 
-                .dashboard {
-                    grid-template-columns: 1fr;
-                    padding: 20px;
-                }
+    .welcome h2 {
+        font-size: 1.9rem;
+    }
 
-                .dashboard .card {
-                    padding: 20px;
-                }
-            }
+    .dashboard {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+
+    .dashboard .card {
+        padding: 20px;
+    }
+}
         </style>
     </head>
     <body>
