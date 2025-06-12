@@ -7,12 +7,12 @@
         <title>Admin - Role Management</title>
         <style>
             :root {
-                --primary-color: #4A90E2; /* Soft blue for primary elements */
-                --secondary-color: #50C878; /* Vibrant green for gradients */
-                --accent-color: #F7C948; /* Warm yellow for highlights */
-                --text-color: #2D3748; /* Dark gray for text */
-                --card-bg: #FFFFFF; /* Clean white for cards */
-                --background: #F3F7FA; /* Light blue-gray background */
+                --primary-color: #4A90E2; 
+                --secondary-color: #50C878;
+                --accent-color: #F7C948;
+                --text-color: #2D3748;
+                --card-bg: #FFFFFF; 
+                --background: #F3F7FA;
                 --shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
                 --transition: all 0.3s ease;
             }
