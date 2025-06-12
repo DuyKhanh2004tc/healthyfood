@@ -18,16 +18,7 @@ public class DisplayAccountServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("user") == null) {
-            response.sendRedirect("login");
-            return;
-        }
-
-        User user = (User) session.getAttribute("user");
-        if (!"System admin".equals(user.getRole().getRoleName())) {
-            response.sendRedirect("login");
-            return;
-        }
+        
         try {
             String roleId = request.getParameter("idRole");
             if (roleId == null || roleId.trim().isEmpty()) {
@@ -59,16 +50,7 @@ public class DisplayAccountServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("user") == null) {
-            response.sendRedirect("login");
-            return;
-        }
-
-        User users = (User) session.getAttribute("user");
-        if (!"System admin".equals(users.getRole().getRoleName())) {
-            response.sendRedirect("login");
-            return;
-        }
+        
 
         try {
             String keyWord = request.getParameter("keyword");
