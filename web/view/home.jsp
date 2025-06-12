@@ -112,8 +112,10 @@
                                 </div>
 
                             </div>
-                            <button class="card-button" type="submit" value="addCart">🛒 Add to Cart</button>
-                            <button class="card-button" type="submit" value="buy">💰 Buy</button>
+                            <c:if test="${sessionScope.user.getRole().getId()== null ||sessionScope.user.getRole().getId()== 3 }">
+                                <button class="card-button" type="submit" value="addCart">🛒 Add to Cart</button>
+                                <button class="card-button" type="submit" value="buy">💰 Buy</button>
+                            </c:if> 
                         </div>
                     </c:forEach>
                 </div>

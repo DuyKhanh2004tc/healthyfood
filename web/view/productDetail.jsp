@@ -1,6 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="model.*" %>
 <%@ page import="java.sql.Timestamp, java.util.*, java.text.*" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -15,7 +16,7 @@
                 padding: 0;
             }
             .container {
-                
+
                 margin: 30px auto;
                 padding: 20px;
                 background-color: #ffffff;
@@ -216,7 +217,7 @@
                         <h3><%= productName %></h3>
                         <p><%= String.format("%.1f", rate) %> ★</p> 
                     </div>
-                  
+
                     <p>Category: <%= categoryName %></p>
                     <p>Price: $<%= String.format("%.2f", price) %></p>
                     <p>Stock: <%= stock %></p>
@@ -225,19 +226,23 @@
 
                     <form action="${pageContext.request.contextPath}/productDetail" method="post">
                         <input type="hidden" name="productId" value="<%= productId %>">
-                        <div class="quantity-controls">
-                            <button type="button" onclick="updateQuantity(-1)">-</button>
-                            <input type="text" name="number" id="quantity" value="1" min="1" max="<%= stock %>">
-                            <button type="button" onclick="updateQuantity(1)">+</button>
-                        </div>
+                        <c:if test="${sessionScope.user.getRole().getId()== null ||sessionScope.user.getRole().getId()== 3 }">
+                            <div class="quantity-controls">
+                                <button type="button" onclick="updateQuantity(-1)">-</button>
+                                <input type="text" name="number" id="quantity" value="1" min="1" max="<%= stock %>">
+                                <button type="button" onclick="updateQuantity(1)">+</button>
+                            </div>
+                        </c:if>
                         <%
                             String error = (String) request.getAttribute("error");
                             if (error != null) {
                         %>
                         <p class="error"><%= error %></p>
                         <% } %>
-                        <button type="submit" value="addCart">🛒 Add to Cart</button>
-                        <button type="submit" value="buy">💰 Buy</button>
+                        <c:if test="${sessionScope.user.getRole().getId()== null ||sessionScope.user.getRole().getId()== 3 }">
+                            <button type="submit" value="addCart">🛒 Add to Cart</button>
+                            <button type="submit" value="buy">💰 Buy</button>
+                        </c:if>
                     </form>
                 </div>
                 <% } else { %>
@@ -274,8 +279,10 @@
                         <input type="radio" id="star2" name="rating" value="4"><label for="star2">★</label>
                         <input type="radio" id="star1" name="rating" value="5"><label for="star1">★</label>
                     </div>
+                    <c:if test="${sessionScope.user.getRole().getId()== 3 }">
                     <textarea name="content" placeholder="Write your comment..." required></textarea>
                     <button type="submit" name="action" value="comment">Submit Comment</button>
+                    </c:if>
                 </form>
             </div>
         </div>

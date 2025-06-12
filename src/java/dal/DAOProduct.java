@@ -52,13 +52,14 @@ public class DAOProduct {
 
     public List<Product> getAllProduct() {
         List<Product> productList = new ArrayList<>();
-        String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, "
-                   + "c.id AS category_id, c.name AS category_name "
-                   + "FROM Product p "
-                   + "INNER JOIN Category c ON p.category_id = c.id";
+        String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, "
+                + "AVG(COALESCE(f.rate, p.rate)) AS average_rate, c.id AS category_id, c.name AS category_name "
+                + "FROM Product p "
+                + "INNER JOIN Category c ON p.category_id = c.id "
+                + "LEFT JOIN Feedback f ON p.id = f.product_id "
+                + "GROUP BY p.id, p.name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, c.id, c.name";
 
-        try (PreparedStatement st = con.prepareStatement(sql);
-             ResultSet rs = st.executeQuery()) {
+        try (PreparedStatement st = con.prepareStatement(sql); ResultSet rs = st.executeQuery()) {
             while (rs.next()) {
                 Product p = new Product();
                 p.setId(rs.getInt("product_id"));
@@ -68,7 +69,7 @@ public class DAOProduct {
                 p.setStock(rs.getInt("stock"));
                 p.setImgUrl(rs.getString("image_url"));
                 p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
-                p.setRate(rs.getDouble("rate"));
+                p.setRate(rs.getDouble("average_rate"));
 
                 Category c = new Category();
                 c.setId(rs.getInt("category_id"));
@@ -77,18 +78,12 @@ public class DAOProduct {
                 p.setCategory(c);
                 productList.add(p);
             }
-            LOGGER.log(Level.INFO, "Retrieved {0} products from database", productList.size());
-            if (productList.isEmpty()) {
-                LOGGER.log(Level.WARNING, "No products found in the database");
-            }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "SQL Error in getAllProduct: {0}", e.getMessage());
-        } catch (NullPointerException e) {
-            LOGGER.log(Level.SEVERE, "Database connection is null in getAllProduct: {0}", e.getMessage());
+            e.printStackTrace();
         }
         return productList;
     }
-    
+
     public String getStatus() {
         try {
             if (con == null || con.isClosed()) {
@@ -105,12 +100,12 @@ public class DAOProduct {
     public List<Product> getProductByCategory(int categoryId) {
         List<Product> productList = new ArrayList<>();
         String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, "
-                   + "AVG(COALESCE(f.rate, p.rate)) AS average_rate, c.id AS category_id, c.name AS category_name "
-                   + "FROM Product p "
-                   + "INNER JOIN Category c ON p.category_id = c.id "
-                   + "LEFT JOIN Feedback f ON p.id = f.product_id "
-                   + "WHERE p.category_id = ? "
-                   + "GROUP BY p.id, p.name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, c.id, c.name";
+                + "AVG(COALESCE(f.rate, p.rate)) AS average_rate, c.id AS category_id, c.name AS category_name "
+                + "FROM Product p "
+                + "INNER JOIN Category c ON p.category_id = c.id "
+                + "LEFT JOIN Feedback f ON p.id = f.product_id "
+                + "WHERE p.category_id = ? "
+                + "GROUP BY p.id, p.name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, c.id, c.name";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setInt(1, categoryId);
             try (ResultSet rs = st.executeQuery()) {
@@ -142,10 +137,10 @@ public class DAOProduct {
     public List<Product> searchProduct(String namesearch) {
         List<Product> productList = new ArrayList<>();
         String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, "
-                   + "c.id AS category_id, c.name AS category_name "
-                   + "FROM Product p "
-                   + "INNER JOIN Category c ON p.category_id = c.id "
-                   + "WHERE p.name LIKE ?";
+                + "c.id AS category_id, c.name AS category_name "
+                + "FROM Product p "
+                + "INNER JOIN Category c ON p.category_id = c.id "
+                + "WHERE p.name LIKE ?";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setString(1, "%" + namesearch + "%");
             try (ResultSet rs = st.executeQuery()) {
@@ -177,10 +172,10 @@ public class DAOProduct {
     public List<Product> getPriceSorted(String orderBy) {
         List<Product> productList = new ArrayList<>();
         String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, "
-                   + "c.id AS category_id, c.name AS category_name "
-                   + "FROM Product p "
-                   + "INNER JOIN Category c ON p.category_id = c.id "
-                   + "ORDER BY p.price " + (orderBy.equalsIgnoreCase("DESC") ? "DESC" : "ASC");
+                + "c.id AS category_id, c.name AS category_name "
+                + "FROM Product p "
+                + "INNER JOIN Category c ON p.category_id = c.id "
+                + "ORDER BY p.price " + (orderBy.equalsIgnoreCase("DESC") ? "DESC" : "ASC");
         try (PreparedStatement st = con.prepareStatement(sql)) {
             try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {
@@ -211,10 +206,10 @@ public class DAOProduct {
     public List<Product> getPriceInRange(double min, double max) {
         List<Product> productList = new ArrayList<>();
         String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, "
-                   + "c.id AS category_id, c.name AS category_name "
-                   + "FROM Product p "
-                   + "INNER JOIN Category c ON p.category_id = c.id "
-                   + "WHERE p.price >= ? AND p.price <= ? ORDER BY p.price";
+                + "c.id AS category_id, c.name AS category_name "
+                + "FROM Product p "
+                + "INNER JOIN Category c ON p.category_id = c.id "
+                + "WHERE p.price >= ? AND p.price <= ? ORDER BY p.price";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setDouble(1, min);
             st.setDouble(2, max);
@@ -247,8 +242,8 @@ public class DAOProduct {
     public Product getProductById(int productId) {
         Product product = null;
         String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, "
-                   + "c.id AS category_id, c.name AS category_name "
-                   + "FROM Product p JOIN Category c ON p.category_id = c.id WHERE p.id = ?";
+                + "c.id AS category_id, c.name AS category_name "
+                + "FROM Product p JOIN Category c ON p.category_id = c.id WHERE p.id = ?";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setInt(1, productId);
             try (ResultSet rs = st.executeQuery()) {
@@ -278,8 +273,7 @@ public class DAOProduct {
     public List<Category> getAllCategories() {
         List<Category> categoryList = new ArrayList<>();
         String sql = "SELECT id, name FROM Category";
-        try (PreparedStatement st = con.prepareStatement(sql);
-             ResultSet rs = st.executeQuery()) {
+        try (PreparedStatement st = con.prepareStatement(sql); ResultSet rs = st.executeQuery()) {
             while (rs.next()) {
                 Category c = new Category();
                 c.setId(rs.getInt("id"));
@@ -294,7 +288,7 @@ public class DAOProduct {
 
     public void insertProduct(Product product) {
         String sql = "INSERT INTO Product (name, description, price, stock, image_url, shelf_life_hours, category_id) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setString(1, product.getName());
             st.setString(2, product.getDescription());
@@ -302,7 +296,7 @@ public class DAOProduct {
             st.setInt(4, product.getStock());
             st.setString(5, product.getImgUrl());
             st.setDouble(6, product.getShelfLifeHours());
-            
+
             st.setInt(8, product.getCategory().getId());
             st.executeUpdate();
             LOGGER.log(Level.INFO, "Inserted product: {0}", product.getName());
@@ -313,7 +307,7 @@ public class DAOProduct {
 
     public void updateProduct(Product product) {
         String sql = "UPDATE Product SET name = ?, description = ?, price = ?, stock = ?, image_url = ?, shelf_life_hours = ?, category_id = ? "
-                   + "WHERE id = ?";
+                + "WHERE id = ?";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setString(1, product.getName());
             st.setString(2, product.getDescription());
@@ -340,43 +334,43 @@ public class DAOProduct {
             LOGGER.log(Level.SEVERE, "SQL Error in deleteProductById: {0}", e.getMessage());
         }
     }
-    
-public List<Product> searchProductsByName(String keywords) {
-    List<Product> productList = new ArrayList<>();
-    String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, "
-               + "c.id AS category_id, c.name AS category_name "
-               + "FROM Product p "
-               + "INNER JOIN Category c ON p.category_id = c.id "
-               + "WHERE p.name LIKE ?";
-    try (PreparedStatement st = con.prepareStatement(sql)) {
-        st.setString(1, "%" + (keywords != null ? keywords.trim() : "") + "%");
-        try (ResultSet rs = st.executeQuery()) {
-            while (rs.next()) {
-                Product p = new Product();
-                p.setId(rs.getInt("product_id"));
-                p.setName(rs.getString("product_name"));
-                p.setDescription(rs.getString("description"));
-                p.setPrice(rs.getDouble("price"));
-                p.setStock(rs.getInt("stock"));
-                p.setImgUrl(rs.getString("image_url"));
-                p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
-                p.setRate(rs.getDouble("rate"));
 
-                Category c = new Category();
-                c.setId(rs.getInt("category_id"));
-                c.setName(rs.getString("category_name"));
+    public List<Product> searchProductsByName(String keywords) {
+        List<Product> productList = new ArrayList<>();
+        String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, "
+                + "c.id AS category_id, c.name AS category_name "
+                + "FROM Product p "
+                + "INNER JOIN Category c ON p.category_id = c.id "
+                + "WHERE p.name LIKE ?";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setString(1, "%" + (keywords != null ? keywords.trim() : "") + "%");
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    Product p = new Product();
+                    p.setId(rs.getInt("product_id"));
+                    p.setName(rs.getString("product_name"));
+                    p.setDescription(rs.getString("description"));
+                    p.setPrice(rs.getDouble("price"));
+                    p.setStock(rs.getInt("stock"));
+                    p.setImgUrl(rs.getString("image_url"));
+                    p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
+                    p.setRate(rs.getDouble("rate"));
 
-                p.setCategory(c);
-                productList.add(p);
+                    Category c = new Category();
+                    c.setId(rs.getInt("category_id"));
+                    c.setName(rs.getString("category_name"));
+
+                    p.setCategory(c);
+                    productList.add(p);
+                }
+                LOGGER.log(Level.INFO, "Retrieved {0} products for search query: {1}", new Object[]{productList.size(), keywords});
+                if (productList.isEmpty()) {
+                    LOGGER.log(Level.WARNING, "No products found for search query: {0}", keywords);
+                }
             }
-            LOGGER.log(Level.INFO, "Retrieved {0} products for search query: {1}", new Object[]{productList.size(), keywords});
-            if (productList.isEmpty()) {
-                LOGGER.log(Level.WARNING, "No products found for search query: {0}", keywords);
-            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "SQL Error in searchProductsByName: {0}", e.getMessage());
         }
-    } catch (SQLException e) {
-        LOGGER.log(Level.SEVERE, "SQL Error in searchProductsByName: {0}", e.getMessage());
+        return productList;
     }
-    return productList;
-}
 }

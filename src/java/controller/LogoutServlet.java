@@ -4,8 +4,7 @@
  */
 
 package controller;
-import dal.DAOCategory;
-import dal.DAOProduct;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,18 +12,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import model.Category;
-import model.Product;
-import model.User;
 
 /**
  *
  * @author ASUS
  */
-public class HomeDisplayServlet extends HttpServlet {
+public class LogoutServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -41,10 +34,10 @@ public class HomeDisplayServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet HomeDisplayServelet</title>");  
+            out.println("<title>Servlet LogoutServlet</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet HomeDisplayServelet at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet LogoutServlet at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -61,16 +54,9 @@ public class HomeDisplayServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-//        HttpSession session = request.getSession();
-//        User u = request.getAttribute("user");
-        DAOProduct dao = new DAOProduct();
-        List<Product> productList = dao.getAllProduct();
-        DAOCategory dao2 = new DAOCategory();
-        List<Category> categoryList = dao2.getAllCategory();
-        request.setAttribute("categoryList",categoryList);
-        request.setAttribute("productList", productList);
-        request.getRequestDispatcher("/view/home.jsp").forward(request, response);
-        
+        HttpSession session = request.getSession();
+        session.removeAttribute("user");
+        response.sendRedirect("home");
     } 
 
     /** 
@@ -83,7 +69,7 @@ public class HomeDisplayServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-      
+        
     }
 
     /** 
