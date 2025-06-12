@@ -21,8 +21,8 @@ public class HomeAdminServlet extends HttpServlet {
             return;
         }
 
-        User user = (User) session.getAttribute("user");
-        if (!"System admin".equals(user.getRole().getRoleName())) {
+        User users = (User) session.getAttribute("user");
+        if (!"System admin".equals(users.getRole().getRoleName())) {
             response.sendRedirect("login");
             return;
         }
