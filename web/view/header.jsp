@@ -16,7 +16,7 @@
         <div class="header">
             <div class="logo">
                 <a href="${pageContext.request.contextPath}/home">
-                    <img src="images/logo_1.png" alt="Logo Image">
+                    <img src="images/logo_1.png" alt="Logo">
                 </a>
             </div>
             <div class="header-right">
@@ -28,7 +28,7 @@
                         <a href="${pageContext.request.contextPath}/register">Register</a>
                         <a href="cart.jsp">Cart</a>
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
-                        <form action="search" method="get">                   
+                        <form class ="search-form" action="search" method="get">                   
                             <input type="image" src="${pageContext.request.contextPath}/icons/search_icon.png" alt="Search" width="20" height="20">
                             <input type="text" name="keyword" placeholder="Search...">
                         </form>
@@ -39,7 +39,7 @@
                         <a href="cart.jsp">Cart</a>
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
                         <a href="${pageContext.request.contextPath}/logout">Logout</a>
-                        <form action="search" method="get">                   
+                        <form class ="search-form" action="search" method="get">                   
                             <input type="image" src="${pageContext.request.contextPath}/icons/search_icon.png" alt="Search" width="20" height="20">
                             <input type="text" name="keyword" placeholder="Search...">
                         </form>
@@ -51,7 +51,7 @@
                         <a href="${pageContext.request.contextPath}/approveProduct">Approve new products</a>                   
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
                         <a href="${pageContext.request.contextPath}/logout">Logout</a>
-                        <form action="search" method="get">                   
+                        <form class ="search-form" action="search" method="get">                   
                             <input type="image" src="${pageContext.request.contextPath}/icons/search_icon.png" alt="Search" width="20" height="20">
                             <input type="text" name="keyword" placeholder="Search...">
                         </form>
@@ -62,7 +62,7 @@
                         <a href="${pageContext.request.contextPath}/manageproduct">Manage Product</a>                 
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
                         <a href="${pageContext.request.contextPath}/logout">Logout</a>
-                        <form action="search" method="get">                   
+                        <form class ="search-form" action="search" method="get">                   
                             <input type="image" src="${pageContext.request.contextPath}/icons/search_icon.png" alt="Search" width="20" height="20">
                             <input type="text" name="keyword" placeholder="Search...">
                         </form>

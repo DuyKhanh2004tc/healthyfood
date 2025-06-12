@@ -12,9 +12,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import model.Category;
 import model.Product;
+import model.User;
 
 /**
  *
@@ -60,31 +62,46 @@ public class CategoryServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        processRequest(request, response);
         DAOProduct dao = new DAOProduct();
         DAOCategory dao2 = new DAOCategory();
+        HttpSession session = request.getSession();
+
+        User u = (User) session.getAttribute("user");
         String categoryId_raw = request.getParameter("categoryId");
         List<Category> categoryList = dao2.getAllCategory();
-            request.setAttribute("categoryList", categoryList);
-            List<Product> productList;
+        request.setAttribute("categoryList", categoryList);
+        List<Product> productList;
         try {
             int categoryId = Integer.parseInt(categoryId_raw);
-            if(categoryId==0){
+            
+            int userRoleId = -1;
+            if (u != null && u.getRole() != null) {
+                userRoleId = u.getRole().getId();
+            }
+
+            if (categoryId == 0) {
                 productList = dao.getAllProduct();
                 request.setAttribute("productList", productList);
-                request.getRequestDispatcher("/view/home.jsp").forward(request, response);
-                return;
+                if (userRoleId == 4) {
+                    request.getRequestDispatcher("/view/nutritionistHome.jsp").forward(request, response);
+                    return;
+                } else {
+                    request.getRequestDispatcher("/view/home.jsp").forward(request, response);
+                    return;
+                }
             } else {
-                productList=dao.getProductByCategory(categoryId);
+                productList = dao.getProductByCategory(categoryId);
                 request.setAttribute("productList", productList);
-                request.getRequestDispatcher("/view/home.jsp").forward(request, response);
-                return;
+                session.setAttribute("categoryId", categoryId);
+                if (userRoleId == 4) {
+                    request.getRequestDispatcher("/view/nutritionistHome.jsp").forward(request, response);
+                    return;
+                } else {
+                    request.getRequestDispatcher("/view/home.jsp").forward(request, response);
+                    return;
+                }
             }
-            
 
-            
-            
-            
         } catch (Exception e) {
 
         }

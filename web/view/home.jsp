@@ -15,7 +15,6 @@
     </head>
     <body>
         <jsp:include page="header.jsp"></jsp:include>
-
             <!-- Main Content -->
             <div>
                 <h1>Welcome to Healthy Food!</h1>
@@ -30,10 +29,9 @@
                         <select name="category" onchange="location.href = 'category?categoryId=' + this.value;">
                             <option value="0">All Products</option>
                         <c:forEach items="${requestScope.categoryList}" var="o">
-                            <option value="${o.id}"<c:if test="${param.categoryId == o.id}">selected</c:if>>${o.name}</option>
+                            <option value="${o.id}" ${sessionScope.categoryId == o.id ? 'selected' : ''}>${o.name}</option>
                         </c:forEach>    
                     </select>
-
                 </div>
 
                 <div>
@@ -66,7 +64,6 @@
                     <button onclick="location.href = 'sortproduct?orderBy=Asc'">Ascending</button>
                 </div>
             </div>
-
             <!-- hien thi product -->
             <div class="content-right">
                 <div class="list-title">
@@ -79,7 +76,6 @@
                         }    
                     %>
                 </div>
-
                 <div class="product-list">                  
                     <c:forEach items="${requestScope.productList}" var="o">
                         <div class="card">
@@ -121,13 +117,6 @@
                 </div>
             </div>    
         </div>
-
-
-
-
-
-
-
         <jsp:include page="footer.jsp"></jsp:include>
     </body>
 </html>
