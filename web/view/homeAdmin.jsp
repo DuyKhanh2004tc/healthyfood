@@ -179,7 +179,7 @@
             <a href="#">Admin Dashboard</a>
             <div class="user-info">
                 <span>Welcome, <c:out value="${sessionScope.user.name}" /></span>
-                <a href="Logout">Logout</a>
+                <a href="logout">Logout</a>
             </div>
         </div>
 
