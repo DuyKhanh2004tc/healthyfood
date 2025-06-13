@@ -4,7 +4,7 @@
  */
 package controller;
 
-import dal.DAOProduct;
+import dal.DAOUser;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,14 +13,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
-import model.Product;
 import model.User;
+import utils.Mail;
 
 /**
  *
- * @author ASUS
+ * @author Hoa
  */
-public class SearchServlet extends HttpServlet {
+public class ForgotPasswordServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,10 +39,10 @@ public class SearchServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SearchServlet</title>");
+            out.println("<title>Servlet ForgotPasswordServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet SearchServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ForgotPasswordServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -60,34 +60,9 @@ public class SearchServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        DAOProduct dao = new DAOProduct();
-        List<Product> searchList;
-        HttpSession session = request.getSession();
-        User u = (User)session.getAttribute("user");
-        int userRoleId = -1;
-        if (u != null && u.getRole() != null) {
-            userRoleId = u.getRole().getId();
-        }
-        String searchName = request.getParameter("keyword");
-        searchList = dao.searchProduct(searchName);
-        request.setAttribute("keyword", searchName);
-        if (searchList.isEmpty() || searchList == null) {
-            String error = "Product Not Found";
-            request.setAttribute("errorMessage", error);
-            if (userRoleId == 4) {
-                request.getRequestDispatcher("/view/nutritionistHome.jsp").forward(request, response);
-                return;
-            } else {
-                request.getRequestDispatcher("/view/home.jsp").forward(request, response);
-                return;
-            }
-        }
-        request.setAttribute("productList", searchList);
-        if (userRoleId == 4) {
-        request.getRequestDispatcher("/view/nutritionistHome.jsp").forward(request, response);
-        } else {
-            request.getRequestDispatcher("/view/home.jsp").forward(request, response);
-        }
+        //processRequest(request, response);
+        request.getRequestDispatcher("view/forgotPassword.jsp").forward(request, response);
+
     }
 
     /**
@@ -101,7 +76,25 @@ public class SearchServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        processRequest(request, response);
+        //processRequest(request, response);
+        String email = request.getParameter("email");
+        DAOUser dao = new DAOUser();
+        
+        if (!dao.checkEmailExists(email, -1)) {
+    request.setAttribute("error", "Email not registered");
+    request.getRequestDispatcher("view/forgotPassword.jsp").forward(request, response);
+    return;
+}
+        String otp = String.valueOf((int) (Math.random() * 900000) + 100000);
+
+HttpSession session = request.getSession();
+session.setAttribute("otp", otp);
+session.setAttribute("otp_time", System.currentTimeMillis());
+session.setAttribute("email", email);
+
+Mail.sendMail(email, "Password Reset Code", "Your verification code is: " + otp);
+
+response.sendRedirect("resetPassword");
     }
 
     /**

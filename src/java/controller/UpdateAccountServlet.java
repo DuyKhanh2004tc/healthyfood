@@ -21,12 +21,17 @@ public class UpdateAccountServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        HttpSession session = request.getSession(false);
-//        if (session == null || !"admin".equals(session.getAttribute("userRole"))) {
-//            response.sendRedirect("login");
-//            return;
-//        }
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect("login");
+            return;
+        }
 
+        User users = (User) session.getAttribute("user");
+        if (!"System admin".equals(users.getRole().getRoleName())) {
+            response.sendRedirect("login");
+            return;
+        }
         try {
             String userId = request.getParameter("id");
             if (userId == null || userId.trim().isEmpty()) {
@@ -68,10 +73,16 @@ public class UpdateAccountServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
-//        if (session == null || !"admin".equals(session.getAttribute("userRole"))) {
-//            response.sendRedirect("login");
-//            return;
-//        }
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect("login");
+            return;
+        }
+
+        User users = (User) session.getAttribute("user");
+        if (!"System admin".equals(users.getRole().getRoleName())) {
+            response.sendRedirect("login");
+            return;
+        }
 
         try {
             String userId = request.getParameter("id");
@@ -102,7 +113,7 @@ public class UpdateAccountServlet extends HttpServlet {
 //                request.setAttribute("error", "Email already exists for another user");
 //                request.getRequestDispatcher("view/updateAccount.jsp").forward(request, response);
                 session.setAttribute("error", "Email already exists for another user");
-                response.sendRedirect("UpdateAccount?id=" + id +"&roleId="+roleIdStr);
+                response.sendRedirect("UpdateAccount?id=" + id + "&roleId=" + roleIdStr);
                 return;
             }
 

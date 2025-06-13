@@ -51,6 +51,16 @@
                 background-color: #c82333;
                 border-color: #c82333;
             }
+            .btn-insert {
+                background-color: #28a745;
+                border-color: #28a745;
+                padding: 8px 16px;
+                font-size: 16px;
+            }
+            .btn-insert:hover {
+                background-color: #218838;
+                border-color: #218838;
+            }
             .error-message {
                 font-size: 16px;
                 margin-bottom: 20px;
@@ -58,18 +68,50 @@
             .table-hover tbody tr:hover {
                 background-color: #f1f1f1;
             }
+            .search-form {
+                max-width: 600px;
+                margin: 20px auto;
+            }
         </style>
     </head>
     <body>
         <jsp:include page="SideBarOfSheller.jsp"></jsp:include>
 
-            <div class="container-fluid mt-4">
-                <div class="d-flex justify-content-center">
-                    <div class="card shadow border-0" style="width: 95%;">
-                        <div class="card-header bg-success text-white fs-5">
-                            <i class="bi bi-box-seam me-2"></i>Product Management
+        <div class="container-fluid mt-4">
+            <div class="d-flex justify-content-center">
+                <div class="card shadow border-0" style="width: 95%;">
+                    <div class="card-header bg-success text-white fs-5">
+                        <i class="bi bi-box-seam me-2"></i>Product Management
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- Insert Button -->
+                        <div class="text-center mb-4">
+                            <a href="manageproduct?service=requestInsert" class="btn btn-warning">
+                                <i class="bi bi-plus-circle me-1"></i> Insert New Product
+                            </a>
                         </div>
-                        <div class="card-body">
+
+                        <!-- Search Form -->
+<form action="manageproduct" class="input-group search-form shadow-sm" method="get" onsubmit="return validateSearch()">
+    <input type="hidden" name="service" value="searchByKeywords"/>
+    <input type="text" class="form-control" id="keywords" name="keywords" placeholder="Search by product name" value="${keywords}">
+    <button class="btn btn-outline-primary" type="submit">
+        <i class="bi bi-search"></i> Search
+    </button>
+</form>
+
+<script>
+function validateSearch() {
+    var keywords = document.getElementById("keywords").value.trim();
+    if (keywords === "") {
+        alert("Please enter a search keyword.");
+        return false;
+    }
+    return true;
+}
+</script>
+
                         <c:if test="${not empty errorMessage}">
                             <p class="text-center text-danger error-message">${errorMessage}</p>
                         </c:if>
@@ -97,13 +139,10 @@
                                                     <td>${product.id}</td>
                                                     <td class="text-center">
                                                         <div class="d-flex flex-column align-items-center">
-                                                            <img src="${product.imgUrl != null ? product.imgUrl : '/images/default.jpg'}"
-                                                                 alt="${product.name}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
+                                                            <img src="${product.imgUrl != null ? product.imgUrl : '/images/default.jpg'}" alt="${product.name}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
                                                             <span class="mt-1">${product.name}</span>
                                                         </div>
                                                     </td>
-
-
                                                     <td class="text-end">${String.format("%.2f", product.price)}</td>
                                                     <td class="text-center">${product.stock}</td>
                                                     <td>${product.description != null ? product.description : 'N/A'}</td>
@@ -111,7 +150,7 @@
                                                     <td class="text-center">${product.category != null ? product.category.name : 'N/A'}</td>
                                                     <td class="text-center">${String.format("%.1f", product.rate)}</td>
                                                     <td class="text-center">
-                                                        <a href="manageproduct?service=requestUpdate&productId=${product.id}" class="btn btn-action btn-edit">
+                                                        <a href="manageproduct?service=requestUpdate&productId=${product.id}" class="btn btn-success btn-edit">
                                                             <i class="bi bi-pencil"></i> Edit
                                                         </a>
                                                         <a href="manageproduct?service=requestDelete&productId=${product.id}" class="btn btn-action btn-delete" onclick="return confirm('Are you sure you want to delete ${product.name}?');">

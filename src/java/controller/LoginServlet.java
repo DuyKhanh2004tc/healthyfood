@@ -81,26 +81,27 @@ public class LoginServlet extends HttpServlet {
                 String email = request.getParameter("email");
                 String password = request.getParameter("password");
 
-                
-                    User matchedUser = null;
+                User matchedUser = null;
 
-                    for (User u : userList) {
-                        if (u.getEmail().equals(email) && u.getPassword().equals(password)) {
-                            matchedUser = u;
-                            break;
-                        }
+                for (User u : userList) {
+                    if (u.getEmail().equals(email) && u.getPassword().equals(password)) {
+                        matchedUser = u;
+                        break;
                     }
+                }
 
-                    if (matchedUser != null) {
-                        HttpSession session = request.getSession();
-                        session.setAttribute("user", matchedUser);
+                if (matchedUser != null) {
+                    HttpSession session = request.getSession();
+                    session.setAttribute("user", matchedUser);
 
-                        if (matchedUser.getRole().getId() == 1) {
-                            response.sendRedirect("HomeAdmin");
-                        } else {
-                            response.sendRedirect("home");
-                        }
-                        return;
+                    if (matchedUser.getRole().getId() == 1) {
+                        response.sendRedirect("HomeAdmin");
+                    } else if (matchedUser.getRole().getId() == 4)  {
+                        response.sendRedirect("nutritionistHome");
+                    } else {
+                        response.sendRedirect("home");
+                    }
+                    return;
                 } else {
                     request.setAttribute("error", "Wrong email or password. Input again.");
                     request.getRequestDispatcher("/view/login.jsp").forward(request, response);

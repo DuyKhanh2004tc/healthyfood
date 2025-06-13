@@ -22,10 +22,16 @@ public class AddAccountServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
-//        if (session == null || !"admin".equals(session.getAttribute("userRole"))) {
-//            response.sendRedirect("login");
-//            return;
-//        }
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect("login");
+            return;
+        }
+
+        User users = (User) session.getAttribute("user");
+        if (!"System admin".equals(users.getRole().getRoleName())) {
+            response.sendRedirect("login");
+            return;
+        }
 
         String idRole = request.getParameter("roleId");
         if (idRole == null || idRole.trim().isEmpty()) {
@@ -47,11 +53,16 @@ public class AddAccountServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
-//        if (session == null || !"admin".equals(session.getAttribute("userRole"))) {
-//            response.sendRedirect("login");
-//            return;
-//        }
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect("login");
+            return;
+        }
 
+        User users = (User) session.getAttribute("user");
+        if (!"System admin".equals(users.getRole().getRoleName())) {
+            response.sendRedirect("login");
+            return;
+        }
         try {
             String name = request.getParameter("name");
             String email = request.getParameter("email");

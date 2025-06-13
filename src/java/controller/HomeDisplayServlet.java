@@ -12,11 +12,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import model.Category;
 import model.Product;
+import model.User;
 
 /**
  *
@@ -59,7 +61,8 @@ public class HomeDisplayServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        //processRequest(request, response);
+//        HttpSession session = request.getSession();
+//        User u = request.getAttribute("user");
         DAOProduct dao = new DAOProduct();
         List<Product> productList = dao.getAllProduct();
         DAOCategory dao2 = new DAOCategory();
@@ -80,7 +83,7 @@ public class HomeDisplayServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-//        processRequest(request, response);
+      
     }
 
     /** 

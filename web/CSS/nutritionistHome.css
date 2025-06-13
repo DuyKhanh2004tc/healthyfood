@@ -1,0 +1,106 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Jun 12, 2025, 11:53:02 PM
+    Author     : ASUS
+*/
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+.nutrition-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #2e7d32; /* Màu xanh lá đậm */
+    color: white;
+    padding: 15px 30px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.logo img {
+    height: 50px;
+    width: auto;
+}
+
+.menu-content-left {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.menu-content-left h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: normal;
+}
+
+.menu-content-left a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 6px 12px;
+    transition: background-color 0.3s ease;
+}
+
+.menu-content-left a:hover {
+    background-color: #1b5e20;
+    border-radius: 5px;
+}
+
+
+.content-filter {
+    background-color: #ffffff;
+    padding: 20px 30px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    border-bottom: 1px solid #ccc;
+}
+
+
+.content-filter .search-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.content-filter input[type="text"] {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+.content-filter button {
+    padding: 6px 12px;
+    background-color: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+
+.content-filter button:hover {
+    background-color: #1b5e20;
+}
+
+
+.product-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px 30px;
+    justify-content: flex-start;
+}
+
