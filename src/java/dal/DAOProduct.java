@@ -483,24 +483,30 @@ public class DAOProduct {
         }
     }
 
-    public void updateProduct(Product product) {
-        String sql = "UPDATE Product SET name = ?, description = ?, price = ?, stock = ?, image_url = ?, shelf_life_hours = ?, category_id = ? "
-                + "WHERE id = ?";
-        try (PreparedStatement st = con.prepareStatement(sql)) {
-            st.setString(1, product.getName());
-            st.setString(2, product.getDescription());
-            st.setDouble(3, product.getPrice());
-            st.setInt(4, product.getStock());
-            st.setString(5, product.getImgUrl());
-            st.setDouble(6, product.getShelfLifeHours());
-            st.setInt(7, product.getCategory().getId());
-            st.setInt(8, product.getId());
-            st.executeUpdate();
-            LOGGER.log(Level.INFO, "Updated product: {0}", product.getName());
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "SQL Error in updateProduct: {0}", e.getMessage());
+    public boolean updateProduct(Product product) {
+    String sql = "UPDATE Product SET name = ?, description = ?, price = ?, stock = ?, image_url = ?, shelf_life_hours = ?, category_id = ? "
+               + "WHERE id = ?";
+    try (PreparedStatement st = con.prepareStatement(sql)) {
+        st.setString(1, product.getName());
+        st.setString(2, product.getDescription());
+        st.setDouble(3, product.getPrice());
+        st.setInt(4, product.getStock());
+        st.setString(5, product.getImgUrl());
+        st.setDouble(6, product.getShelfLifeHours());
+        st.setInt(7, product.getCategory().getId());
+        st.setInt(8, product.getId());
+        int rowsAffected = st.executeUpdate();
+        if (rowsAffected == 0) {
+            LOGGER.log(Level.WARNING, "No product found with ID: {0}", product.getId());
+            return false;
         }
+        LOGGER.log(Level.INFO, "Updated product with ID: {0}", product.getId());
+        return true;
+    } catch (SQLException e) {
+        LOGGER.log(Level.SEVERE, "SQL Error in updateProduct for ID {0}: {1}", new Object[]{product.getId(), e.getMessage()});
+        return false;
     }
+}
 
     public void deleteProductById(int productId) {
         String sql = "DELETE FROM Product WHERE id = ?";

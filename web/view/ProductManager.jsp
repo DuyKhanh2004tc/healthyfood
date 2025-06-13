@@ -35,22 +35,13 @@
                 font-size: 14px;
                 border-radius: 5px;
             }
-            .btn-edit {
-                background-color: #ffc107;
-                border-color: #ffc107;
+            .btn-edit, .btn-delete {
+                transition: all 0.3s ease;
             }
-            .btn-edit:hover {
-                background-color: #e0a800;
-                border-color: #e0a800;
+            .btn-edit:hover, .btn-delete:hover {
+                transform: scale(1.05);
             }
-            .btn-delete {
-                background-color: #dc3545;
-                border-color: #dc3545;
-            }
-            .btn-delete:hover {
-                background-color: #c82333;
-                border-color: #c82333;
-            }
+
             .btn-insert {
                 background-color: #28a745;
                 border-color: #28a745;
@@ -75,94 +66,102 @@
         </style>
     </head>
     <body>
+        <div class="d-flex justify-content-between align-items-center p-3 bg-white shadow-sm">
+            <div class="d-flex align-items-center">
+                <img src="${pageContext.request.contextPath}/images/logo_1.png" alt="Logo" height="50">
+                <h4 class="ms-3 mb-0 text-success">Welcome Management, ${sessionScope.user.getName()}</h4>
+            </div>
+            <a href="${pageContext.request.contextPath}/logout" class="btn btn-outline-danger">Logout</a>
+        </div>
+
         <jsp:include page="SideBarOfSheller.jsp"></jsp:include>
 
-        <div class="container-fluid mt-4">
-            <div class="d-flex justify-content-center">
-                <div class="card shadow border-0" style="width: 95%;">
-                    <div class="card-header bg-success text-white fs-5">
-                        <i class="bi bi-box-seam me-2"></i>Product Management
-                    </div>
-                    <div class="card-body">
-                        
-                        <!-- Insert Button -->
-                        <div class="text-center mb-4">
-                            <a href="manageproduct?service=requestInsert" class="btn btn-warning">
-                                <i class="bi bi-plus-circle me-1"></i> Insert New Product
-                            </a>
+            <div class="container-fluid mt-4">
+                <div class="d-flex justify-content-center">
+                    <div class="card shadow border-0" style="width: 95%;">
+                        <div class="card-header bg-success text-white fs-5">
+                            <i class="bi bi-box-seam me-2"></i>Product Management
                         </div>
+                        <div class="card-body">
 
-                        <!-- Search Form -->
-<form action="manageproduct" class="input-group search-form shadow-sm" method="get" onsubmit="return validateSearch()">
-    <input type="hidden" name="service" value="searchByKeywords"/>
-    <input type="text" class="form-control" id="keywords" name="keywords" placeholder="Search by product name" value="${keywords}">
-    <button class="btn btn-outline-primary" type="submit">
-        <i class="bi bi-search"></i> Search
-    </button>
-</form>
+                            <!-- Insert Button -->
+                            <div class="text-center mb-4">
+                                <a href="manageproduct?service=requestInsert" class="btn btn-warning">
+                                    <i class="bi bi-plus-circle me-1"></i> Insert New Product
+                                </a>
+                            </div>
 
-<script>
-function validateSearch() {
-    var keywords = document.getElementById("keywords").value.trim();
-    if (keywords === "") {
-        alert("Please enter a search keyword.");
-        return false;
-    }
-    return true;
-}
-</script>
+                            <!-- Search Form -->
+                            <form action="manageproduct" class="input-group search-form shadow-sm" method="get" onsubmit="return validateSearch()">
+                                <input type="hidden" name="service" value="searchByKeywords"/>
+                                <input type="text" class="form-control" id="keywords" name="keywords" placeholder="Search by product name" value="${keywords}">
+                            <button class="btn btn-outline-primary" type="submit">
+                                <i class="bi bi-search"></i> Search
+                            </button>
+                        </form>
+
+                        <script>
+                            function validateSearch() {
+                                var keywords = document.getElementById("keywords").value.trim();
+                                if (keywords === "") {
+                                    alert("Please enter a search keyword.");
+                                    return false;
+                                }
+                                return true;
+                            }
+                        </script>
 
                         <c:if test="${not empty errorMessage}">
                             <p class="text-center text-danger error-message">${errorMessage}</p>
                         </c:if>
                         <c:choose>
-                            <c:when test="${not empty allProducts}">
-                                <h4 class="text-center mb-4 text-success fw-bold">All Products</h4>
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-striped table-hover align-middle">
-                                        <thead class="table-primary text-center">
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Product</th>
-                                                <th>Price</th>
-                                                <th>Stock</th>
-                                                <th>Description</th>
-                                                <th>Shelf Life (hours)</th>
-                                                <th>Category</th>
-                                                <th>Rate</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <c:forEach var="product" items="${allProducts}">
-                                                <tr>
-                                                    <td>${product.id}</td>
-                                                    <td class="text-center">
-                                                        <div class="d-flex flex-column align-items-center">
-                                                            <img src="${product.imgUrl != null ? product.imgUrl : '/images/default.jpg'}" alt="${product.name}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
-                                                            <span class="mt-1">${product.name}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td class="text-end">${String.format("%.2f", product.price)}</td>
-                                                    <td class="text-center">${product.stock}</td>
-                                                    <td>${product.description != null ? product.description : 'N/A'}</td>
-                                                    <td class="text-center">${String.format("%.1f", product.shelfLifeHours)}</td>
-                                                    <td class="text-center">${product.category != null ? product.category.name : 'N/A'}</td>
-                                                    <td class="text-center">${String.format("%.1f", product.rate)}</td>
-                                                    <td class="text-center">
-                                                        <a href="manageproduct?service=requestUpdate&productId=${product.id}" class="btn btn-success btn-edit">
-                                                            <i class="bi bi-pencil"></i> Edit
-                                                        </a>
-                                                        <a href="manageproduct?service=requestDelete&productId=${product.id}" class="btn btn-action btn-delete" onclick="return confirm('Are you sure you want to delete ${product.name}?');">
-                                                            <i class="bi bi-trash"></i> Delete
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                            </c:forEach>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </c:when>
+<c:when test="${not empty allProducts}">
+    <h4 class="text-center mb-4 text-success fw-bold">All Products</h4>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover align-middle">
+            <thead class="table-primary text-center">
+                <tr>
+                    <th>ID</th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Description</th>
+                    <th>Shelf Life (hours)</th>
+                    <th>Category</th>
+                    <th>Rate</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <c:forEach var="product" items="${allProducts}">
+                    <tr>
+                        <td>${product.id}</td>
+                        <td class="text-center">
+                            <div class="d-flex flex-column align-items-center">
+                                <img src="${product.imgUrl != null ? product.imgUrl : '/images/default.jpg'}" alt="${product.name}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
+                                <span class="mt-1">${product.name}</span>
+                            </div>
+                        </td>
+                        <td class="text-end">${String.format("%.2f", product.price)}</td>
+                        <td class="text-center">${product.stock}</td>
+                        <td>${product.description != null ? product.description : 'N/A'}</td>
+                        <td class="text-center">${String.format("%.1f", product.shelfLifeHours)}</td>
+                        <td class="text-center">${product.category != null ? product.category.name : 'N/A'}</td>
+                        <td class="text-center">${String.format("%.1f", product.rate)}</td>
+                        <td class="text-center">
+                            <a href="manageproduct?service=requestUpdate&productId=${product.id}" class="btn btn-action btn-edit">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            <a href="manageproduct?service=requestDelete&productId=${product.id}" class="btn btn-action btn-delete" onclick="return confirm('Are you sure you want to delete ${product.name}?');">
+                                <i class="bi bi-trash"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+    </div>
+</c:when>
                             <c:otherwise>
                                 <p class="text-center text-danger error-message">No products found!</p>
                             </c:otherwise>
