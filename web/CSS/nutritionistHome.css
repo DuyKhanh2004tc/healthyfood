@@ -12,6 +12,7 @@ body {
     background-color: #f4f4f4;
 }
 
+
 .nutrition-header {
     display: flex;
     align-items: center;
@@ -21,7 +22,10 @@ body {
     padding: 15px 30px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
-
+.search-content{
+    display:flex;
+    
+}
 .logo img {
     height: 50px;
     width: auto;

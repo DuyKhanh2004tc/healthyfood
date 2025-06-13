@@ -17,7 +17,7 @@
         <div class="nutrition-header">
             <div class="logo">
 <!--                <a href="${pageContext.request.contextPath}/home">-->
-                    <img src="${pageContext.request.contextPath}/images/logo_3.png" alt="Logo">
+                <img src="${pageContext.request.contextPath}/images/logo_3.png" alt="Logo">
                 <!--</a>-->
             </div>
             <div class="menu-content-left">
@@ -47,15 +47,21 @@
             <div>
                 <b>Sort Product:</b>
                 <button onclick="location.href = 'sortproduct?orderBy=desc'">Descending</button>
-                <button onclick="location.href = 'sortproduct?orderBy=Asc'">Ascending</button>
+                <button onclick="location.href = 'sortproduct?orderBy=asc'">Ascending</button>
             </div>
-            <form class ="search-form" action="search" method="get">                   
-                <input type="image" src="${pageContext.request.contextPath}/icons/search_icon.png" alt="Search" width="20" height="20">
-                <input type="text" name="keyword" value="${requestScope.keyword}" placeholder="Search...">
-            </form>
+            <div class="search-content">
+                <c:if test="${not empty sessionScope.keyword}">
+                    <button onclick="location.href = 'nutritionistHome'">Back</button>
+                </c:if>
+                <form class ="search-form" action="search" method="get">                   
+                    <input type="image" src="${pageContext.request.contextPath}/icons/search_icon.png" alt="Search" width="20" height="20">
+                    <input type="text" name="keyword" value="${sessionScope.keyword}" placeholder="Search...">               
+                </form>
+            </div>
         </div>
 
-        <div class="product-list">                  
+        <div class="product-list">     
+
             <c:forEach items="${requestScope.productList}" var="o">
                 <div class="card">
                     <a href="${pageContext.request.contextPath}/productDetail?productId=${o.id}">

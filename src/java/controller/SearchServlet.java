@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dal.DAOCategory;
 import dal.DAOProduct;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
+import model.Category;
 import model.Product;
 import model.User;
 
@@ -61,15 +63,21 @@ public class SearchServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         DAOProduct dao = new DAOProduct();
+
         List<Product> searchList;
         HttpSession session = request.getSession();
-        User u = (User)session.getAttribute("user");
+        User u = (User) session.getAttribute("user");
+        session.removeAttribute("categoryId");
         int userRoleId = -1;
         if (u != null && u.getRole() != null) {
             userRoleId = u.getRole().getId();
         }
         String searchName = request.getParameter("keyword");
+        session.setAttribute("keyword", searchName);
+ 
+        
         searchList = dao.searchProduct(searchName);
+        
         request.setAttribute("keyword", searchName);
         if (searchList.isEmpty() || searchList == null) {
             String error = "Product Not Found";
@@ -84,7 +92,7 @@ public class SearchServlet extends HttpServlet {
         }
         request.setAttribute("productList", searchList);
         if (userRoleId == 4) {
-        request.getRequestDispatcher("/view/nutritionistHome.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/nutritionistHome.jsp").forward(request, response);
         } else {
             request.getRequestDispatcher("/view/home.jsp").forward(request, response);
         }
@@ -101,7 +109,7 @@ public class SearchServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        processRequest(request, response);
+
     }
 
     /**

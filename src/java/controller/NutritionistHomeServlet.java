@@ -13,6 +13,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import model.Category;
 import model.Product;
@@ -59,6 +60,9 @@ public class NutritionistHomeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         DAOProduct dao = new DAOProduct();
+        HttpSession session = request.getSession();
+        session.removeAttribute("keyword");
+        session.removeAttribute("categoryId");
         List<Product> productList = dao.getAllProduct();
         DAOCategory dao2 = new DAOCategory();
         List<Category> categoryList = dao2.getAllCategory();

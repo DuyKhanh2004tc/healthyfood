@@ -63,25 +63,28 @@ public class SortProductServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        processRequest(request, response);
         DAOProduct dao = new DAOProduct();
         DAOCategory dao2 = new DAOCategory();
         List<Product> productList;
         HttpSession session = request.getSession();
-        User u = (User)session.getAttribute("user");
+        User u = (User) session.getAttribute("user");
         String order = request.getParameter("orderBy");
+
         List<Category> categoryList = dao2.getAllCategory();
         request.setAttribute("categoryList", categoryList);
         int userRoleId = -1;
         if (u != null && u.getRole() != null) {
             userRoleId = u.getRole().getId();
         }
-        if (session.getAttribute("categoryId") == null) {
-            productList = dao.getPriceSorted(order);
-        } else {
+
+        if (session.getAttribute("keyword") != null) {
+            String searchName = (String) session.getAttribute("keyword");
+            productList = dao.sortSearchedProduct(searchName, order);
+        } else if (session.getAttribute("categoryId") != null) {
             int cId = (int) session.getAttribute("categoryId");
             productList = dao.getPriceSortedByCategoryId(order, cId);
-
+        } else {
+            productList = dao.getPriceSorted(order);
         }
         request.setAttribute("productList", productList);
         if (userRoleId == 4) {

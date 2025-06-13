@@ -67,6 +67,7 @@ public class CategoryServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         User u = (User) session.getAttribute("user");
+        session.removeAttribute("keyword");
         String categoryId_raw = request.getParameter("categoryId");
         List<Category> categoryList = dao2.getAllCategory();
         request.setAttribute("categoryList", categoryList);
@@ -80,6 +81,7 @@ public class CategoryServlet extends HttpServlet {
             }
 
             if (categoryId == 0) {
+                session.removeAttribute("categoryId");
                 productList = dao.getAllProduct();
                 request.setAttribute("productList", productList);
                 if (userRoleId == 4) {
