@@ -5,8 +5,7 @@
 
 package controller;
 
-import dal.DAOCategory;
-import dal.DAOProduct;
+import dal.DAOUser;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,15 +13,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.List;
-import model.Category;
-import model.Product;
+import model.User;
+import utils.Mail;
 
 /**
  *
- * @author ASUS
+ * @author Hoa
  */
-public class NutritionistHomeServlet extends HttpServlet {
+public class VerifyRegisterServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -39,10 +37,10 @@ public class NutritionistHomeServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet NutritionistHomeServlet</title>");  
+            out.println("<title>Servlet VerifyRegister</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet NutritionistHomeServlet at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet VerifyRegister at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -59,16 +57,8 @@ public class NutritionistHomeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        DAOProduct dao = new DAOProduct();
-        HttpSession session = request.getSession();
-        session.removeAttribute("keyword");
-        session.removeAttribute("categoryId");
-        List<Product> productList = dao.getAllProduct();
-        DAOCategory dao2 = new DAOCategory();
-        List<Category> categoryList = dao2.getAllCategory();
-        request.setAttribute("categoryList",categoryList);
-        request.setAttribute("productList", productList);
-        request.getRequestDispatcher("/view/nutritionistHome.jsp").forward(request, response);
+        //processRequest(request, response);
+        request.getRequestDispatcher("view/verifyRegister.jsp").forward(request, response);
     } 
 
     /** 
@@ -81,7 +71,43 @@ public class NutritionistHomeServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-       
+        //processRequest(request, response);
+          String inputOtp = request.getParameter("otp");
+        HttpSession session = request.getSession();
+
+        String sessionOtp = (String) session.getAttribute("otp");
+        Long otpTime = (Long) session.getAttribute("otp_time");
+        long currentTime = System.currentTimeMillis();
+
+
+        if (sessionOtp == null || otpTime == null || currentTime - otpTime > 5 * 60 * 1000) {
+            request.setAttribute("error", "OTP is expired or invalid.");
+            request.getRequestDispatcher("view/verifyRegister.jsp").forward(request, response);
+            return;
+        }
+
+        if (!inputOtp.equals(sessionOtp)) {
+            request.setAttribute("error", "Incorrect OTP.");
+            request.getRequestDispatcher("view/verifyRegister.jsp").forward(request, response);
+            return;
+        }
+
+        User customer = (User) session.getAttribute("pendingUser");
+        if (customer == null) {
+            request.setAttribute("error", "Session expired. Please register again.");
+            request.getRequestDispatcher("view/register.jsp").forward(request, response);
+            return;
+        }
+
+        DAOUser dao = new DAOUser();
+        dao.addAccount(customer);
+        Mail.sendMail(customer.getEmail(), "Welcome to HealthyFood", "Congratulations! You have successfully registered.");
+        session.removeAttribute("otp");
+        session.removeAttribute("otp_time");
+        session.removeAttribute("pendingUser");
+
+        request.setAttribute("success", "Registration successful! You can now login.");
+        request.getRequestDispatcher("view/login.jsp").forward(request, response);
     }
 
     /** 

@@ -101,61 +101,66 @@ public class RegisterServlet extends HttpServlet {
                 return;
             }
 
-            if (phoneNumber != null && phoneNumber.matches("^(0|\\+84)[0-9]{9}$")) {
-                Date dob = null;
-                if (dateOfBirth != null && !dateOfBirth.trim().isEmpty()) {
-                    try {
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                        java.util.Date parsedDate = sdf.parse(dateOfBirth);
-                        dob = new Date(parsedDate.getTime());
+            if (!phoneNumber.matches("^(0|\\+84)[0-9]{9}$")) {
+                request.setAttribute("error", "Invalid phone number. It must start with 0 or +84 and contain 9 digits after.");
+                request.getRequestDispatcher("view/register.jsp").forward(request, response);
+                return;
+            }
 
-                        LocalDate birthDate = LocalDate.parse(dateOfBirth);
-                        if (birthDate.plusYears(13).isAfter(LocalDate.now())) {
-                            request.setAttribute("error", "You must be at least 13 years old to register.");
-                            request.getRequestDispatcher("view/register.jsp").forward(request, response);
-                            return;
-                        }
-                    } catch (ParseException e) {
-                        request.setAttribute("error", "Invalid date format for DOB. Use YYYY-MM-DD");
+            Date dob = null;
+            if (dateOfBirth != null && !dateOfBirth.trim().isEmpty()) {
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    java.util.Date parsedDate = sdf.parse(dateOfBirth);
+                    dob = new Date(parsedDate.getTime());
+
+                    LocalDate birthDate = LocalDate.parse(dateOfBirth);
+                    if (birthDate.plusYears(13).isAfter(LocalDate.now())) {
+                        request.setAttribute("error", "You must be at least 13 years old to register.");
                         request.getRequestDispatcher("view/register.jsp").forward(request, response);
                         return;
                     }
-                    if (!password.equals(confirmPassword)) {
-                        request.setAttribute("error", "Password and Confirm Password do not match.");
-                        request.getRequestDispatcher("view/register.jsp").forward(request, response);
-                    }
-                }
-                if (password.length() <= 8 || password.length() >= 32) {
-                    request.setAttribute("error", "Password must be between 8 and 32 characters long.");
+                } catch (ParseException e) {
+                    request.setAttribute("error", "Invalid date format for DOB. Use YYYY-MM-DD");
                     request.getRequestDispatcher("view/register.jsp").forward(request, response);
+                    return;
                 }
-
-                boolean genderSQL = "1".equals(gender);
-
-                User customer = new User();
-                customer.setName(fullName);
-                customer.setEmail(email);
-                customer.setPassword(password);
-                customer.setPhone(phoneNumber);
-                customer.setDob(dob);
-                customer.setAddress(address);
-                customer.setGender(genderSQL);
-
-                boolean added = dao.addAccount(customer);
-                if (added) {
-                    Mail.sendMail(email, "Registration Successful - Welcome to HealthyFood!",
-                            "Congratulations! You have successfully registered.\nYour password:" + password);
-                    session.setAttribute("success", "User added successfully at " + new java.util.Date());
-                    response.sendRedirect("login");
-                } else {
-                    request.setAttribute("error", "Failed to add user: " + dao.getStatus());
+            }
+            
+            if (!password.equals(confirmPassword)) {
+                    request.setAttribute("error", "Password and Confirm Password do not match.");
                     request.getRequestDispatcher("view/register.jsp").forward(request, response);
+                    return;
                 }
-            } else {
-                request.setAttribute("error", "Invalid phone number. It must start with 0 or +84 and contain 9 digits after.");
+            
+            if (password.length() <= 8 || password.length() >= 32) {
+                request.setAttribute("error", "Password must be between 8 and 32 characters long.");
                 request.getRequestDispatcher("view/register.jsp").forward(request, response);
+                return;
             }
 
+            boolean genderSQL = "1".equals(gender);
+
+            User customer = new User();
+            customer.setName(fullName);
+            customer.setEmail(email);
+            customer.setPassword(password);
+            customer.setPhone(phoneNumber);
+            customer.setDob(dob);
+            customer.setAddress(address);
+            customer.setGender(genderSQL);
+            
+            
+            session.setAttribute("pendingUser", customer);
+
+            String otp = String.valueOf((int) (Math.random() * 900000) + 100000);
+
+            session.setAttribute("otp", otp);
+            session.setAttribute("otp_time", System.currentTimeMillis());
+
+            Mail.sendMail(email, "Verify your registration", "Your verification code is: " + otp);
+
+            response.sendRedirect("verifyRegister");
         } catch (Exception e) {
             request.setAttribute("error", "Error: " + e.getMessage());
             request.getRequestDispatcher("view/register.jsp").forward(request, response);

@@ -81,6 +81,10 @@
         <servlet-class>controller.NutritionistHomeServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>VerifyRegisterServlet</servlet-name>
+        <servlet-class>controller.VerifyRegisterServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>BlogDetailServlet</servlet-name>
         <servlet-class>controller.BlogDetailServlet</servlet-class>
     </servlet>
@@ -117,12 +121,28 @@
         <url-pattern>/search</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>LoginServlet</servlet-name>
-        <url-pattern>/login</url-pattern>
+        <servlet-name>SortProductServlet</servlet-name>
+        <url-pattern>/sortproduct</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PriceFilterServlet</servlet-name>
+        <url-pattern>/pricefilter</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddAccountServlet</servlet-name>
+        <url-pattern>/AddAccount</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CategoryServlet</servlet-name>
         <url-pattern>/category</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ManageProductServlet</servlet-name>
+        <url-pattern>/manageproduct</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>RegisterServlet</servlet-name>
@@ -149,26 +169,14 @@
         <url-pattern>/nutritionistHome</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>VerifyRegisterServlet</servlet-name>
+        <url-pattern>/verifyRegister</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>BlogDetailServlet</servlet-name>
         <url-pattern>/blogDetail</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>
     </welcome-file-list>
-    <servlet-mapping>
-        <servlet-name>SortProductServlet</servlet-name>
-        <url-pattern>/sortproduct</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ManageProductServlet</servlet-name>
-        <url-pattern>/manageproduct</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>PriceFilterServlet</servlet-name>
-        <url-pattern>/pricefilter</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>AddAccountServlet</servlet-name>
-        <url-pattern>/AddAccount</url-pattern>
-    </servlet-mapping>
 </web-app>
