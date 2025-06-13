@@ -12,17 +12,17 @@ import java.sql.Timestamp;
  */
 public class Blog {
     private int id;
-    private String tittle;
+    private String title;
     private String image;
     private String description;
-    private Timestamp create_at;
+    private Timestamp created_at;
 
-    public Blog(int id, String tittle, String image, String description, Timestamp create_at, User user) {
+    public Blog(int id, String title, String image, String description, Timestamp created_at, User user) {
         this.id = id;
-        this.tittle = tittle;
+        this.title = title;
         this.image = image;
         this.description = description;
-        this.create_at = create_at;
+        this.created_at = created_at;
         this.user = user;
     }
     private User user;
@@ -41,12 +41,12 @@ public class Blog {
     }
 
 
-    public String getTittle() {
-        return tittle;
+    public String getTitle() {
+        return title;
     }
 
-    public void setTittle(String tittle) {
-        this.tittle = tittle;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getImage() {
@@ -65,12 +65,12 @@ public class Blog {
         this.description = description;
     }
 
-    public Timestamp getCreate_at() {
-        return create_at;
+    public Timestamp getCreated_at() {
+        return created_at;
     }
 
-    public void setCreate_at(Timestamp create_at) {
-        this.create_at = create_at;
+    public void setCreated_at(Timestamp created_at) {
+        this.created_at = created_at;
     }
 
     public User getUser() {
