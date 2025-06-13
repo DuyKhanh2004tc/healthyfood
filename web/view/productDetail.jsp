@@ -191,6 +191,8 @@
             String categoryName = (String) request.getAttribute("categoryName");
             Integer categoryId = (Integer) request.getAttribute("categoryId"); 
             Double rate = (Double) request.getAttribute("rate");
+            Integer prevId = (Integer) request.getAttribute("prevId"); 
+Integer nextId = (Integer) request.getAttribute("nextId"); 
         %>
 
         <div class="container">
@@ -205,8 +207,13 @@
                 if (message != null) {
             %>
             <p class="success"><%= message %></p>
-            <% } %>
-
+            <% } %>           
+            <a href="${pageContext.request.contextPath}/productDetail?productId=<%= prevId%>">
+                <p><=</p>
+            </a>  
+               <a href="${pageContext.request.contextPath}/productDetail?productId=<%=nextId%>">
+                <p>=></p>
+            </a>  
             <div class="product-details">
                 <% if (productId != null) { %>
                 <div>
@@ -280,8 +287,8 @@
                         <input type="radio" id="star1" name="rating" value="5"><label for="star1">★</label>
                     </div>
                     <c:if test="${sessionScope.user.getRole().getId()== 3 }">
-                    <textarea name="content" placeholder="Write your comment..." required></textarea>
-                    <button type="submit" name="action" value="comment">Submit Comment</button>
+                        <textarea name="content" placeholder="Write your comment..." required></textarea>
+                        <button type="submit" name="action" value="comment">Submit Comment</button>
                     </c:if>
                 </form>
             </div>

@@ -78,6 +78,20 @@ public class ProductDetailServlet extends HttpServlet {
         }
         DAOFeedback feedbackDAO = new DAOFeedback();
         List<Feedback> feedbackList = feedbackDAO.getFeedbackByProductId(productId);
+        List<Product> p = dao.getAllProduct();
+        int prevId = 0;
+        int nextId = 0;
+        for (int i = 0; i < p.size(); i++) {
+            if (p.get(i).getId() == productId) {
+                if (i > 0) {
+                    prevId = p.get(i - 1).getId();
+                }
+                if (i < p.size() - 1) {
+                    nextId = p.get(i + 1).getId();
+                }
+                break;
+            }
+        }
 
         request.setAttribute("productId", product.getId());
         request.setAttribute("productName", product.getName());
@@ -90,6 +104,8 @@ public class ProductDetailServlet extends HttpServlet {
         request.setAttribute("categoryId", product.getCategory().getId());
         request.setAttribute("feedbackList", feedbackList);
         request.setAttribute("rate", product.getRate());
+        request.setAttribute("prevId", prevId != 0 ? prevId : p.get(p.size() - 1).getId());
+        request.setAttribute("nextId", nextId != 0 ? nextId : p.get(0).getId());
         
         request.getRequestDispatcher("view/productDetail.jsp").forward(request, response);
 
@@ -108,9 +124,9 @@ public class ProductDetailServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         if ("comment".equals(action)) {
-            
+
             User user = (User) request.getSession().getAttribute("user");
-            if (user == null || user.getRole().getId()!= 3) {
+            if (user == null || user.getRole().getId() != 3) {
                 response.sendRedirect("login.jsp");
                 return;
             }

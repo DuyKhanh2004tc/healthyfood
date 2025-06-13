@@ -65,17 +65,17 @@ public class DAOBlog {
 
     }
 
-    public Blog getProductById(int blogId) {
+    public Blog getBlogById(int blogId) {
         Blog blog = null;
-        String sql = "Select b.id,b.title,b.image,b.description,b.created_at,u.id AS user_id,u.name,u.email,u.password,u.phone,u.dob,u.address,u.gender,u.created_at,r.id AS role_id,r.role_name "
+        String sql = "Select b.id,b.title,b.image,b.description,b.created_at,u.id AS user_id,u.name,u.email,u.password,u.phone,u.dob,u.address,u.gender,u.created_at AS userCreate,r.id AS role_id,r.role_name "
                 + "From Blog b "
                 + "join Users u on u.id = b.user_id "
-                + "join Role R on r.id = u.role_id WHERE p.id = ?";
+                + "join Role R on r.id = u.role_id WHERE b.id = ?";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setInt(1, blogId);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
-                  
+                blog = new Blog();
                 blog.setId(rs.getInt("id"));
                 blog.setTitle(rs.getString("title"));
                 blog.setImage(rs.getString("image"));
@@ -91,7 +91,7 @@ public class DAOBlog {
                 u.setDob(rs.getDate("dob"));
                 u.setAddress(rs.getString("address"));
                 u.setGender(rs.getBoolean("gender"));
-                u.setCreatedAt(rs.getTimestamp("created_at"));
+                u.setCreatedAt(rs.getTimestamp("userCreate"));
 
                 Role r = new Role();
                 r.setId(rs.getInt("role_id"));
@@ -108,8 +108,8 @@ public class DAOBlog {
         return blog;
     }
     public static void main(String[] args) {
-            List<Blog> blog = DAOBlog.INSTANCE.getAllBlog();
-            System.out.println(blog.size());
+            Blog blog = DAOBlog.INSTANCE.getBlogById(1);
+            System.out.println(blog.getImage());
             
         }
 }
