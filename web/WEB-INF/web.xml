@@ -80,6 +80,7 @@
         <servlet-name>NutritionistHomeServlet</servlet-name>
         <servlet-class>controller.NutritionistHomeServlet</servlet-class>
     </servlet>
+    
     <servlet>
         <servlet-name>VerifyRegisterServlet</servlet-name>
         <servlet-class>controller.VerifyRegisterServlet</servlet-class>
@@ -175,6 +176,10 @@
     <servlet-mapping>
         <servlet-name>BlogDetailServlet</servlet-name>
         <url-pattern>/blogDetail</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>VerifyRegister</servlet-name>
+        <url-pattern>/verifyRegister</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>
