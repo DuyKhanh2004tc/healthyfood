@@ -3,7 +3,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <title>Reset Password</title>
+        <title>Register</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/login.css" />
     </head>
     <body>

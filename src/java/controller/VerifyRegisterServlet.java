@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.User;
+import utils.Mail;
 
 /**
  *
@@ -100,7 +101,7 @@ public class VerifyRegisterServlet extends HttpServlet {
 
         DAOUser dao = new DAOUser();
         dao.addAccount(customer);
-
+        Mail.sendMail(customer.getEmail(), "Welcome to HealthyFood", "Congratulations! You have successfully registered.");
         session.removeAttribute("otp");
         session.removeAttribute("otp_time");
         session.removeAttribute("pendingUser");
