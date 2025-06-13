@@ -312,7 +312,6 @@ public class DAOUser {
                 return false;
             }
 
-            // Kiểm tra email đã tồn tại
             if (checkEmailExists(user.getEmail(), -1)) { 
                 status = "Error: Email already exists";
                 return false;
