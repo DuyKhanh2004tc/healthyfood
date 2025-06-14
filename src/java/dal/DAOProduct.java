@@ -52,12 +52,11 @@ public class DAOProduct {
 
     public List<Product> getAllProduct() {
         List<Product> productList = new ArrayList<>();
-        String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, "
-                + "AVG(COALESCE(f.rate, p.rate)) AS average_rate, c.id AS category_id, c.name AS category_name "
+        String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, "
+                + "p.image_url, p.shelf_life_hours, p.rate AS average_rate, "
+                + "c.id AS category_id, c.name AS category_name "
                 + "FROM Product p "
-                + "INNER JOIN Category c ON p.category_id = c.id "
-                + "LEFT JOIN Feedback f ON p.id = f.product_id "
-                + "GROUP BY p.id, p.name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, c.id, c.name";
+                + "INNER JOIN Category c ON p.category_id = c.id";
 
         try (PreparedStatement st = con.prepareStatement(sql); ResultSet rs = st.executeQuery()) {
             while (rs.next()) {
@@ -168,7 +167,8 @@ public class DAOProduct {
         }
         return productList;
     }
-    public List<Product> sortSearchedProduct(String namesearch,String orderBy) {
+
+    public List<Product> sortSearchedProduct(String namesearch, String orderBy) {
         List<Product> productList = new ArrayList<>();
         String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, "
                 + "c.id AS category_id, c.name AS category_name "
@@ -203,7 +203,8 @@ public class DAOProduct {
         }
         return productList;
     }
-    public List<Product> getPriceSortedByCategoryId(String orderBy,int categoryId) {
+
+    public List<Product> getPriceSortedByCategoryId(String orderBy, int categoryId) {
         List<Product> productList = new ArrayList<>();
         String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, "
                 + "c.id AS category_id, c.name AS category_name "

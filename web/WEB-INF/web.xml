@@ -177,10 +177,7 @@
         <servlet-name>BlogDetailServlet</servlet-name>
         <url-pattern>/blogDetail</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>VerifyRegister</servlet-name>
-        <url-pattern>/verifyRegister</url-pattern>
-    </servlet-mapping>
+    
     <welcome-file-list>
         <welcome-file>home</welcome-file>
     </welcome-file-list>
