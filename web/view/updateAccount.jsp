@@ -4,83 +4,16 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Update Account</title>
-        <style>
-            .container {
-                width: 50%;
-                margin: 20px auto;
-                padding: 20px;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            }
-            h2 {
-                text-align: center;
-                color: #333;
-            }
-            .form-group {
-                margin-bottom: 15px;
-            }
-            label {
-                display: block;
-                margin-bottom: 5px;
-                font-weight: bold;
-                color: #555;
-            }
-            input[type="text"],
-            input[type="email"],
-            input[type="password"],
-            input[type="date"] {
-                width: 100%;
-                padding: 8px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-                box-sizing: border-box;
-            }
-            select {
-                width: 100%;
-                padding: 8px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-                box-sizing: border-box;
-            }
-            .error {
-                color: red;
-                text-align: center;
-                margin: 10px 0;
-            }
-            .btn {
-                padding: 10px 20px;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-                font-size: 16px;
-                margin: 5px;
-            }
-            .btn-submit {
-                background-color: #4CAF50;
-                color: white;
-            }
-            .btn-submit:hover {
-                background-color: #45a049;
-            }
-            .btn-back {
-                background-color: #2196F3;
-                color: white;
-            }
-            .btn-back:hover {
-                background-color: #0b7dda;
-            }
-            .note {
-                color: #666;
-                font-size: 12px;
-                margin-top: 5px;
-            }
-        </style>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="CSS/updateAccount.css">
     </head>
     <body>
-        <div class="container">
-            <h2>Update Account</h2>
+        <jsp:include page="headerAdmin.jsp"></jsp:include>
+
+            <div class="container">
+                <h2>Update Account</h2>
             <c:if test="${not empty error}">
                 <p class="error">${error}</p>
             </c:if>
@@ -130,9 +63,15 @@
                         </c:forEach>
                     </select>
                 </div>
-                <div>
-                    <button type="submit" class="btn btn-submit">Update</button>
-                    <button type="button" class="btn btn-back" onclick="location.href='DisplayAccount?idRole=${user.role.id}&page=1'">Back to List</button>
+                <div class="button-group">
+                    <button type="submit" class="btn btn-submit">
+                        Update
+                        <span class="tooltip">Save changes</span>
+                    </button>
+                    <button type="button" class="btn btn-back" onclick="location.href = 'DisplayAccount?idRole=${user.role.id}&page=1'">
+                        Back to List
+                        <span class="tooltip">Return to user list</span>
+                    </button>
                 </div>
             </form>
         </div>

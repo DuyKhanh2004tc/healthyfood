@@ -1,0 +1,237 @@
+:root {
+    --primary-color: #6366f1;
+    --secondary-color: #34d399;
+    --accent-color: #f59e0b;
+    --text-color: #1f2937;
+    --shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #e6f0fa 0%, #f0f4f8 100%);
+    margin: 0;
+    padding: 0; /* Remove padding to eliminate top and side gaps */
+    color: #2d3748;
+}
+
+.headeradmin {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    padding: 20px 30px; /* Compact height as per reference */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    left: 0; /* Ensure no side gaps */
+}
+
+.headeradmin a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1.4rem; /* Reduced for compactness */
+    font-weight: 700;
+    padding: 0 15px;
+    transition: var(--transition);
+}
+
+.headeradmin a:hover {
+    color: var(--accent-color);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.headeradmin .user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Reduced gap for compactness */
+    padding: 0 15px;
+}
+
+.headeradmin .user-info span {
+    color: #ffffff;
+    font-size: 1rem; /* Reduced for compactness */
+    font-weight: 500;
+}
+
+.container {
+    max-width: 600px;
+    margin: 30px auto;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 24px;
+    position: relative;
+    margin-top: 50px; /* Adjusted for compact header */
+}
+
+h2 {
+    text-align: center;
+    color: #1e3a8a;
+    font-weight: 700;
+    font-size: 24px;
+    margin-bottom: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #1e3a8a;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    background: #f7fafc;
+    color: #2d3748;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+input::placeholder {
+    color: #6b7280;
+    font-weight: 400;
+}
+
+.error {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 12px;
+    border-radius: 6px;
+    margin: 16px 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    display: inline-block;
+}
+
+.btn-submit {
+    background: #3b82f6;
+    color: #fff;
+}
+
+.btn-submit:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+}
+
+.btn-back {
+    background: #6b7280;
+    color: #fff;
+}
+
+.btn-back:hover {
+    background: #4b5563;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(75, 85, 99, 0.2);
+}
+
+.note {
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 400;
+    margin-top: 6px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.tooltip {
+    visibility: hidden;
+    background: #2d3748;
+    color: #fff;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.btn:hover .tooltip {
+    visibility: visible;
+}
+
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+        padding: 16px;
+        margin-top: 40px; /* Adjusted for compact header */
+    }
+    h2 {
+        font-size: 20px;
+    }
+    .btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+    .headeradmin {
+        flex-direction: column;
+        gap: 10px;
+        padding: 8px 0;
+    }
+    .headeradmin .user-info {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .button-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+}
