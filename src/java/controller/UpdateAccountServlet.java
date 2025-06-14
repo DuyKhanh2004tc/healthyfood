@@ -48,7 +48,6 @@ public class UpdateAccountServlet extends HttpServlet {
                 return;
             }
 
-            // Lấy danh sách tất cả vai trò từ DAORole
             ArrayList<Role> roles = DAORole.INSTANCE.getAllRoles();
             if (roles == null || roles.isEmpty()) {
                 request.setAttribute("error", "Error retrieving roles");
@@ -110,8 +109,8 @@ public class UpdateAccountServlet extends HttpServlet {
 
             DAOUser daoUser = DAOUser.INSTANCE;
             if (daoUser.checkEmailExists(email, id)) {
-//                request.setAttribute("error", "Email already exists for another user");
-//                request.getRequestDispatcher("view/updateAccount.jsp").forward(request, response);
+                request.setAttribute("error", "Email already exists for another user");
+                request.getRequestDispatcher("view/updateAccount.jsp").forward(request, response);
                 session.setAttribute("error", "Email already exists for another user");
                 response.sendRedirect("UpdateAccount?id=" + id + "&roleId=" + roleIdStr);
                 return;
@@ -155,15 +154,12 @@ public class UpdateAccountServlet extends HttpServlet {
             role.setId(roleId);
             user.setRole(role);
 
-            System.out.println("Updating user ID: " + id);
-            System.out.println("Email: " + email);
-            System.out.println("Role ID: " + roleId);
+
             boolean updated = daoUser.updateUser(user);
             if (updated) {
                 session.setAttribute("success", "User with ID " + id + " updated successfully at " + new java.util.Date());
                 response.sendRedirect("DisplayAccount?idRole=" + roleId + "&page=1");
             } else {
-                System.err.println("Update failed: " + daoUser.getStatus());
                 request.setAttribute("error", "Failed to update user: " + daoUser.getStatus());
                 request.getRequestDispatcher("view/updateAccount.jsp").forward(request, response);
             }

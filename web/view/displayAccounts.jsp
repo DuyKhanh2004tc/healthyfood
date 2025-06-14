@@ -4,92 +4,33 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Accounts for Role</title>
-        <style>
-            table {
-                border-collapse: collapse;
-                width: 80%;
-                margin: 20px auto;
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />      
+        <link rel="stylesheet" href="CSS/displayAccount.css">
+        <script>
+            function showLoading() {
+                document.querySelector('.loading').style.display = 'block';
+                document.querySelector('.container').style.opacity = '0.5';
             }
-            th, td {
-                padding: 10px;
-                text-align: left;
-                border: 1px solid #ddd;
-            }
-            th {
-                background-color: #f2f2f2;
-            }
-            tr:nth-child(even) {
-                background-color: #f9f9f9;
-            }
-            .btn {
-                padding: 5px 10px;
-                background-color: #2196F3;
-                color: white;
-                border: none;
-                border-radius: 3px;
-                cursor: pointer;
-                text-decoration: none;
-            }
-            .btn:hover {
-                background-color: #0b7dda;
-            }
-            .btn-delete {
-                background-color: #f44336;
-            }
-            .btn-delete:hover {
-                background-color: #da190b;
-            }
-            button {
-                padding: 5px 10px;
-                margin: 20px auto;
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                border-radius: 3px;
-                cursor: pointer;
-                display: block;
-            }
-            .error {
-                color: red;
-                text-align: center;
-                margin: 20px;
-            }
-            .success {
-                color: green;
-                text-align: center;
-                margin: 20px;
-            }
-            .pagination {
-                text-align: center;
-                margin: 20px;
-            }
-            .pagination a {
-                padding: 5px 10px;
-                margin: 0 5px;
-                background-color: #ddd;
-                text-decoration: none;
-                color: #333;
-                border-radius: 3px;
-            }
-            .pagination a:hover {
-                background-color: #bbb;
-            }
-            .pagination .active {
-                background-color: #4CAF50;
-                color: white;
-            }
-        </style>
+        </script>
     </head>
     <body>
-        <div>
-            <form action="DisplayAccount" method="post">                   
-                <input type="hidden" name="idRole" value="${roleId}">
-                <input type="image" src="${pageContext.request.contextPath}/icons/search_icon.png" alt="Search" width="20" height="20">
-                <input type="text" name="keyword" placeholder="Search...">
-            </form>
-        </div>  
-        <div>          
+        <jsp:include page="headerAdmin.jsp"></jsp:include>
+            <div class="container">
+                <div class="loading"><i class="fas fa-spinner"></i> Loading...</div>
+                <div class="role-title">Users for Role: ${roleId}</div>
+            <div class="header">
+                <form action="DisplayAccount" method="post" class="search-form" onsubmit="showLoading()">                   
+                    <input type="hidden" name="idRole" value="${roleId}">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="keyword" placeholder="Search users...">
+                </form>
+                <a href="AddAccount?roleId=${roleId}" class="btn btn-primary">
+                    Add New User
+                    <span class="tooltip">Create a new user</span>
+                </a>
+            </div>  
             <c:if test="${not empty success}">
                 <p class="success">${success}</p>
             </c:if>
@@ -103,9 +44,9 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>User ID</th>
-                            <th>Username</th>
-                            <th>Email</th>
+                            <th onclick="window.location.href = 'DisplayAccount?idRole=${roleId}&sortBy=id'">User ID</th>
+                            <th onclick="window.location.href = 'DisplayAccount?idRole=${roleId}&sortBy=name'">Username</th>
+                            <th onclick="window.location.href = 'DisplayAccount?idRole=${roleId}&sortBy=email'">Email</th>
                             <th>Update</th>
                             <th>Delete</th>
                         </tr>
@@ -117,20 +58,23 @@
                                 <td>${user.name}</td>
                                 <td>${user.email}</td>
                                 <td>
-                                    <a href="UpdateAccount?id=${user.id}&roleId=${roleId}" class="btn">Update</a>
+                                    <a href="UpdateAccount?id=${user.id}&roleId=${roleId}" class="btn btn-primary">
+                                        Update
+                                        <span class="tooltip">Edit user details</span>
+                                    </a>
                                 </td>
                                 <td>
                                     <a href="DeleteUser?id=${user.id}&roleId=${roleId}" 
                                        class="btn btn-delete" 
-                                       onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                                       onclick="return confirm('Are you sure you want to delete this user?');">
+                                        Delete
+                                        <span class="tooltip">Remove user</span>
+                                    </a>
                                 </td>
                             </tr>
                         </c:forEach>
                     </tbody>
                 </table>
-                <div>
-                    <a href="AddAccount?roleId=${roleId}" class="btn">ADD</a>
-                </div>
                 <div class="pagination">
                     <c:if test="${currentPage > 1}">
                         <a href="DisplayAccount?idRole=${roleId}&page=${currentPage - 1}">Previous</a>
@@ -141,7 +85,7 @@
                     </c:if>
                 </div>
             </c:if>
-            <button onclick="location.href = 'HomeAdmin'">Back to Role List</button>
+            <button class="btn-back" onclick="location.href = 'HomeAdmin'">Back to Role List</button>
         </div>
     </body>
 </html>
