@@ -17,9 +17,9 @@
     </head>
     <body>
         <jsp:include page="headerAdmin.jsp"></jsp:include>
-            <div class="container">
-                <div class="loading"><i class="fas fa-spinner"></i> Loading...</div>
-                <div class="role-title">Users for Role: ${roleId}</div>
+        <div class="container">
+            <div class="loading"><i class="fas fa-spinner"></i> Loading...</div>
+            <div class="role-title">Users for Role: ${roleId}</div>
             <div class="header">
                 <form action="DisplayAccount" method="post" class="search-form" onsubmit="showLoading()">                   
                     <input type="hidden" name="idRole" value="${roleId}">
@@ -44,9 +44,39 @@
                 <table>
                     <thead>
                         <tr>
-                            <th onclick="window.location.href = 'DisplayAccount?idRole=${roleId}&sortBy=id'">User ID</th>
-                            <th onclick="window.location.href = 'DisplayAccount?idRole=${roleId}&sortBy=name'">Username</th>
-                            <th onclick="window.location.href = 'DisplayAccount?idRole=${roleId}&sortBy=email'">Email</th>
+                            <th>
+                                <a href="DisplayAccount?idRole=${roleId}&sortBy=id&sortOrder=${sortBy == 'id' && sortOrder == 'asc' ? 'desc' : 'asc'}">
+                                    User ID
+                                    <c:if test="${sortBy == 'id'}">
+                                        <c:choose>
+                                            <c:when test="${sortOrder == 'asc'}"><i class="fas fa-sort-up"></i></c:when>
+                                            <c:otherwise><i class="fas fa-sort-down"></i></c:otherwise>
+                                        </c:choose>
+                                    </c:if>
+                                </a>
+                            </th>
+                            <th>
+                                <a href="DisplayAccount?idRole=${roleId}&sortBy=name&sortOrder=${sortBy == 'name' && sortOrder == 'asc' ? 'desc' : 'asc'}">
+                                    Username
+                                    <c:if test="${sortBy == 'name'}">
+                                        <c:choose>
+                                            <c:when test="${sortOrder == 'asc'}"><i class="fas fa-sort-up"></i></c:when>
+                                            <c:otherwise><i class="fas fa-sort-down"></i></c:otherwise>
+                                        </c:choose>
+                                    </c:if>
+                                </a>
+                            </th>
+                            <th>
+                                <a href="DisplayAccount?idRole=${roleId}&sortBy=email&sortOrder=${sortBy == 'email' && sortOrder == 'asc' ? 'desc' : 'asc'}">
+                                    Email
+                                    <c:if test="${sortBy == 'email'}">
+                                        <c:choose>
+                                            <c:when test="${sortOrder == 'asc'}"><i class="fas fa-sort-up"></i></c:when>
+                                            <c:otherwise><i class="fas fa-sort-down"></i></c:otherwise>
+                                        </c:choose>
+                                    </c:if>
+                                </a>
+                            </th>
                             <th>Update</th>
                             <th>Delete</th>
                         </tr>
@@ -77,11 +107,11 @@
                 </table>
                 <div class="pagination">
                     <c:if test="${currentPage > 1}">
-                        <a href="DisplayAccount?idRole=${roleId}&page=${currentPage - 1}">Previous</a>
+                        <a href="DisplayAccount?idRole=${roleId}&page=${currentPage - 1}&sortBy=${sortBy}&sortOrder=${sortOrder}">Previous</a>
                     </c:if>
                     <span>Page ${currentPage} of ${totalPages}</span>
                     <c:if test="${currentPage < totalPages}">
-                        <a href="DisplayAccount?idRole=${roleId}&page=${currentPage + 1}">Next</a>
+                        <a href="DisplayAccount?idRole=${roleId}&page=${currentPage + 1}&sortBy=${sortBy}&sortOrder=${sortOrder}">Next</a>
                     </c:if>
                 </div>
             </c:if>
