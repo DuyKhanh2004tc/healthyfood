@@ -115,8 +115,22 @@
                         </div>
                     </c:forEach>
                 </div>
-            </div>    
+                <ul class="pagination">
+                    <c:if test="${sessionScope.categoryId == null}">
+                        <c:forEach begin="1" end="${requestScope.totalPage}" var="i">
+                            <li class="page-item"><a href="home?index=${i}" class="page-link">${i}</a></li>
+                            </c:forEach>
+                        </c:if>    
+                        <c:if test="${sessionScope.categoryId != null}">
+                            <c:forEach begin="1" end="${requestScope.totalPage}" var="o">
+                            <li class="page-item"><a href="category?categoryId=${sessionScope.categoryId}&index=${o}" class="page-link">${o}</a></li>
+                            </c:forEach>
+                        </c:if>    
+                </ul>
+            </div>   
+
         </div>
+
         <jsp:include page="footer.jsp"></jsp:include>
     </body>
 </html>

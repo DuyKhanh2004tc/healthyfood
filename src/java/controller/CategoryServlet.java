@@ -72,17 +72,38 @@ public class CategoryServlet extends HttpServlet {
         List<Category> categoryList = dao2.getAllCategory();
         request.setAttribute("categoryList", categoryList);
         List<Product> productList;
+
         try {
+
             int categoryId = Integer.parseInt(categoryId_raw);
-            
             int userRoleId = -1;
             if (u != null && u.getRole() != null) {
                 userRoleId = u.getRole().getId();
             }
+            String index_raw = request.getParameter("index");
+            if (index_raw == null) {
+                index_raw = "1";
+            }
+            int index = Integer.parseInt(index_raw);
+            if (categoryId == 0) {
+                int totalProduct = dao.getTotalProduct();
+                int pages = totalProduct / 12;
+                if (totalProduct % 12 != 0) {
+                    pages++;
+                }
+                request.setAttribute("totalPage", pages);
+            } else {
+                int totalProduct = dao.getTotalProductByCid(categoryId);
+                int pages = totalProduct / 12;
+                if (totalProduct % 12 != 0) {
+                    pages++;
+                }
+                request.setAttribute("totalPage", pages);
+            }
 
             if (categoryId == 0) {
                 session.removeAttribute("categoryId");
-                productList = dao.getAllProduct();
+                productList = dao.getProductPagination(index, 12);
                 request.setAttribute("productList", productList);
                 if (userRoleId == 4) {
                     request.getRequestDispatcher("/view/nutritionistHome.jsp").forward(request, response);
@@ -92,7 +113,7 @@ public class CategoryServlet extends HttpServlet {
                     return;
                 }
             } else {
-                productList = dao.getProductByCategory(categoryId);
+                productList = dao.getProductPaginationByCid(categoryId, index, 12);
                 request.setAttribute("productList", productList);
                 session.setAttribute("categoryId", categoryId);
                 if (userRoleId == 4) {

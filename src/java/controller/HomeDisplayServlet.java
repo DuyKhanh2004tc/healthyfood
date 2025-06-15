@@ -61,10 +61,23 @@ public class HomeDisplayServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-//        HttpSession session = request.getSession();
+        HttpSession session = request.getSession();
 //        User u = request.getAttribute("user");
         DAOProduct dao = new DAOProduct();
-        List<Product> productList = dao.getAllProduct();
+        List<Product> productList;
+        String index_raw = request.getParameter("index");
+        if(index_raw == null){
+            index_raw ="1";
+        }
+        int index = Integer.parseInt(index_raw);
+        int totalProduct = dao.getTotalProduct();
+        int pages = totalProduct / 12;
+        if( totalProduct % 12 != 0){
+            pages++;
+        }
+        request.setAttribute("totalPage", pages);      
+        productList = dao.getProductPagination(index, 12);
+
         DAOCategory dao2 = new DAOCategory();
         List<Category> categoryList = dao2.getAllCategory();
         request.setAttribute("categoryList",categoryList);
