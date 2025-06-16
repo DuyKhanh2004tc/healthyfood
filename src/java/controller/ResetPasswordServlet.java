@@ -83,6 +83,7 @@ public class ResetPasswordServlet extends HttpServlet {
 
         String sessionOtp = (String) session.getAttribute("otp");
         Long otpTime = (Long) session.getAttribute("otp_time");
+        long currentTime = System.currentTimeMillis();
         String email = (String) session.getAttribute("email");
 
         if (sessionOtp == null || otpTime == null || email == null) {
@@ -91,15 +92,9 @@ public class ResetPasswordServlet extends HttpServlet {
             return;
         }
 
-        long now = System.currentTimeMillis();
-        if (now - otpTime > 5 * 60 * 1000) {
-            String newOtp = String.valueOf((int) (Math.random() * 900000) + 100000);
-            session.setAttribute("otp", newOtp);
-            session.setAttribute("otp_time", now);
-
-            Mail.sendMail(email, "New Password Reset Code",
-                    "Your new verification code is: " + newOtp);
-            request.setAttribute("error", "OTP has expired. Please request a new one.");
+        
+        if (sessionOtp == null || otpTime == null || currentTime - otpTime > 5 * 60 * 1000) {
+            request.setAttribute("error", "OTP is expired or invalid.Please click on 'Resend OTP' to receive a new code.");
             request.getRequestDispatcher("view/resetPassword.jsp").forward(request, response);
             return;
         }

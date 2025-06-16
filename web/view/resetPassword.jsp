@@ -28,6 +28,13 @@
                         </c:if>
                 <input type="submit" value="Reset Password">
             </form>
+                        
+                        <div style="text-align: center; margin-top: 10px;">
+                <form action="resendOTP" method="post" style="display: inline;">
+                    <input type="hidden" name="type" value="reset" /> 
+                    <button type="submit" class="link-button">Resend OTP</button>
+                </form>
+            </div>
         </div>
         <script>
             function togglePassword(inputId, iconId) {

@@ -80,7 +80,6 @@
         <servlet-name>NutritionistHomeServlet</servlet-name>
         <servlet-class>controller.NutritionistHomeServlet</servlet-class>
     </servlet>
-    
     <servlet>
         <servlet-name>VerifyRegisterServlet</servlet-name>
         <servlet-class>controller.VerifyRegisterServlet</servlet-class>
@@ -88,6 +87,10 @@
     <servlet>
         <servlet-name>BlogDetailServlet</servlet-name>
         <servlet-class>controller.BlogDetailServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ResendOTPServlet</servlet-name>
+        <servlet-class>controller.ResendOTPServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>HomeDisplayServlet</servlet-name>
@@ -177,7 +180,10 @@
         <servlet-name>BlogDetailServlet</servlet-name>
         <url-pattern>/blogDetail</url-pattern>
     </servlet-mapping>
-    
+    <servlet-mapping>
+        <servlet-name>ResendOTPServlet</servlet-name>
+        <url-pattern>/resendOTP</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>
     </welcome-file-list>

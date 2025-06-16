@@ -103,3 +103,18 @@ input[type="submit"]:hover {
   margin-bottom: 15px;
   margin-top: 10px;
 }
+
+.link-button {
+    background: none;
+    border: none;
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: inherit;
+    padding: 0;
+}
+
+.link-button:hover {
+    color: #0056b3;
+}
