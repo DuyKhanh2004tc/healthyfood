@@ -78,8 +78,8 @@ public class ResetPasswordServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         String inputOtp = request.getParameter("otp");
-        String newPassword = request.getParameter("newPassword");
-        String confirmPassword = request.getParameter("confirmPassword");
+        String newPassword = request.getParameter("newpassword");
+        String confirmPassword = request.getParameter("confirmpassword");
 
         String sessionOtp = (String) session.getAttribute("otp");
         Long otpTime = (Long) session.getAttribute("otp_time");

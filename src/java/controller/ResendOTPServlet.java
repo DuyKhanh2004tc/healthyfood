@@ -75,29 +75,39 @@ public class ResendOTPServlet extends HttpServlet {
             throws ServletException, IOException {
         //processRequest(request, response);
 
-        String type = request.getParameter("type"); 
-
+        String type = request.getParameter("type");
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("pendingUser"); 
+        String email = null;
 
+        // Check for pendingUser (registration flow) or email (password reset flow)
+        User user = (User) session.getAttribute("pendingUser");
         if (user != null) {
-            String email = user.getEmail();
+            email = user.getEmail();
+        } else {
+            email = (String) session.getAttribute("email");
+        }
 
+        if (email != null) {
             String otp = String.valueOf((int) (Math.random() * 900000) + 100000);
-
             session.setAttribute("otp", otp);
             session.setAttribute("otp_time", System.currentTimeMillis());
 
-            Mail.sendMail(email, "Verify your registration", "Your verification code is: " + otp);
-            request.setAttribute("message", "A new verification code has been sent to your email.");
+            String subject = "register".equals(type) ? "Verify your registration" : "Password Reset Code";
+            Mail.sendMail(email, subject, "Your verification code is: " + otp);
+
+
         } else {
-            request.setAttribute("error", "User not found. Unable to resend verification code.");
+            request.setAttribute("error", "No email found in session. Unable to resend verification code.");
         }
 
+        // Redirect to appropriate page based on type
         if ("register".equals(type)) {
             request.getRequestDispatcher("view/verifyRegister.jsp").forward(request, response);
         } else if ("reset".equals(type)) {
             request.getRequestDispatcher("view/resetPassword.jsp").forward(request, response);
+        } else {
+            request.setAttribute("error", "Invalid request type provided.");
+            request.getRequestDispatcher("view/error.jsp").forward(request, response);
         }
     }
 

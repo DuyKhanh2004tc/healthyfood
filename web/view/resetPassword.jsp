@@ -16,8 +16,8 @@
                     <input type="text" name="otp" id="otp" maxlength="6" required />
                 </div>
                 <div class="txt_field password-wrapper">
-                    <input type="password" id="password" name="password" placeholder="Password" required />
-                    <i class="fa fa-eye-slash" id="togglePassword" onclick="togglePassword('password', 'togglePassword')"></i>
+                    <input type="password" id="newPassword" name="newpassword" placeholder="New Password" required />
+                    <i class="fa fa-eye-slash" id="togglePassword" onclick="togglePassword('newPassword', 'togglePassword')"></i>
                 </div>
                 <div class="txt_field password-wrapper">
                     <input type="password" id="confirmPassword" name="confirmpassword" placeholder="Confirm Password" required />
