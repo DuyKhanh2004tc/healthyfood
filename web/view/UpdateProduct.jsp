@@ -42,12 +42,12 @@
     </head>
     <body>
         <jsp:include page="SideBarOfSheller.jsp"></jsp:include>
-        <div class="container">
-            <div class="card shadow">
-                <div class="card-header">
-                    <h4><i class="bi bi-pencil me-2"></i>Update Product</h4>
-                </div>
-                <div class="card-body">
+            <div class="container">
+                <div class="card shadow">
+                    <div class="card-header">
+                        <h4><i class="bi bi-pencil me-2"></i>Update Product</h4>
+                    </div>
+                    <div class="card-body">
                     <c:if test="${not empty errorMessage}">
                         <p class="text-center text-danger error-message">${errorMessage}</p>
                     </c:if>
@@ -81,13 +81,8 @@
                                     <input type="number" step="0.1" min="0" class="form-control" id="shelfLifeHours" name="shelfLifeHours" value="${product.shelfLifeHours}" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="categoryId">Category</label>
-                                    <select class="form-control" id="categoryId" name="categoryId" required>
-                                        <option value="">Select Category</option>
-                                        <c:forEach var="category" items="${categoryList}">
-                                            <option value="${category.id}" ${category.id == product.category.id ? 'selected' : ''}>${category.name}</option>
-                                        </c:forEach>
-                                    </select>
+                                    <label for="categoryName">Category</label>
+                                    <input type="text" class="form-control" id="categoryName" name="categoryName" value="${product.category != null ? product.category.name : ''}" required maxlength="100">
                                 </div>
                                 <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Save Changes</button>
                                 <a href="manageproduct?service=list" class="btn btn-secondary">Cancel</a>
@@ -102,6 +97,6 @@
             </div>
         </div>
         <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
-        
+
     </body>
 </html>

@@ -1,5 +1,6 @@
 package controller;
 
+import dal.DAOCategory;
 import model.Product;
 import model.Category;
 import dal.DAOProduct;
@@ -12,15 +13,15 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ManageProductServlet extends HttpServlet {
+public class SellerProductServlet extends HttpServlet {
     private DAOProduct productDAO;
-    private static final Logger LOGGER = Logger.getLogger(ManageProductServlet.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SellerProductServlet.class.getName());
     private Object service;
 
     @Override
     public void init() throws ServletException {
         productDAO = DAOProduct.INSTANCE;
-        LOGGER.log(Level.INFO, "ManageProductServlet initialized, DAO status: {0}", productDAO.getStatus());
+        LOGGER.log(Level.INFO, "SellerProductServlet initialized, DAO status: {0}", productDAO.getStatus());
     }
 
     @Override
@@ -29,24 +30,24 @@ public class ManageProductServlet extends HttpServlet {
             String service = request.getParameter("service");
             if (!productDAO.getStatus().equals("OK")) {
                 request.setAttribute("errorMessage", "Database connection failed: " + productDAO.getStatus());
-                request.getRequestDispatcher("/view/ProductManager.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/SellerProductManager.jsp").forward(request, response);
                 return;
             }
 
             if (service == null || service.equals("list")) {
                 List<Product> products = productDAO.getAllProduct();
-                LOGGER.log(Level.INFO, "Fetched {0} products for ProductManager.jsp", products != null ? products.size() : 0);
+                LOGGER.log(Level.INFO, "Fetched {0} products for SellerProductManager.jsp", products != null ? products.size() : 0);
                 if (products == null || products.isEmpty()) {
                     request.setAttribute("errorMessage", "No products available to display.");
                 }
                 request.setAttribute("allProducts", products);
-                request.getRequestDispatcher("/view/ProductManager.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/SellerProductManager.jsp").forward(request, response);
             } else if (service.equals("searchByKeywords")) {
                 String keywords = request.getParameter("keywords");
                 if (keywords == null || keywords.trim().isEmpty()) {
                     request.setAttribute("errorMessage", "Please enter a search keyword.");
                     request.setAttribute("allProducts", productDAO.getAllProduct());
-                    request.getRequestDispatcher("/view/ProductManager.jsp").forward(request, response);
+                    request.getRequestDispatcher("/view/SellerProductManager.jsp").forward(request, response);
                     return;
                 }
                 List<Product> products = productDAO.searchProductsByName(keywords.trim());
@@ -56,7 +57,7 @@ public class ManageProductServlet extends HttpServlet {
                 }
                 request.setAttribute("allProducts", products);
                 request.setAttribute("keywords", keywords);
-                request.getRequestDispatcher("/view/ProductManager.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/SellerProductManager.jsp").forward(request, response);
             } else if (service.equals("requestInsert")) {
                 List<Category> categories = productDAO.getAllCategories();
                 request.setAttribute("categoryList", categories);
@@ -66,7 +67,7 @@ public class ManageProductServlet extends HttpServlet {
                 Product product = productDAO.getProductById(productId);
                 if (product == null) {
                     request.setAttribute("errorMessage", "Product not found for ID: " + productId);
-                    request.getRequestDispatcher("/view/ProductManager.jsp").forward(request, response);
+                    request.getRequestDispatcher("/view/SellerProductManager.jsp").forward(request, response);
                 } else {
                     request.setAttribute("product", product);
                     request.setAttribute("categoryList", productDAO.getAllCategories());
@@ -76,15 +77,15 @@ public class ManageProductServlet extends HttpServlet {
                 int productId = Integer.parseInt(request.getParameter("productId"));
                 productDAO.deleteProductById(productId);
                 LOGGER.log(Level.INFO, "Deleted product with ID: {0}", productId);
-                response.sendRedirect("manageproduct?service=list");
+                response.sendRedirect("sellerproduct?service=list");
             } else {
                 request.setAttribute("errorMessage", "Invalid service request.");
-                request.getRequestDispatcher("/view/ProductManager.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/SellerProductManager.jsp").forward(request, response);
             }
         } catch (NumberFormatException e) {
             LOGGER.log(Level.SEVERE, "Invalid product ID format: {0}", e.getMessage());
             request.setAttribute("errorMessage", "Invalid product ID.");
-            request.getRequestDispatcher("/view/ProductManager.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/SellerProductManager.jsp").forward(request, response);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error processing GET request: {0}", e.getMessage());
             request.setAttribute("errorMessage", "An error occurred: " + e.getMessage());
@@ -110,32 +111,66 @@ public class ManageProductServlet extends HttpServlet {
 
                 productDAO.insertProduct(product);
                 LOGGER.log(Level.INFO, "Inserted new product: {0}", product.getName());
-                response.sendRedirect("manageproduct?service=list");
-            } else if (service.equals("update")) {
-                Product product = new Product();
-                product.setId(Integer.parseInt(request.getParameter("id")));
-                product.setName(request.getParameter("name"));
-                product.setDescription(request.getParameter("description"));
-                product.setPrice(Double.parseDouble(request.getParameter("price")));
-                product.setStock(Integer.parseInt(request.getParameter("stock")));
-                product.setImgUrl(request.getParameter("imgUrl"));
-                product.setShelfLifeHours(Double.parseDouble(request.getParameter("shelfLifeHours")));
-                Category category = new Category();
-                category.setId(Integer.parseInt(request.getParameter("categoryId")));
-                product.setCategory(category);
+                response.sendRedirect("sellerproduct?service=list");
+            } else if ("update".equals(service)) {
+    try {
+        int id = Integer.parseInt(request.getParameter("id"));
+        String name = request.getParameter("name");
+        String description = request.getParameter("description");
+        double price = Double.parseDouble(request.getParameter("price"));
+        int stock = Integer.parseInt(request.getParameter("stock"));
+        String imgUrl = request.getParameter("imgUrl");
+        double shelfLifeHours = Double.parseDouble(request.getParameter("shelfLifeHours"));
+        String categoryName = request.getParameter("categoryName");
 
-                if (productDAO.updateProduct(product)) {
-                    LOGGER.log(Level.INFO, "Updated product: {0} (ID: {1})", new Object[]{product.getName(), product.getId()});
-                    response.sendRedirect("manageproduct?service=list");
-                } else {
-                    request.setAttribute("errorMessage", "Failed to update product. Please try again.");
-                    request.setAttribute("product", product);
-                    request.setAttribute("categoryList", productDAO.getAllCategories());
-                    request.getRequestDispatcher("/view/UpdateProduct.jsp").forward(request, response);
-                }
-            } else {
+        if (categoryName == null || categoryName.trim().isEmpty()) {
+            request.setAttribute("errorMessage", "Category name is required.");
+            request.setAttribute("product", productDAO.getProductById(id));
+            request.getRequestDispatcher("UpdateProduct.jsp").forward(request, response);
+            return;
+        }
+        if (categoryName.length() > 100) {
+            request.setAttribute("errorMessage", "Category name must be 100 characters or less.");
+            request.setAttribute("product", productDAO.getProductById(id));
+            request.getRequestDispatcher("UpdateProduct.jsp").forward(request, response);
+            return;
+        }
+
+        Product product = new Product();
+        product.setId(id);
+        product.setName(name);
+        product.setDescription(description);
+        product.setPrice(price);
+        product.setStock(stock);
+        product.setImgUrl(imgUrl);
+        product.setShelfLifeHours(shelfLifeHours);
+
+        DAOCategory daoCategory = new DAOCategory();
+        Category category = daoCategory.getOrCreateCategory(categoryName);
+        if (category == null) {
+            request.setAttribute("errorMessage", "Failed to process category.");
+            request.setAttribute("product", productDAO.getProductById(id));
+            request.getRequestDispatcher("UpdateProduct.jsp").forward(request, response);
+            return;
+        }
+        product.setCategory(category);
+
+        boolean updated = productDAO.updateProduct(product);
+        if (updated) {
+            response.sendRedirect("sellerproduct?service=list");
+        } else {
+            request.setAttribute("errorMessage", "Failed to update product.");
+            request.setAttribute("product", product);
+            request.getRequestDispatcher("UpdateProduct.jsp").forward(request, response);
+        }
+    } catch (NumberFormatException e) {
+        request.setAttribute("errorMessage", "Invalid input format.");
+        request.setAttribute("product", productDAO.getProductById(Integer.parseInt(request.getParameter("id"))));
+        request.getRequestDispatcher("UpdateProduct.jsp").forward(request, response);
+    }
+} else {
                 request.setAttribute("errorMessage", "Invalid service request.");
-                request.getRequestDispatcher("/view/ProductManager.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/SellerProductManager.jsp").forward(request, response);
             }
         } catch (NumberFormatException e) {
             LOGGER.log(Level.SEVERE, "Invalid input format: {0}", e.getMessage());

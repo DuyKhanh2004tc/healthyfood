@@ -519,13 +519,15 @@ public class DAOProduct {
         }
     }
 
-    public List<Product> searchProductsByName(String keywords) {
+public List<Product> searchProductsByName(String keywords) {
         List<Product> productList = new ArrayList<>();
-        String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, "
-                + "c.id AS category_id, c.name AS category_name "
-                + "FROM Product p "
-                + "INNER JOIN Category c ON p.category_id = c.id "
-                + "WHERE p.name LIKE ?";
+        String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, "
+                   + "AVG(COALESCE(f.rate, p.rate)) AS average_rate, c.id AS category_id, c.name AS category_name "
+                   + "FROM Product p "
+                   + "INNER JOIN Category c ON p.category_id = c.id "
+                   + "LEFT JOIN Feedback f ON p.id = f.product_id "
+                   + "WHERE p.name LIKE ? "
+                   + "GROUP BY p.id, p.name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, c.id, c.name";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setString(1, "%" + (keywords != null ? keywords.trim() : "") + "%");
             try (ResultSet rs = st.executeQuery()) {
@@ -538,23 +540,20 @@ public class DAOProduct {
                     p.setStock(rs.getInt("stock"));
                     p.setImgUrl(rs.getString("image_url"));
                     p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
-                    p.setRate(rs.getDouble("rate"));
-
+                    p.setRate(rs.getDouble("average_rate"));
                     Category c = new Category();
                     c.setId(rs.getInt("category_id"));
                     c.setName(rs.getString("category_name"));
-
                     p.setCategory(c);
                     productList.add(p);
                 }
                 LOGGER.log(Level.INFO, "Retrieved {0} products for search query: {1}", new Object[]{productList.size(), keywords});
-                if (productList.isEmpty()) {
-                    LOGGER.log(Level.WARNING, "No products found for search query: {0}", keywords);
-                }
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "SQL Error in searchProductsByName: {0}", e.getMessage());
         }
         return productList;
     }
+
+
 }

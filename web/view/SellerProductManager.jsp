@@ -86,13 +86,13 @@
 
                             <!-- Insert Button -->
                             <div class="text-center mb-4">
-                                <a href="manageproduct?service=requestInsert" class="btn btn-warning">
+                                <a href="sellerproduct?service=requestInsert" class="btn btn-warning">
                                     <i class="bi bi-plus-circle me-1"></i> Insert New Product
                                 </a>
                             </div>
 
                             <!-- Search Form -->
-                            <form action="manageproduct" class="input-group search-form shadow-sm" method="get" onsubmit="return validateSearch()">
+                            <form action="sellerproduct" class="input-group search-form shadow-sm" method="get" onsubmit="return validateSearch()">
                                 <input type="hidden" name="service" value="searchByKeywords"/>
                                 <input type="text" class="form-control" id="keywords" name="keywords" placeholder="Search by product name" value="${keywords}">
                             <button class="btn btn-outline-primary" type="submit">
@@ -149,10 +149,10 @@
                         <td class="text-center">${product.category != null ? product.category.name : 'N/A'}</td>
                         <td class="text-center">${String.format("%.1f", product.rate)}</td>
                         <td class="text-center">
-                            <a href="manageproduct?service=requestUpdate&productId=${product.id}" class="btn btn-action btn-edit">
+                            <a href="sellerproduct?service=requestUpdate&productId=${product.id}" class="btn btn-success btn-edit">
                                 <i class="bi bi-pencil"></i> Edit
                             </a>
-                            <a href="manageproduct?service=requestDelete&productId=${product.id}" class="btn btn-action btn-delete" onclick="return confirm('Are you sure you want to delete ${product.name}?');">
+                            <a href="sellerproduct?service=requestDelete&productId=${product.id}" class="btn btn-action btn-delete" onclick="return confirm('Are you sure you want to delete ${product.name}?');">
                                 <i class="bi bi-trash"></i> Delete
                             </a>
                         </td>
