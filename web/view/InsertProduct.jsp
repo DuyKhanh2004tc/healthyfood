@@ -42,12 +42,12 @@
     </head>
     <body>
         <jsp:include page="SideBarOfSheller.jsp"></jsp:include>
-        <div class="container">
-            <div class="card shadow">
-                <div class="card-header">
-                    <h4><i class="bi bi-plus-circle me-2"></i>Insert New Product</h4>
-                </div>
-                <div class="card-body">
+            <div class="container">
+                <div class="card shadow">
+                    <div class="card-header">
+                        <h4><i class="bi bi-plus-circle me-2"></i>Insert New Product</h4>
+                    </div>
+                    <div class="card-body">
                     <c:if test="${not empty errorMessage}">
                         <p class="text-center text-danger error-message">${errorMessage}</p>
                     </c:if>
@@ -70,7 +70,7 @@
                             <input type="number" min="0" class="form-control" id="stock" name="stock" value="${param.stock}" required>
                         </div>
                         <div class="form-group">
-                            <label for="imgUrl">Image URL</label>
+                            <label for="imgUrl">Image </label>
                             <input type="text" class="form-control" id="imgUrl" name="imgUrl" value="${param.imgUrl}">
                         </div>
                         <div class="form-group">
@@ -78,13 +78,8 @@
                             <input type="number" step="0.1" min="0" class="form-control" id="shelfLifeHours" name="shelfLifeHours" value="${param.shelfLifeHours}" required>
                         </div>
                         <div class="form-group">
-                            <label for="categoryId">Category</label>
-                            <select class="form-control" id="categoryId" name="categoryId" required>
-                                <option value="">Select Category</option>
-                                <c:forEach var="category" items="${categoryList}">
-                                    <option value="${category.id}" ${category.id == param.categoryId ? 'selected' : ''}>${category.name}</option>
-                                </c:forEach>
-                            </select>
+                            <label for="categoryName">Category</label>
+                            <input type="text" class="form-control" id="categoryName" name="categoryName" required maxlength="100">
                         </div>
                         <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Save Product</button>
                         <a href="manageproduct?service=list" class="btn btn-secondary">Cancel</a>
@@ -94,35 +89,35 @@
         </div>
         <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
         <script>
-            function validateForm() {
-                var name = document.getElementById("name").value.trim();
-                var price = document.getElementById("price").value;
-                var stock = document.getElementById("stock").value;
-                var shelfLife = document.getElementById("shelfLifeHours").value;
-                var category = document.getElementById("categoryId").value;
+                        function validateForm() {
+                            var name = document.getElementById("name").value.trim();
+                            var price = document.getElementById("price").value;
+                            var stock = document.getElementById("stock").value;
+                            var shelfLife = document.getElementById("shelfLifeHours").value;
+                            var category = document.getElementById("categoryId").value;
 
-                if (name === "") {
-                    alert("Product name is required.");
-                    return false;
-                }
-                if (price <= 0) {
-                    alert("Price must be greater than 0.");
-                    return false;
-                }
-                if (stock < 0) {
-                    alert("Stock cannot be negative.");
-                    return false;
-                }
-                if (shelfLife < 0) {
-                    alert("Shelf life cannot be negative.");
-                    return false;
-                }
-                if (category === "") {
-                    alert("Please select a category.");
-                    return false;
-                }
-                return true;
-            }
+                            if (name === "") {
+                                alert("Product name is required.");
+                                return false;
+                            }
+                            if (price <= 0) {
+                                alert("Price must be greater than 0.");
+                                return false;
+                            }
+                            if (stock < 0) {
+                                alert("Stock cannot be negative.");
+                                return false;
+                            }
+                            if (shelfLife < 0) {
+                                alert("Shelf life cannot be negative.");
+                                return false;
+                            }
+                            if (category === "") {
+                                alert("Please select a category.");
+                                return false;
+                            }
+                            return true;
+                        }
         </script>
     </body>
 </html>

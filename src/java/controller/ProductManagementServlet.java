@@ -13,15 +13,15 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class SellerProductServlet extends HttpServlet {
+public class ProductManagementServlet extends HttpServlet {
     private DAOProduct productDAO;
-    private static final Logger LOGGER = Logger.getLogger(SellerProductServlet.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ProductManagementServlet.class.getName());
     private Object service;
 
     @Override
     public void init() throws ServletException {
         productDAO = DAOProduct.INSTANCE;
-        LOGGER.log(Level.INFO, "SellerProductServlet initialized, DAO status: {0}", productDAO.getStatus());
+        LOGGER.log(Level.INFO, "ProductManagementServlet initialized, DAO status: {0}", productDAO.getStatus());
     }
 
     @Override
@@ -30,24 +30,24 @@ public class SellerProductServlet extends HttpServlet {
             String service = request.getParameter("service");
             if (!productDAO.getStatus().equals("OK")) {
                 request.setAttribute("errorMessage", "Database connection failed: " + productDAO.getStatus());
-                request.getRequestDispatcher("/view/SellerProductManager.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/ProductManagement.jsp").forward(request, response);
                 return;
             }
 
             if (service == null || service.equals("list")) {
                 List<Product> products = productDAO.getAllProduct();
-                LOGGER.log(Level.INFO, "Fetched {0} products for SellerProductManager.jsp", products != null ? products.size() : 0);
+                LOGGER.log(Level.INFO, "Fetched {0} products for ProductManagement.jsp", products != null ? products.size() : 0);
                 if (products == null || products.isEmpty()) {
                     request.setAttribute("errorMessage", "No products available to display.");
                 }
                 request.setAttribute("allProducts", products);
-                request.getRequestDispatcher("/view/SellerProductManager.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/ProductManagement.jsp").forward(request, response);
             } else if (service.equals("searchByKeywords")) {
                 String keywords = request.getParameter("keywords");
                 if (keywords == null || keywords.trim().isEmpty()) {
                     request.setAttribute("errorMessage", "Please enter a search keyword.");
                     request.setAttribute("allProducts", productDAO.getAllProduct());
-                    request.getRequestDispatcher("/view/SellerProductManager.jsp").forward(request, response);
+                    request.getRequestDispatcher("/view/ProductManagement.jsp").forward(request, response);
                     return;
                 }
                 List<Product> products = productDAO.searchProductsByName(keywords.trim());
@@ -57,7 +57,7 @@ public class SellerProductServlet extends HttpServlet {
                 }
                 request.setAttribute("allProducts", products);
                 request.setAttribute("keywords", keywords);
-                request.getRequestDispatcher("/view/SellerProductManager.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/ProductManagement.jsp").forward(request, response);
             } else if (service.equals("requestInsert")) {
                 List<Category> categories = productDAO.getAllCategories();
                 request.setAttribute("categoryList", categories);
@@ -67,7 +67,7 @@ public class SellerProductServlet extends HttpServlet {
                 Product product = productDAO.getProductById(productId);
                 if (product == null) {
                     request.setAttribute("errorMessage", "Product not found for ID: " + productId);
-                    request.getRequestDispatcher("/view/SellerProductManager.jsp").forward(request, response);
+                    request.getRequestDispatcher("/view/ProductManagement.jsp").forward(request, response);
                 } else {
                     request.setAttribute("product", product);
                     request.setAttribute("categoryList", productDAO.getAllCategories());
@@ -77,15 +77,15 @@ public class SellerProductServlet extends HttpServlet {
                 int productId = Integer.parseInt(request.getParameter("productId"));
                 productDAO.deleteProductById(productId);
                 LOGGER.log(Level.INFO, "Deleted product with ID: {0}", productId);
-                response.sendRedirect("sellerproduct?service=list");
+                response.sendRedirect("productmanagement?service=list");
             } else {
                 request.setAttribute("errorMessage", "Invalid service request.");
-                request.getRequestDispatcher("/view/SellerProductManager.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/ProductManagement.jsp").forward(request, response);
             }
         } catch (NumberFormatException e) {
             LOGGER.log(Level.SEVERE, "Invalid product ID format: {0}", e.getMessage());
             request.setAttribute("errorMessage", "Invalid product ID.");
-            request.getRequestDispatcher("/view/SellerProductManager.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/ProductManagement.jsp").forward(request, response);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error processing GET request: {0}", e.getMessage());
             request.setAttribute("errorMessage", "An error occurred: " + e.getMessage());
@@ -111,7 +111,7 @@ public class SellerProductServlet extends HttpServlet {
 
                 productDAO.insertProduct(product);
                 LOGGER.log(Level.INFO, "Inserted new product: {0}", product.getName());
-                response.sendRedirect("sellerproduct?service=list");
+                response.sendRedirect("productmanagement?service=list");
             } else if ("update".equals(service)) {
     try {
         int id = Integer.parseInt(request.getParameter("id"));
@@ -157,7 +157,7 @@ public class SellerProductServlet extends HttpServlet {
 
         boolean updated = productDAO.updateProduct(product);
         if (updated) {
-            response.sendRedirect("sellerproduct?service=list");
+            response.sendRedirect("productmanagement?service=list");
         } else {
             request.setAttribute("errorMessage", "Failed to update product.");
             request.setAttribute("product", product);
@@ -170,7 +170,7 @@ public class SellerProductServlet extends HttpServlet {
     }
 } else {
                 request.setAttribute("errorMessage", "Invalid service request.");
-                request.getRequestDispatcher("/view/SellerProductManager.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/ProductManagement.jsp").forward(request, response);
             }
         } catch (NumberFormatException e) {
             LOGGER.log(Level.SEVERE, "Invalid input format: {0}", e.getMessage());

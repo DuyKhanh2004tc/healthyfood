@@ -16,6 +16,7 @@
         <servlet-name>CustomerAccountServlet</servlet-name>
         <servlet-class>controller.CustomerAccountServlet</servlet-class>
     </servlet>
+
     <servlet>
         <servlet-name>DisplayAccountServlet</servlet-name>
         <servlet-class>controller.DisplayAccountServlet</servlet-class>
@@ -88,6 +89,14 @@
         <servlet-name>ResendOTPServlet</servlet-name>
         <servlet-class>controller.ResendOTPServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ProductManagementServlet</servlet-name>
+        <servlet-class>controller.ProductManagementServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SellerServlet</servlet-name>
+        <servlet-class>controller.SellerServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeDisplayServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -144,6 +153,7 @@
         <servlet-name>RegisterServlet</servlet-name>
         <url-pattern>/register</url-pattern>
     </servlet-mapping>
+  
     <servlet-mapping>
         <servlet-name>NutritionBlogServlet</servlet-name>
         <url-pattern>/nutritionBlog</url-pattern>
@@ -175,6 +185,14 @@
     <servlet-mapping>
         <servlet-name>ResendOTPServlet</servlet-name>
         <url-pattern>/resendOTP</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ProductManagementServlet</servlet-name>
+        <url-pattern>/productmanagement</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SellerServlet</servlet-name>
+        <url-pattern>/seller</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>

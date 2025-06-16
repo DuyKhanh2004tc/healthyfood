@@ -53,7 +53,7 @@
                     </c:if>
                     <c:choose>
                         <c:when test="${not empty product}">
-                            <form action="manageproduct" method="post" onsubmit="return validateForm()">
+                            <form action="productmanagement" method="post" onsubmit="return validateForm()">
                                 <input type="hidden" name="service" value="update"/>
                                 <input type="hidden" name="id" value="${product.id}"/>
                                 <div class="form-group">
@@ -73,7 +73,7 @@
                                     <input type="number" min="0" class="form-control" id="stock" name="stock" value="${product.stock}" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="imgUrl">Image URL</label>
+                                    <label for="imgUrl">Image </label>
                                     <input type="text" class="form-control" id="imgUrl" name="imgUrl" value="${product.imgUrl}">
                                 </div>
                                 <div class="form-group">
@@ -85,12 +85,12 @@
                                     <input type="text" class="form-control" id="categoryName" name="categoryName" value="${product.category != null ? product.category.name : ''}" required maxlength="100">
                                 </div>
                                 <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Save Changes</button>
-                                <a href="manageproduct?service=list" class="btn btn-secondary">Cancel</a>
+                                <a href="productmanagement?service=list" class="btn btn-secondary">Cancel</a>
                             </form>
                         </c:when>
                         <c:otherwise>
                             <p class="text-center text-danger error-message">Product not found.</p>
-                            <a href="manageproduct?service=list" class="btn btn-secondary">Back to Product List</a>
+                            <a href="productmanagement?service=list" class="btn btn-secondary">Back to Product List</a>
                         </c:otherwise>
                     </c:choose>
                 </div>
