@@ -104,6 +104,11 @@ input[type="submit"]:hover {
   margin-top: 10px;
 }
 
+.resend-otp {
+  text-align: center;
+  margin-top: 15px;
+}
+
 .link-button {
     background: none;
     border: none;

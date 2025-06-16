@@ -11,11 +11,11 @@
         <div class="center">
             <h1>Reset Password</h1>
             <form action="resetPassword" method="post">
-                 <div class="txt_field">
-    <label for="otp" style="font-size: 16px; color: #333;">Verification Code</label>
-    <input type="text" name="otp" id="otp" maxlength="6" required />
-</div>
-                 <div class="txt_field password-wrapper">
+                <div class="txt_field">
+                    <label for="otp" style="font-size: 16px; color: #333;">Verification Code</label>
+                    <input type="text" name="otp" id="otp" maxlength="6" required />
+                </div>
+                <div class="txt_field password-wrapper">
                     <input type="password" id="password" name="password" placeholder="Password" required />
                     <i class="fa fa-eye-slash" id="togglePassword" onclick="togglePassword('password', 'togglePassword')"></i>
                 </div>
@@ -24,14 +24,14 @@
                     <i class="fa fa-eye-slash" id="toggleConfirmPassword" onclick="togglePassword('confirmPassword', 'toggleConfirmPassword')"></i>
                 </div>   
                 <c:if test="${not empty error}">
-                            <div class="error-message">${error}</div>
-                        </c:if>
+                    <div class="error-message">${error}</div>
+                </c:if>
                 <input type="submit" value="Reset Password">
             </form>
-                        
-                        <div style="text-align: center; margin-top: 10px;">
-                <form action="resendOTP" method="post" style="display: inline;">
-                    <input type="hidden" name="type" value="reset" /> 
+
+            <div class="resend-otp">
+                <form action="resendOTP" method="post">
+                    <input type="hidden" name="type" value="reset" />
                     <button type="submit" class="link-button">Resend OTP</button>
                 </form>
             </div>

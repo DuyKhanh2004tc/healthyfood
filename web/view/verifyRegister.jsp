@@ -21,9 +21,9 @@
                 <div class="auth-switch">
                 </div>
             </form>
-            <div style="text-align: center; margin-top: 10px;">
-                <form action="resendOTP" method="post" style="display: inline;">
-                    <input type="hidden" name="type" value="register" /> 
+            <div class="resend-otp">
+                <form action="resendOTP" method="post">
+                    <input type="hidden" name="type" value="register" />
                     <button type="submit" class="link-button">Resend OTP</button>
                 </form>
             </div>
