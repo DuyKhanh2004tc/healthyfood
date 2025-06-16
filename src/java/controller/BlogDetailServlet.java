@@ -59,25 +59,40 @@ public class BlogDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String BlogIdStr = request.getParameter("blogId");
-        int BlogId;
+        String blogIdStr = request.getParameter("blogId");
+        int blogId;
         try {
-            BlogId = Integer.parseInt(BlogIdStr);
+            blogId = Integer.parseInt(blogIdStr);
         } catch (NumberFormatException e) {
             request.setAttribute("error", "Invalid Blog ID.");
             request.getRequestDispatcher("view/blogDetail.jsp").forward(request, response);
             return;
         }
         DAOBlog dao = new DAOBlog();
-        Blog blog = dao.getBlogById(BlogId);
+        Blog blog = dao.getBlogById(blogId);
         List<Blog> b = dao.getAllBlog();
+        int prevId = 0;
+        int nextId= 0;
+        for (int i = 0; i < b.size(); i++) {
+            if (b.get(i).getId() == blogId) {
+                if (i > 0) {
+                    prevId =b.get(i - 1).getId();
+                }
+                if (i < b.size() - 1) {
+                    nextId = b.get(i + 1).getId();
+                }
+                break;
+            }
+        }
+        
         request.setAttribute("blogId", blog.getId());
         request.setAttribute("title", blog.getTitle());
         request.setAttribute("description", blog.getDescription());
         request.setAttribute("created_at", blog.getCreated_at());
         request.setAttribute("image", blog.getImage());
         request.setAttribute("createBy", blog.getUser().getName());
-        request.setAttribute("size", b.size());
+        request.setAttribute("prevId", prevId != 0 ? prevId : b.get(b.size() - 1).getId());
+        request.setAttribute("nextId", nextId != 0 ? nextId : b.get(0).getId());
         request.getRequestDispatcher("view/blogDetail.jsp").forward(request, response);
     }
 

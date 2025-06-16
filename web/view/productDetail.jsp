@@ -16,7 +16,7 @@
                 padding: 0;
             }
             .container {
-
+                max-width: 1200px;
                 margin: 30px auto;
                 padding: 20px;
                 background-color: #ffffff;
@@ -32,46 +32,64 @@
                 color: #4CAF50;
                 font-weight: bold;
             }
-
             .back-link:hover {
                 text-decoration: underline;
             }
-
+            .nav-buttons {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+            .nav-button {
+                padding: 8px 15px;
+                background-color: #a8e6a1;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+                color: #2e4d32;
+                text-decoration: none;
+                display: inline-block;
+                transition: background-color 0.3s ease;
+            }
+            .nav-button:hover {
+                background-color: #7ed957;
+            }
+            .nav-button:disabled {
+                background-color: #ccc;
+                cursor: not-allowed;
+                opacity: 0.5;
+                pointer-events: none;
+            }
             .product-details {
                 display: flex;
                 gap: 20px;
                 flex-wrap: wrap;
             }
-
             .product-img {
                 max-width: 400px;
                 border-radius: 10px;
                 box-shadow: 0 2px 6px rgba(0,0,0,0.3);
             }
-
             .product-details .name-rate {
                 display: flex;
                 align-items: center;
                 gap: 10px;
                 margin-top: 0;
             }
-
             .product-details h3 {
                 margin: 0;
                 color: #3e7d4d;
             }
-
             .product-details p {
                 margin: 8px 0;
             }
-
             .quantity-controls {
                 margin: 20px 0;
                 display: flex;
                 align-items: center;
                 gap: 10px;
             }
-
             .quantity-controls input[type="text"] {
                 width: 50px;
                 text-align: center;
@@ -79,7 +97,6 @@
                 border: 1px solid #c1e1c1;
                 border-radius: 5px;
             }
-
             .quantity-controls button {
                 padding: 6px 12px;
                 background-color: #a8e6a1;
@@ -88,11 +105,9 @@
                 cursor: pointer;
                 font-weight: bold;
             }
-
             .quantity-controls button:hover {
                 background-color: #7ed957;
             }
-
             button[type="submit"] {
                 padding: 10px 20px;
                 background-color: #4CAF50;
@@ -101,26 +116,22 @@
                 border: none;
                 border-radius: 6px;
                 cursor: pointer;
+                margin-right: 10px;
             }
-
             button[type="submit"]:hover {
                 background-color: #3c8d40;
             }
-
             .error {
                 color: red;
                 font-weight: bold;
             }
-
             .success {
                 color: green;
                 font-weight: bold;
             }
-
             .product-list {
                 margin-top: 40px;
             }
-
             .feedback-card {
                 background-color: #f1fff0;
                 border: 1px solid #d9f5dc;
@@ -128,12 +139,10 @@
                 padding: 15px;
                 margin-bottom: 15px;
             }
-
             .feedback-card h3 {
                 margin: 0 0 5px 0;
                 color: #4CAF50;
             }
-
             textarea[name="content"] {
                 width: 100%;
                 min-height: 100px;
@@ -145,7 +154,6 @@
                 font-size: 14px;
                 font-family: inherit;
             }
-
             .no-results {
                 color: #888;
                 font-style: italic;
@@ -177,7 +185,6 @@
         </style>
     </head>
     <body>
-
         <jsp:include page="header.jsp"></jsp:include>
 
         <%
@@ -192,7 +199,7 @@
             Integer categoryId = (Integer) request.getAttribute("categoryId"); 
             Double rate = (Double) request.getAttribute("rate");
             Integer prevId = (Integer) request.getAttribute("prevId"); 
-Integer nextId = (Integer) request.getAttribute("nextId"); 
+            Integer nextId = (Integer) request.getAttribute("nextId"); 
         %>
 
         <div class="container">
@@ -208,12 +215,11 @@ Integer nextId = (Integer) request.getAttribute("nextId");
             %>
             <p class="success"><%= message %></p>
             <% } %>           
-            <a href="${pageContext.request.contextPath}/productDetail?productId=<%= prevId%>">
-                <p><=</p>
-            </a>  
-               <a href="${pageContext.request.contextPath}/productDetail?productId=<%=nextId%>">
-                <p>=></p>
-            </a>  
+            <div class="nav-buttons">
+                <a href="${pageContext.request.contextPath}/productDetail?productId=<%= prevId%>" class="nav-button" <%= prevId == null ? "disabled" : "" %>>⇐ Previous</a>
+                <a href="${pageContext.request.contextPath}/productDetail?productId=<%= nextId%>" class="nav-button" <%= nextId == null ? "disabled" : "" %>>Next ⇒</a>
+            </div>
+
             <div class="product-details">
                 <% if (productId != null) { %>
                 <div>
@@ -224,7 +230,6 @@ Integer nextId = (Integer) request.getAttribute("nextId");
                         <h3><%= productName %></h3>
                         <p><%= String.format("%.1f", rate) %> ★</p> 
                     </div>
-
                     <p>Category: <%= categoryName %></p>
                     <p>Price: $<%= String.format("%.2f", price) %></p>
                     <p>Stock: <%= stock %></p>
@@ -233,7 +238,7 @@ Integer nextId = (Integer) request.getAttribute("nextId");
 
                     <form action="${pageContext.request.contextPath}/productDetail" method="post">
                         <input type="hidden" name="productId" value="<%= productId %>">
-                        <c:if test="${sessionScope.user.getRole().getId()== null ||sessionScope.user.getRole().getId()== 3 }">
+                        <c:if test="${sessionScope.user.getRole().getId() == null || sessionScope.user.getRole().getId() == 3}">
                             <div class="quantity-controls">
                                 <button type="button" onclick="updateQuantity(-1)">-</button>
                                 <input type="text" name="number" id="quantity" value="1" min="1" max="<%= stock %>">
@@ -246,9 +251,9 @@ Integer nextId = (Integer) request.getAttribute("nextId");
                         %>
                         <p class="error"><%= error %></p>
                         <% } %>
-                        <c:if test="${sessionScope.user.getRole().getId()== null ||sessionScope.user.getRole().getId()== 3 }">
-                            <button type="submit" value="addCart">🛒 Add to Cart</button>
-                            <button type="submit" value="buy">💰 Buy</button>
+                        <c:if test="${sessionScope.user.getRole().getId() == null || sessionScope.user.getRole().getId() == 3}">
+                            <button type="submit" name="action" value="addCart">🛒 Add to Cart</button>
+                            <button type="submit" name="action" value="buy">💰 Buy</button>
                         </c:if>
                     </form>
                 </div>
@@ -286,7 +291,7 @@ Integer nextId = (Integer) request.getAttribute("nextId");
                         <input type="radio" id="star2" name="rating" value="4"><label for="star2">★</label>
                         <input type="radio" id="star1" name="rating" value="5"><label for="star1">★</label>
                     </div>
-                    <c:if test="${sessionScope.user.getRole().getId()== 3 }">
+                    <c:if test="${sessionScope.user.getRole().getId() == 3}">
                         <textarea name="content" placeholder="Write your comment..." required></textarea>
                         <button type="submit" name="action" value="comment">Submit Comment</button>
                     </c:if>
@@ -306,6 +311,5 @@ Integer nextId = (Integer) request.getAttribute("nextId");
         </script>
 
         <jsp:include page="footer.jsp"></jsp:include>
-
     </body>
 </html>
