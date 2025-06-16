@@ -37,7 +37,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2025 Healthy Food. All rights reserved.</p>
+                <p> 2025 Healthy Food.</p>
             </div>
         </footer>
     </body>
