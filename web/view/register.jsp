@@ -14,31 +14,31 @@
             <form action="register" method="post">
 
                 <div class="txt_field">
-                    <input type="text" name="fullname" placeholder="Fullname" required />
+                    <input type="text" name="fullname" placeholder="Fullname" value="${param.fullname}" required />
                 </div>
 
                 <div class="txt_field">
-                    <input type="email" name="email" placeholder="Email" required />
+                    <input type="email" name="email" placeholder="Email" value="${param.email}" required />
                 </div>
 
                 <div class="txt_field">
-                    <input type="text" name="phonenumber" placeholder="Phone number" required />
+                    <input type="text" name="phonenumber" placeholder="Phone number" value="${param.phonenumber}" required />
                 </div>
 
                 <div class="txt_field">
                     <label for="dateofbirth">Date of Birth:</label>
-                    <input type="date" name="dateofbirth" id="dateofbirth" required />
+                    <input type="date" name="dateofbirth" id="dateofbirth" value="${param.dateofbirth}" required />
                 </div>
 
                 <div class="txt_field">
-                    <input type="text" name="address" placeholder="Address" required />
+                    <input type="text" name="address" placeholder="Address" value="${param.address}" required />
                 </div>
 
                 <div class="txt_field gender-group">
                     <label>Gender:</label>
                     <div class="radio-options">
-                        <label><input type="radio" name="gender" value="0" required /> Female</label>
-                        <label><input type="radio" name="gender" value="1" /> Male</label>
+                        <label><input type="radio" name="gender" value="0" required ${param.gender == '0' ? 'checked' : ''}/> Female</label>
+                        <label><input type="radio" name="gender" value="1" ${param.gender == '1' ? 'checked' : ''} /> Male</label>
                     </div>
                 </div>
 

@@ -89,7 +89,7 @@ public class LoginServlet extends HttpServlet {
                         break;
                     }
                 }
-
+                             
                 if (matchedUser != null) {
                     HttpSession session = request.getSession();
                     session.setAttribute("user", matchedUser);

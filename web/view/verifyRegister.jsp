@@ -12,7 +12,7 @@
             <form action="verifyRegister" method="post">
                 <div class="txt_field">
                     <label for="otp" style="font-size: 16px; color: #333;">Verification Code</label>
-                    <input type="text" name="otp" id="otp" maxlength="6" />
+                    <input type="text" name="otp" id="otp" maxlength="6" value="${param.otp}"/>
                 </div>
                 <c:if test="${not empty error}">
                     <div class="error-message">${error}</div>
@@ -26,6 +26,9 @@
                     <input type="hidden" name="type" value="register" />
                     <button type="submit" class="link-button">Resend OTP</button>
                 </form>
+            </div>
+            <div class="auth-switch">
+                Already have an account? <a href="login">Login</a>
             </div>
         </div>
 

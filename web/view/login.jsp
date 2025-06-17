@@ -12,7 +12,7 @@
             <h1>Login</h1>
             <form action="login" method="post">
                 <div class="txt_field">
-                    <input type="email" name="email" placeholder="Email" required />
+                    <input type="email" name="email" placeholder="Email" value="${param.email != null ? param.email : ''}" required />
                 </div>
                 <div class="txt_field password-wrapper">
     <input type="password" id="password" name="password" placeholder="Password" required />

@@ -13,7 +13,7 @@
             <form action="resetPassword" method="post">
                 <div class="txt_field">
                     <label for="otp" style="font-size: 16px; color: #333;">Verification Code</label>
-                    <input type="text" name="otp" id="otp" maxlength="6" required />
+                    <input type="text" name="otp" id="otp" maxlength="6" value="${param.otp}" required />
                 </div>
                 <div class="txt_field password-wrapper">
                     <input type="password" id="newPassword" name="newpassword" placeholder="New Password" required />
@@ -35,6 +35,10 @@
                     <button type="submit" class="link-button">Resend OTP</button>
                 </form>
             </div>
+                
+                <div class="auth-switch">
+                    Remember your password? <a href="login">Login Here</a>
+                </div>
         </div>
         <script>
             function togglePassword(inputId, iconId) {
