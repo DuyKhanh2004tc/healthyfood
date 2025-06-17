@@ -22,11 +22,14 @@
                     <div class="error-message">${error}</div>
                 </c:if>
                 <div class="auth-switch">
-                    <a href="forgotPassword">Forgot Password?</a>        
+                    <a href="forgotPassword" style="display: block; margin-bottom: 10px;">Forgot Password?</a>        
                     <input type="submit" value="Login">
                 </div>
                 <div class="auth-switch">
                     Don't have an account? <a href="register">Register</a>
+                </div>
+                <div class="auth-switch">
+                    <a href="home">Back to Home</a>
                 </div>
             </form>
             <script>

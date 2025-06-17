@@ -61,6 +61,10 @@
                 <div class="auth-switch">
                     Already have an account? <a href="login">Login</a>
                 </div>
+                
+                <div class="auth-switch">
+                    <a href="home">Back to Home</a>
+                </div>
 
             </form>
         </div>
