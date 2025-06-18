@@ -82,13 +82,13 @@ public class DAOProduct {
         }
         return productList;
     }
-    
-    public int getTotalProduct(){
+
+    public int getTotalProduct() {
         String sql = " SELECT COUNT(*) FROM PRODUCT ";
         try (PreparedStatement st = con.prepareStatement(sql)) {
-            
+
             ResultSet rs = st.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 int n = rs.getInt(1);
                 return n;
             }
@@ -97,12 +97,13 @@ public class DAOProduct {
         }
         return 0;
     }
-    public int getTotalProductByCid(int categoryId){
+
+    public int getTotalProductByCid(int categoryId) {
         String sql = " SELECT COUNT(*) FROM PRODUCT WHERE category_id = ? ";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setInt(1, categoryId);
             ResultSet rs = st.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 int n = rs.getInt(1);
                 return n;
             }
@@ -111,7 +112,7 @@ public class DAOProduct {
         }
         return 0;
     }
-    
+
     public List<Product> getProductPagination(int index, int row) {
         List<Product> productList = new ArrayList<>();
         String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, "
@@ -188,6 +189,58 @@ public class DAOProduct {
             e.printStackTrace();
         }
         return productList;
+    }
+
+    public void addToCart(int userId, int productId, int quantity) {
+        try {
+            String checkCartExistSQL = "SELECT id FROM Cart WHERE user_id = ? ";
+            int cartId = -1;
+            try (PreparedStatement st = con.prepareStatement(checkCartExistSQL)) {
+                st.setInt(1, userId);
+                ResultSet rs = st.executeQuery();
+                if (rs.next()) {
+                    cartId = rs.getInt("id");
+                } else {
+                    String createCartSQL = "INSERT INTO Cart (user_id) VALUES (?) ";
+                    try (PreparedStatement st2 = con.prepareStatement(createCartSQL, Statement.RETURN_GENERATED_KEYS)) {
+                        st2.setInt(1, userId);
+                        st2.executeUpdate();
+                        ResultSet rs2 = st2.getGeneratedKeys();
+                        if (rs2.next()) {
+                            cartId = rs.getInt(1);
+                        }
+                    }
+                }
+            }
+            
+            String checkItemExistSQL = "SELECT id, quantity FROM CartItem WHERE cart_id =? AND product_id = ?";
+            try (PreparedStatement st = con.prepareStatement(checkItemExistSQL)){
+                st.setInt(1,cartId);
+                st.setInt(2, productId);
+                ResultSet rs = st.executeQuery();
+                if(rs.next()){
+                    int existedQuantity = rs.getInt("quantity");
+                    int newQuantity = existedQuantity + quantity;
+                    int itemId = rs.getInt("id");
+                    String updateSQL = "UPDATE CartItem SET quantity = ? WHERE id = ? ";
+                    try (PreparedStatement st3 = con.prepareStatement(updateSQL)){
+                        st3.setInt(1, newQuantity);
+                        st3.setInt(2, itemId);
+                        st3.executeUpdate();
+                    }
+                }else {
+                    String insertItemSQL = "INSERT INTO CartItem (cart_id, product_id,quantity) VALUES (?,?,?) ";
+                    try (PreparedStatement st4 = con.prepareStatement(insertItemSQL)){
+                        st4.setInt(1, cartId);
+                        st4.setInt(2, productId);
+                        st4.setInt(3, quantity);
+                        st4.executeUpdate();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getStatus() {
@@ -484,29 +537,29 @@ public class DAOProduct {
     }
 
     public boolean updateProduct(Product product) {
-    String sql = "UPDATE Product SET name = ?, description = ?, price = ?, stock = ?, image_url = ?, shelf_life_hours = ?, category_id = ? "
-               + "WHERE id = ?";
-    try (PreparedStatement st = con.prepareStatement(sql)) {
-        st.setString(1, product.getName());
-        st.setString(2, product.getDescription());
-        st.setDouble(3, product.getPrice());
-        st.setInt(4, product.getStock());
-        st.setString(5, product.getImgUrl());
-        st.setDouble(6, product.getShelfLifeHours());
-        st.setInt(7, product.getCategory().getId());
-        st.setInt(8, product.getId());
-        int rowsAffected = st.executeUpdate();
-        if (rowsAffected == 0) {
-            LOGGER.log(Level.WARNING, "No product found with ID: {0}", product.getId());
+        String sql = "UPDATE Product SET name = ?, description = ?, price = ?, stock = ?, image_url = ?, shelf_life_hours = ?, category_id = ? "
+                + "WHERE id = ?";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setString(1, product.getName());
+            st.setString(2, product.getDescription());
+            st.setDouble(3, product.getPrice());
+            st.setInt(4, product.getStock());
+            st.setString(5, product.getImgUrl());
+            st.setDouble(6, product.getShelfLifeHours());
+            st.setInt(7, product.getCategory().getId());
+            st.setInt(8, product.getId());
+            int rowsAffected = st.executeUpdate();
+            if (rowsAffected == 0) {
+                LOGGER.log(Level.WARNING, "No product found with ID: {0}", product.getId());
+                return false;
+            }
+            LOGGER.log(Level.INFO, "Updated product with ID: {0}", product.getId());
+            return true;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "SQL Error in updateProduct for ID {0}: {1}", new Object[]{product.getId(), e.getMessage()});
             return false;
         }
-        LOGGER.log(Level.INFO, "Updated product with ID: {0}", product.getId());
-        return true;
-    } catch (SQLException e) {
-        LOGGER.log(Level.SEVERE, "SQL Error in updateProduct for ID {0}: {1}", new Object[]{product.getId(), e.getMessage()});
-        return false;
     }
-}
 
     public void deleteProductById(int productId) {
         String sql = "DELETE FROM Product WHERE id = ?";
@@ -519,15 +572,15 @@ public class DAOProduct {
         }
     }
 
-public List<Product> searchProductsByName(String keywords) {
+    public List<Product> searchProductsByName(String keywords) {
         List<Product> productList = new ArrayList<>();
         String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, "
-                   + "AVG(COALESCE(f.rate, p.rate)) AS average_rate, c.id AS category_id, c.name AS category_name "
-                   + "FROM Product p "
-                   + "INNER JOIN Category c ON p.category_id = c.id "
-                   + "LEFT JOIN Feedback f ON p.id = f.product_id "
-                   + "WHERE p.name LIKE ? "
-                   + "GROUP BY p.id, p.name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, c.id, c.name";
+                + "AVG(COALESCE(f.rate, p.rate)) AS average_rate, c.id AS category_id, c.name AS category_name "
+                + "FROM Product p "
+                + "INNER JOIN Category c ON p.category_id = c.id "
+                + "LEFT JOIN Feedback f ON p.id = f.product_id "
+                + "WHERE p.name LIKE ? "
+                + "GROUP BY p.id, p.name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, c.id, c.name";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setString(1, "%" + (keywords != null ? keywords.trim() : "") + "%");
             try (ResultSet rs = st.executeQuery()) {
@@ -554,6 +607,5 @@ public List<Product> searchProductsByName(String keywords) {
         }
         return productList;
     }
-
 
 }

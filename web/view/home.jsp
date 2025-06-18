@@ -109,7 +109,10 @@
 
                             </div>
                             <c:if test="${sessionScope.user.getRole().getId()== null ||sessionScope.user.getRole().getId()== 3 }">
-                                <button class="card-button" type="submit" value="addCart">🛒 Add to Cart</button>
+                                <form action="cart" method="get">
+                                    <input type="hidden" name="productId" value="${o.id}" />
+                                    <button class="card-button" type="submit">🛒 Add to Cart</button>
+                                </form>
                                 <button class="card-button" type="submit" value="buy">💰 Buy</button>
                             </c:if> 
                         </div>
