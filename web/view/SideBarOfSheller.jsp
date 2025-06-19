@@ -53,7 +53,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
             </div>
             <div class="offcanvas-body">
-                <a href="manageproduct"><i class="bi bi-box-seam me-2"></i>Product Management</a>
+                <a href="productmanagement"><i class="bi bi-box-seam me-2"></i>Product Management</a>
                 <a href="OrderStatus.jsp"><i class="bi bi-truck me-2"></i>Order Status</a>
                 <a href="OrderHistory.jsp"><i class="bi bi-clock-history me-2"></i>Order History</a>
             </div>

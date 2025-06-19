@@ -30,6 +30,13 @@ public class DAOProduct {
             INSTANCE = this;
         }
     }
+    
+    // Placeholder for connection retrieval
+    public Connection getConnection() throws SQLException {
+        // Implement connection logic, e.g., using DataSource or DriverManager
+        return con; // Replace with actual connection logic
+    }
+
 
     public static void main(String[] args) {
         // Gọi getAllProduct từ INSTANCE
@@ -293,15 +300,20 @@ public class DAOProduct {
         return productList;
     }
 
-    public List<Product> searchProduct(String namesearch) {
+   
+    public List<Product> searchProducts(String keywords) {
         List<Product> productList = new ArrayList<>();
-        String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, "
+        String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, "
+                + "p.image_url, p.shelf_life_hours, p.rate AS average_rate, "
                 + "c.id AS category_id, c.name AS category_name "
                 + "FROM Product p "
                 + "INNER JOIN Category c ON p.category_id = c.id "
                 + "WHERE p.name LIKE ?";
+
         try (PreparedStatement st = con.prepareStatement(sql)) {
-            st.setString(1, "%" + namesearch + "%");
+            // If keywords are empty or null, return all products
+            String searchPattern = (keywords == null || keywords.trim().isEmpty()) ? "%" : "%" + keywords.trim() + "%";
+            st.setString(1, searchPattern);
             try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {
                     Product p = new Product();
@@ -312,7 +324,7 @@ public class DAOProduct {
                     p.setStock(rs.getInt("stock"));
                     p.setImgUrl(rs.getString("image_url"));
                     p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
-                    p.setRate(rs.getDouble("rate"));
+                    p.setRate(rs.getDouble("average_rate"));
 
                     Category c = new Category();
                     c.setId(rs.getInt("category_id"));
@@ -323,7 +335,7 @@ public class DAOProduct {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "SQL Error in searchProduct: {0}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "SQL Error in searchProducts: {0}", e.getMessage());
         }
         return productList;
     }
@@ -517,47 +529,97 @@ public class DAOProduct {
         return categoryList;
     }
 
-    public void insertProduct(Product product) {
-        String sql = "INSERT INTO Product (name, description, price, stock, image_url, shelf_life_hours, category_id) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement st = con.prepareStatement(sql)) {
-            st.setString(1, product.getName());
-            st.setString(2, product.getDescription());
-            st.setDouble(3, product.getPrice());
-            st.setInt(4, product.getStock());
-            st.setString(5, product.getImgUrl());
-            st.setDouble(6, product.getShelfLifeHours());
+    public void insertProduct(Product product) throws SQLException {
+        // Start transaction
+        con.setAutoCommit(false);
+        try {
+            // Get or insert category
+            int categoryId = getOrInsertCategory(product.getCategory().getName());
 
-            st.setInt(8, product.getCategory().getId());
-            st.executeUpdate();
+            // Insert product
+            String sql = "INSERT INTO Product (name, description, price, stock, image_url, shelf_life_hours, rate, category_id) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement st = con.prepareStatement(sql)) {
+                st.setString(1, product.getName());
+                st.setString(2, product.getDescription());
+                st.setDouble(3, product.getPrice());
+                st.setInt(4, product.getStock());
+                st.setString(5, product.getImgUrl());
+                st.setDouble(6, product.getShelfLifeHours());
+                st.setDouble(7, product.getRate());
+                st.setInt(8, categoryId);
+                st.executeUpdate();
+            }
+
+            // Commit transaction
+            con.commit();
             LOGGER.log(Level.INFO, "Inserted product: {0}", product.getName());
         } catch (SQLException e) {
+            con.rollback();
             LOGGER.log(Level.SEVERE, "SQL Error in insertProduct: {0}", e.getMessage());
+            throw e;
+        } finally {
+            con.setAutoCommit(true);
         }
     }
 
-    public boolean updateProduct(Product product) {
-        String sql = "UPDATE Product SET name = ?, description = ?, price = ?, stock = ?, image_url = ?, shelf_life_hours = ?, category_id = ? "
-                + "WHERE id = ?";
-        try (PreparedStatement st = con.prepareStatement(sql)) {
-            st.setString(1, product.getName());
-            st.setString(2, product.getDescription());
-            st.setDouble(3, product.getPrice());
-            st.setInt(4, product.getStock());
-            st.setString(5, product.getImgUrl());
-            st.setDouble(6, product.getShelfLifeHours());
-            st.setInt(7, product.getCategory().getId());
-            st.setInt(8, product.getId());
-            int rowsAffected = st.executeUpdate();
-            if (rowsAffected == 0) {
-                LOGGER.log(Level.WARNING, "No product found with ID: {0}", product.getId());
-                return false;
+    private int getOrInsertCategory(String categoryName) throws SQLException {
+        // Check if category exists
+        String selectSql = "SELECT id FROM Category WHERE name = ?";
+        try (PreparedStatement st = con.prepareStatement(selectSql)) {
+            st.setString(1, categoryName);
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id");
+                }
             }
-            LOGGER.log(Level.INFO, "Updated product with ID: {0}", product.getId());
-            return true;
+        }
+
+        // Insert new category
+        String insertSql = "INSERT INTO Category (name) VALUES (?)";
+        try (PreparedStatement st = con.prepareStatement(insertSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            st.setString(1, categoryName);
+            st.executeUpdate();
+            try (ResultSet rs = st.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        throw new SQLException("Failed to insert or retrieve category ID");
+    }
+
+ public void updateProduct(Product product) throws SQLException {
+        con.setAutoCommit(false);
+        try {
+            int categoryId = getOrInsertCategory(product.getCategory().getName());
+
+            String sql = "UPDATE Product SET name = ?, description = ?, price = ?, stock = ?, image_url = ?, "
+                    + "shelf_life_hours = ?, rate = ?, category_id = ? WHERE id = ?";
+            try (PreparedStatement st = con.prepareStatement(sql)) {
+                st.setString(1, product.getName());
+                st.setString(2, product.getDescription());
+                st.setDouble(3, product.getPrice());
+                st.setInt(4, product.getStock());
+                st.setString(5, product.getImgUrl());
+                st.setDouble(6, product.getShelfLifeHours());
+                st.setDouble(7, product.getRate());
+                st.setInt(8, categoryId);
+                st.setInt(9, product.getId());
+                int rowsAffected = st.executeUpdate();
+                if (rowsAffected == 0) {
+                    throw new SQLException("No product found with ID: " + product.getId());
+                }
+            }
+
+            con.commit();
+            LOGGER.log(Level.INFO, "Updated product: {0}", product.getName());
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "SQL Error in updateProduct for ID {0}: {1}", new Object[]{product.getId(), e.getMessage()});
-            return false;
+            con.rollback();
+            LOGGER.log(Level.SEVERE, "SQL Error in updateProduct: {0}", e.getMessage());
+            throw e;
+        } finally {
+            con.setAutoCommit(true);
         }
     }
 

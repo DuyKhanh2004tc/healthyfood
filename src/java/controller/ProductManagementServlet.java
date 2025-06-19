@@ -1,224 +1,369 @@
 package controller;
 
-import dal.DAOCategory;
-import model.Product;
-import model.Category;
 import dal.DAOProduct;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import model.Product;
+import model.Category;
 
+@WebServlet(name = "ProductManagementServlet", urlPatterns = {"/productmanagement"})
+@MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 10)
 public class ProductManagementServlet extends HttpServlet {
+
     private DAOProduct productDAO;
-    private static final Logger LOGGER = Logger.getLogger(ProductManagementServlet.class.getName());
-    private Object service;
+    private static final String UPLOAD_DIR = "images/uploads";
 
     @Override
     public void init() throws ServletException {
-        productDAO = DAOProduct.INSTANCE;
-        LOGGER.log(Level.INFO, "ProductManagementServlet initialized, DAO status: {0}", productDAO.getStatus());
+        productDAO = new DAOProduct();
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String service = request.getParameter("service");
+
+        if ("requestInsert".equals(service)) {
+            // Forward to insert form
+            request.getRequestDispatcher("view/insertProduct.jsp").forward(request, response);
+        } else if ("requestUpdate".equals(service)) {
+            // Fetch product by ID for update
+            try {
+                int productId = Integer.parseInt(request.getParameter("productId"));
+                Product product = productDAO.getProductById(productId);
+                if (product != null) {
+                    request.setAttribute("product", product);
+                    request.getRequestDispatcher("view/UpdateProduct.jsp").forward(request, response);
+                } else {
+                    request.setAttribute("errorMessage", "Product not found.");
+                    displayProductList(request, response);
+                }
+            } catch (NumberFormatException e) {
+                request.setAttribute("errorMessage", "Invalid product ID.");
+                displayProductList(request, response);
+            }
+        } else if ("requestDelete".equals(service)) {
+            try {
+                int productId = Integer.parseInt(request.getParameter("productId"));
+                productDAO.deleteProductById(productId);
+                request.setAttribute("message", "Product deleted successfully!");
+            } catch (NumberFormatException e) {
+                request.setAttribute("errorMessage", "Invalid product ID.");
+            }
+            displayProductList(request, response);
+        } else if ("searchByKeywords".equals(service)) {
+            // Handle search
+            String keywords = request.getParameter("keywords");
+            List<Product> productList = productDAO.searchProducts(keywords != null ? keywords.trim() : "");
+            request.setAttribute("allProducts", productList);
+            request.setAttribute("keywords", keywords); // Retain search input
+            request.getRequestDispatcher("view/ProductManagement.jsp").forward(request, response);
+        } else {
+            // Default: list all products
+            displayProductList(request, response);
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String service = request.getParameter("service");
+
+        if ("insert".equals(service)) {
+            handleInsertProduct(request, response);
+        } else if ("update".equals(service)) {
+            handleUpdateProduct(request, response);
+        } else {
+            displayProductList(request, response);
+        }
+    }
+
+    private void displayProductList(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        List<Product> productList = productDAO.getAllProduct();
+        request.setAttribute("allProducts", productList);
+        request.getRequestDispatcher("view/ProductManagement.jsp").forward(request, response);
+    }
+
+    private void handleInsertProduct(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String name = null;
+        String description = null;
+        Double price = null;
+        Integer stock = null;
+        Double shelfLifeHours = null;
+        String categoryName = null;
+        String imageUrl = null;
+        boolean hasError = false;
+
         try {
-            String service = request.getParameter("service");
-            if (!productDAO.getStatus().equals("OK")) {
-                request.setAttribute("errorMessage", "Database connection failed: " + productDAO.getStatus());
-                request.getRequestDispatcher("/view/ProductManagement.jsp").forward(request, response);
+            name = request.getParameter("name");
+            if (name == null || name.trim().isEmpty()) {
+                request.setAttribute("nameError", "Product name is required.");
+                hasError = true;
+            } else if (name.length() > 255) {
+                request.setAttribute("nameError", "Product name cannot exceed 255 characters.");
+                hasError = true;
+            }
+
+            description = request.getParameter("description");
+
+            String priceStr = request.getParameter("price");
+            if (priceStr == null || priceStr.trim().isEmpty()) {
+                request.setAttribute("priceError", "Price is required.");
+                hasError = true;
+            } else {
+                try {
+                    price = Double.parseDouble(priceStr);
+                    if (price <= 0) {
+                        request.setAttribute("priceError", "Price must be positive.");
+                        hasError = true;
+                    }
+                } catch (NumberFormatException e) {
+                    request.setAttribute("priceError", "Invalid price format.");
+                    hasError = true;
+                }
+            }
+
+            String stockStr = request.getParameter("stock");
+            if (stockStr == null || stockStr.trim().isEmpty()) {
+                request.setAttribute("stockError", "Stock is required.");
+                hasError = true;
+            } else {
+                try {
+                    stock = Integer.parseInt(stockStr);
+                    if (stock < 0) {
+                        request.setAttribute("stockError", "Stock cannot be negative.");
+                        hasError = true;
+                    }
+                } catch (NumberFormatException e) {
+                    request.setAttribute("stockError", "Invalid stock format.");
+                    hasError = true;
+                }
+            }
+
+            String shelfLifeStr = request.getParameter("shelfLifeHours");
+            if (shelfLifeStr == null || shelfLifeStr.trim().isEmpty()) {
+                request.setAttribute("shelfLifeError", "Shelf life is required.");
+                hasError = true;
+            } else {
+                try {
+                    shelfLifeHours = Double.parseDouble(shelfLifeStr);
+                    if (shelfLifeHours < 0) {
+                        request.setAttribute("shelfLifeError", "Shelf life cannot be negative.");
+                        hasError = true;
+                    }
+                } catch (NumberFormatException e) {
+                    request.setAttribute("shelfLifeError", "Invalid shelf life format.");
+                    hasError = true;
+                }
+            }
+
+            categoryName = request.getParameter("categoryName");
+            if (categoryName == null || categoryName.trim().isEmpty()) {
+                request.setAttribute("categoryError", "Category name is required.");
+                hasError = true;
+            } else if (categoryName.length() > 100) {
+                request.setAttribute("categoryError", "Category name cannot exceed 100 characters.");
+                hasError = true;
+            }
+
+            Part filePart = request.getPart("imageFile");
+            if (filePart != null && filePart.getSize() > 0) {
+                String contentType = filePart.getContentType();
+                if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
+                    request.setAttribute("imageError", "Only JPEG or PNG images are allowed.");
+                    hasError = true;
+                } else {
+                    String fileName = System.currentTimeMillis() + "_" + filePart.getSubmittedFileName();
+                    String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
+                    File uploadDir = new File(uploadPath);
+                    if (!uploadDir.exists()) {
+                        uploadDir.mkdirs();
+                    }
+                    String filePath = uploadPath + File.separator + fileName;
+                    filePart.write(filePath);
+                    imageUrl = request.getContextPath() + "/" + UPLOAD_DIR + "/" + fileName;
+                }
+            }
+
+            if (hasError) {
+                request.setAttribute("errorMessage", "Please correct the errors below.");
+                request.getRequestDispatcher("view/insertProduct.jsp").forward(request, response);
                 return;
             }
 
-            if (service == null || service.equals("list")) {
-                List<Product> products = productDAO.getAllProduct();
-                LOGGER.log(Level.INFO, "Fetched {0} products for ProductManagement.jsp", products != null ? products.size() : 0);
-                if (products == null || products.isEmpty()) {
-                    request.setAttribute("errorMessage", "No products available to display.");
-                }
-                request.setAttribute("allProducts", products);
-                request.getRequestDispatcher("/view/ProductManagement.jsp").forward(request, response);
-            } else if (service.equals("searchByKeywords")) {
-                String keywords = request.getParameter("keywords");
-                if (keywords == null || keywords.trim().isEmpty()) {
-                    request.setAttribute("errorMessage", "Please enter a search keyword.");
-                    request.setAttribute("allProducts", productDAO.getAllProduct());
-                    request.getRequestDispatcher("/view/ProductManagement.jsp").forward(request, response);
-                    return;
-                }
-                List<Product> products = productDAO.searchProductsByName(keywords.trim());
-                LOGGER.log(Level.INFO, "Found {0} products for search query: {1}", new Object[]{products.size(), keywords});
-                if (products.isEmpty()) {
-                    request.setAttribute("errorMessage", "No products found matching: " + keywords);
-                }
-                request.setAttribute("allProducts", products);
-                request.setAttribute("keywords", keywords);
-                request.getRequestDispatcher("/view/ProductManagement.jsp").forward(request, response);
-            } else if (service.equals("requestInsert")) {
-                List<Category> categories = productDAO.getAllCategories();
-                request.setAttribute("categoryList", categories);
-                request.getRequestDispatcher("/view/InsertProduct.jsp").forward(request, response);
-            } else if (service.equals("requestUpdate")) {
-                int productId = Integer.parseInt(request.getParameter("productId"));
-                Product product = productDAO.getProductById(productId);
-                if (product == null) {
-                    request.setAttribute("errorMessage", "Product not found for ID: " + productId);
-                    request.getRequestDispatcher("/view/ProductManagement.jsp").forward(request, response);
-                } else {
-                    request.setAttribute("product", product);
-                    request.setAttribute("categoryList", productDAO.getAllCategories());
-                    request.getRequestDispatcher("/view/UpdateProduct.jsp").forward(request, response);
-                }
-            } else if (service.equals("requestDelete")) {
-                int productId = Integer.parseInt(request.getParameter("productId"));
-                productDAO.deleteProductById(productId);
-                LOGGER.log(Level.INFO, "Deleted product with ID: {0}", productId);
-                response.sendRedirect("productmanagement?service=list");
-            } else {
-                request.setAttribute("errorMessage", "Invalid service request.");
-                request.getRequestDispatcher("/view/ProductManagement.jsp").forward(request, response);
-            }
-        } catch (NumberFormatException e) {
-            LOGGER.log(Level.SEVERE, "Invalid product ID format: {0}", e.getMessage());
-            request.setAttribute("errorMessage", "Invalid product ID.");
-            request.getRequestDispatcher("/view/ProductManagement.jsp").forward(request, response);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error processing GET request: {0}", e.getMessage());
-            request.setAttribute("errorMessage", "An error occurred: " + e.getMessage());
-            request.getRequestDispatcher("/view/error.jsp").forward(request, response);
-        }
-    }
+            Product product = new Product();
+            product.setName(name);
+            product.setDescription(description);
+            product.setPrice(price);
+            product.setStock(stock);
+            product.setImgUrl(imageUrl);
+            product.setShelfLifeHours(shelfLifeHours);
+            product.setRate(0.0);
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try {
-            String service = request.getParameter("service");
-            if (service.equals("insert")) {
-                Product product = new Product();
-                product.setName(request.getParameter("name"));
-                product.setDescription(request.getParameter("description"));
-                product.setPrice(Double.parseDouble(request.getParameter("price")));
-                product.setStock(Integer.parseInt(request.getParameter("stock")));
-                product.setImgUrl(request.getParameter("imgUrl"));
-                product.setShelfLifeHours(Double.parseDouble(request.getParameter("shelfLifeHours")));
-                Category category = new Category();
-                category.setId(Integer.parseInt(request.getParameter("categoryId")));
-                product.setCategory(category);
-
-                productDAO.insertProduct(product);
-                LOGGER.log(Level.INFO, "Inserted new product: {0}", product.getName());
-                response.sendRedirect("productmanagement?service=list");
-            } else if ("update".equals(service)) {
-    try {
-        int id = Integer.parseInt(request.getParameter("id"));
-        String name = request.getParameter("name");
-        String description = request.getParameter("description");
-        double price = Double.parseDouble(request.getParameter("price"));
-        int stock = Integer.parseInt(request.getParameter("stock"));
-        String imgUrl = request.getParameter("imgUrl");
-        double shelfLifeHours = Double.parseDouble(request.getParameter("shelfLifeHours"));
-        String categoryName = request.getParameter("categoryName");
-
-        if (categoryName == null || categoryName.trim().isEmpty()) {
-            request.setAttribute("errorMessage", "Category name is required.");
-            request.setAttribute("product", productDAO.getProductById(id));
-            request.getRequestDispatcher("UpdateProduct.jsp").forward(request, response);
-            return;
-        }
-        if (categoryName.length() > 100) {
-            request.setAttribute("errorMessage", "Category name must be 100 characters or less.");
-            request.setAttribute("product", productDAO.getProductById(id));
-            request.getRequestDispatcher("UpdateProduct.jsp").forward(request, response);
-            return;
-        }
-
-        Product product = new Product();
-        product.setId(id);
-        product.setName(name);
-        product.setDescription(description);
-        product.setPrice(price);
-        product.setStock(stock);
-        product.setImgUrl(imgUrl);
-        product.setShelfLifeHours(shelfLifeHours);
-
-        DAOCategory daoCategory = new DAOCategory();
-        Category category = daoCategory.getOrCreateCategory(categoryName);
-        if (category == null) {
-            request.setAttribute("errorMessage", "Failed to process category.");
-            request.setAttribute("product", productDAO.getProductById(id));
-            request.getRequestDispatcher("UpdateProduct.jsp").forward(request, response);
-            return;
-        }
-        product.setCategory(category);
-
-        boolean updated = productDAO.updateProduct(product);
-        if (updated) {
-            response.sendRedirect("productmanagement?service=list");
-        } else {
-            request.setAttribute("errorMessage", "Failed to update product.");
-            request.setAttribute("product", product);
-            request.getRequestDispatcher("UpdateProduct.jsp").forward(request, response);
-        }
-    } catch (NumberFormatException e) {
-        request.setAttribute("errorMessage", "Invalid input format.");
-        request.setAttribute("product", productDAO.getProductById(Integer.parseInt(request.getParameter("id"))));
-        request.getRequestDispatcher("UpdateProduct.jsp").forward(request, response);
-    }
-} else {
-                request.setAttribute("errorMessage", "Invalid service request.");
-                request.getRequestDispatcher("/view/ProductManagement.jsp").forward(request, response);
-            }
-        } catch (NumberFormatException e) {
-            LOGGER.log(Level.SEVERE, "Invalid input format: {0}", e.getMessage());
-            request.setAttribute("errorMessage", "Invalid input data.");
-            request.setAttribute("product", createProductFromRequest(request));
-            request.setAttribute("categoryList", productDAO.getAllCategories());
-            request.getRequestDispatcher(service.equals("insert") ? "/view/InsertProduct.jsp" : "/view/UpdateProduct.jsp").forward(request, response);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error processing POST request: {0}", e.getMessage());
-            request.setAttribute("errorMessage", "An error occurred: " + e.getMessage());
-            request.getRequestDispatcher("/view/error.jsp").forward(request, response);
-        }
-    }
-
-    private Product createProductFromRequest(HttpServletRequest request) {
-        Product product = new Product();
-        try {
-            if (request.getParameter("id") != null) {
-                product.setId(Integer.parseInt(request.getParameter("id")));
-            }
-        } catch (NumberFormatException e) {
-            // ID might be invalid, leave it unset
-        }
-        product.setName(request.getParameter("name"));
-        product.setDescription(request.getParameter("description"));
-        try {
-            product.setPrice(Double.parseDouble(request.getParameter("price")));
-        } catch (NumberFormatException e) {
-            product.setPrice(0.0);
-        }
-        try {
-            product.setStock(Integer.parseInt(request.getParameter("stock")));
-        } catch (NumberFormatException e) {
-            product.setStock(0);
-        }
-        product.setImgUrl(request.getParameter("imgUrl"));
-        try {
-            product.setShelfLifeHours(Double.parseDouble(request.getParameter("shelfLifeHours")));
-        } catch (NumberFormatException e) {
-            product.setShelfLifeHours(0.0);
-        }
-        try {
             Category category = new Category();
-            category.setId(Integer.parseInt(request.getParameter("categoryId")));
+            category.setName(categoryName);
             product.setCategory(category);
-        } catch (NumberFormatException e) {
-            product.setCategory(new Category());
+
+            productDAO.insertProduct(product);
+
+            response.sendRedirect("productmanagement?service=list&message=Product inserted successfully");
+        } catch (Exception e) {
+            request.setAttribute("errorMessage", "Failed to insert product: " + e.getMessage());
+            request.getRequestDispatcher("view/insertProduct.jsp").forward(request, response);
         }
-        return product;
+    }
+
+    private void handleUpdateProduct(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String name = null;
+        String description = null;
+        Double price = null;
+        Integer stock = null;
+        Double shelfLifeHours = null;
+        String categoryName = null;
+        String imageUrl = null;
+        boolean hasError = false;
+        int productId = 0;
+
+        try {
+            productId = Integer.parseInt(request.getParameter("productId"));
+            Product existingProduct = productDAO.getProductById(productId);
+            if (existingProduct == null) {
+                request.setAttribute("errorMessage", "Product not found.");
+                displayProductList(request, response);
+                return;
+            }
+
+            name = request.getParameter("name");
+            if (name == null || name.trim().isEmpty()) {
+                request.setAttribute("nameError", "Product name is required.");
+                hasError = true;
+            } else if (name.length() > 255) {
+                request.setAttribute("nameError", "Product name cannot exceed 255 characters.");
+                hasError = true;
+            }
+
+            description = request.getParameter("description");
+
+            String priceStr = request.getParameter("price");
+            if (priceStr == null || priceStr.trim().isEmpty()) {
+                request.setAttribute("priceError", "Price is required.");
+                hasError = true;
+            } else {
+                try {
+                    price = Double.parseDouble(priceStr);
+                    if (price <= 0) {
+                        request.setAttribute("priceError", "Price must be positive.");
+                        hasError = true;
+                    }
+                } catch (NumberFormatException e) {
+                    request.setAttribute("priceError", "Invalid price format.");
+                    hasError = true;
+                }
+            }
+
+            String stockStr = request.getParameter("stock");
+            if (stockStr == null || stockStr.trim().isEmpty()) {
+                request.setAttribute("stockError", "Stock is required.");
+                hasError = true;
+            } else {
+                try {
+                    stock = Integer.parseInt(stockStr);
+                    if (stock < 0) {
+                        request.setAttribute("stockError", "Stock cannot be negative.");
+                        hasError = true;
+                    }
+                } catch (NumberFormatException e) {
+                    request.setAttribute("stockError", "Invalid stock format.");
+                    hasError = true;
+                }
+            }
+
+            String shelfLifeStr = request.getParameter("shelfLifeHours");
+            if (shelfLifeStr == null || shelfLifeStr.trim().isEmpty()) {
+                request.setAttribute("shelfLifeError", "Shelf life is required.");
+                hasError = true;
+            } else {
+                try {
+                    shelfLifeHours = Double.parseDouble(shelfLifeStr);
+                    if (shelfLifeHours < 0) {
+                        request.setAttribute("shelfLifeError", "Shelf life cannot be negative.");
+                        hasError = true;
+                    }
+                } catch (NumberFormatException e) {
+                    request.setAttribute("shelfLifeError", "Invalid shelf life format.");
+                    hasError = true;
+                }
+            }
+
+            categoryName = request.getParameter("categoryName");
+            if (categoryName == null || categoryName.trim().isEmpty()) {
+                request.setAttribute("categoryError", "Category name is required.");
+                hasError = true;
+            } else if (categoryName.length() > 100) {
+                request.setAttribute("categoryError", "Category name cannot exceed 100 characters.");
+                hasError = true;
+            }
+
+            Part filePart = request.getPart("imageFile");
+            if (filePart != null && filePart.getSize() > 0) {
+                String contentType = filePart.getContentType();
+                if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
+                    request.setAttribute("imageError", "Only JPEG or PNG images are allowed.");
+                    hasError = true;
+                } else {
+                    String fileName = System.currentTimeMillis() + "_" + filePart.getSubmittedFileName();
+                    String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
+                    File uploadDir = new File(uploadPath);
+                    if (!uploadDir.exists()) {
+                        uploadDir.mkdirs();
+                    }
+                    String filePath = uploadPath + File.separator + fileName;
+                    filePart.write(filePath);
+                    imageUrl = request.getContextPath() + "/" + UPLOAD_DIR + "/" + fileName;
+                }
+            } else {
+                imageUrl = existingProduct.getImgUrl();
+            }
+
+            if (hasError) {
+                request.setAttribute("errorMessage", "Please correct the errors below.");
+                request.setAttribute("product", existingProduct);
+                request.getRequestDispatcher("view/UpdateProduct.jsp").forward(request, response);
+                return;
+            }
+
+            Product product = new Product();
+            product.setId(productId);
+            product.setName(name);
+            product.setDescription(description);
+            product.setPrice(price);
+            product.setStock(stock);
+            product.setImgUrl(imageUrl);
+            product.setShelfLifeHours(shelfLifeHours);
+            product.setRate(existingProduct.getRate());
+
+            Category category = new Category();
+            category.setName(categoryName);
+            product.setCategory(category);
+
+            productDAO.updateProduct(product);
+
+            response.sendRedirect("productmanagement?service=list&message=Product updated successfully");
+        } catch (Exception e) {
+            request.setAttribute("errorMessage", "Failed to update product: " + e.getMessage());
+            request.setAttribute("product", productDAO.getProductById(productId));
+            request.getRequestDispatcher("view/UpdateProduct.jsp").forward(request, response);
+        }
     }
 }

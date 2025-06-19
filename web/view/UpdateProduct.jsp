@@ -2,101 +2,166 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Update Product</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet">
-        <link href="${pageContext.request.contextPath}/css/bootstrap-icons.css" rel="stylesheet">
-        <style>
-            body {
-                background-color: #f8f9fa;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            }
-            .card {
-                max-width: 600px;
-                margin: 50px auto;
-                border-radius: 10px;
-                overflow: hidden;
-            }
-            .card-header {
-                background: linear-gradient(90deg, #28a745, #218838);
-                color: white;
-            }
-            .form-group {
-                margin-bottom: 15px;
-            }
-            .btn-primary {
-                background-color: #28a745;
-                border-color: #28a745;
-            }
-            .btn-primary:hover {
-                background-color: #218838;
-                border-color: #218838;
-            }
-            .error-message {
-                font-size: 16px;
-                margin-bottom: 20px;
-            }
-        </style>
-    </head>
-    <body>
-        <jsp:include page="SideBarOfSheller.jsp"></jsp:include>
-            <div class="container">
-                <div class="card shadow">
-                    <div class="card-header">
-                        <h4><i class="bi bi-pencil me-2"></i>Update Product</h4>
+<head>
+    <meta charset="UTF-8">
+    <title>Update Product</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/css/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #eef2f7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container {
+            padding: 40px 15px;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #28a745, #218838);
+            color: white;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            padding: 20px;
+        }
+        .card-header h4 {
+            margin: 0;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .form-control {
+            border-radius: 8px;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        .general-error {
+            color: #dc3545;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .current-image {
+            max-width: 120px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        .btn {
+            border-radius: 8px;
+            padding: 10px 20px;
+        }
+        .btn-primary {
+            background-color: #28a745;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #218838;
+        }
+        .btn-secondary {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <jsp:include page="SideBarOfSheller.jsp" />
+    <div class="container">
+        <div class="card mx-auto" style="max-width: 700px;">
+            <div class="card-header text-center">
+                <h4><i class="bi bi-pencil-square me-2"></i>Update Product</h4>
+            </div>
+            <div class="card-body">
+                <c:if test="${not empty errorMessage}">
+                    <p class="general-error">${errorMessage}</p>
+                </c:if>
+                <form action="productmanagement" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="service" value="update"/>
+                    <input type="hidden" name="productId" value="${product.id}"/>
+
+                    <!-- Product Name -->
+                    <div class="form-group">
+                        <label for="name" class="form-label">Product Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="${product.name}">
+                        <c:if test="${not empty nameError}">
+                            <span class="error-message">${nameError}</span>
+                        </c:if>
                     </div>
-                    <div class="card-body">
-                    <c:if test="${not empty errorMessage}">
-                        <p class="text-center text-danger error-message">${errorMessage}</p>
-                    </c:if>
-                    <c:choose>
-                        <c:when test="${not empty product}">
-                            <form action="productmanagement" method="post" onsubmit="return validateForm()">
-                                <input type="hidden" name="service" value="update"/>
-                                <input type="hidden" name="id" value="${product.id}"/>
-                                <div class="form-group">
-                                    <label for="name">Product Name</label>
-                                    <input type="text" class="form-control" id="name" name="name" value="${product.name}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="description">Description</label>
-                                    <textarea class="form-control" id="description" name="description" rows="4">${product.description}</textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="price">Price</label>
-                                    <input type="number" step="0.01" min="0" class="form-control" id="price" name="price" value="${product.price}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="stock">Stock</label>
-                                    <input type="number" min="0" class="form-control" id="stock" name="stock" value="${product.stock}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="imgUrl">Image </label>
-                                    <input type="text" class="form-control" id="imgUrl" name="imgUrl" value="${product.imgUrl}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="shelfLifeHours">Shelf Life (hours)</label>
-                                    <input type="number" step="0.1" min="0" class="form-control" id="shelfLifeHours" name="shelfLifeHours" value="${product.shelfLifeHours}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="categoryName">Category</label>
-                                    <input type="text" class="form-control" id="categoryName" name="categoryName" value="${product.category != null ? product.category.name : ''}" required maxlength="100">
-                                </div>
-                                <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Save Changes</button>
-                                <a href="productmanagement?service=list" class="btn btn-secondary">Cancel</a>
-                            </form>
-                        </c:when>
-                        <c:otherwise>
-                            <p class="text-center text-danger error-message">Product not found.</p>
-                            <a href="productmanagement?service=list" class="btn btn-secondary">Back to Product List</a>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
+
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="4">${product.description}</textarea>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="form-group">
+                        <label for="price" class="form-label">Price ($)</label>
+                        <input type="number" step="0.01" min="0" class="form-control" id="price" name="price" value="${product.price}">
+                        <c:if test="${not empty priceError}">
+                            <span class="error-message">${priceError}</span>
+                        </c:if>
+                    </div>
+
+                    <!-- Stock -->
+                    <div class="form-group">
+                        <label for="stock" class="form-label">Stock</label>
+                        <input type="number" min="0" class="form-control" id="stock" name="stock" value="${product.stock}">
+                        <c:if test="${not empty stockError}">
+                            <span class="error-message">${stockError}</span>
+                        </c:if>
+                    </div>
+
+                    <!-- Image -->
+                    <div class="form-group">
+                        <label for="imageFile" class="form-label">Product Image</label><br>
+                        <c:if test="${not empty product.imgUrl}">
+                            <img src="${product.imgUrl}" alt="Current Image" class="current-image">
+                        </c:if>
+                        <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/jpeg,image/png">
+                        <c:if test="${not empty imageError}">
+                            <span class="error-message">${imageError}</span>
+                        </c:if>
+                    </div>
+
+                    <!-- Shelf Life -->
+                    <div class="form-group">
+                        <label for="shelfLifeHours" class="form-label">Shelf Life (hours)</label>
+                        <input type="number" step="0.1" min="0" class="form-control" id="shelfLifeHours" name="shelfLifeHours" value="${product.shelfLifeHours}">
+                        <c:if test="${not empty shelfLifeError}">
+                            <span class="error-message">${shelfLifeError}</span>
+                        </c:if>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="form-group">
+                        <label for="categoryName" class="form-label">Category</label>
+                        <input type="text" class="form-control" id="categoryName" name="categoryName" value="${product.category.name}" maxlength="100">
+                        <c:if test="${not empty categoryError}">
+                            <span class="error-message">${categoryError}</span>
+                        </c:if>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i>Update Product
+                        </button>
+                        <a href="productmanagement?service=list" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
             </div>
         </div>
-        <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
-
-    </body>
+    </div>
+    <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
