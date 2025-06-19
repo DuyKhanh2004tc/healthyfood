@@ -12,6 +12,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import model.CartItem;
+import model.Product;
 import model.User;
 
 /**
@@ -58,19 +62,34 @@ public class CartServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       HttpSession session = request.getSession();
+        HttpSession session = request.getSession();
         User u = (User) session.getAttribute("user");
         DAOProduct dao = new DAOProduct();
+        if (request.getParameter("productId") != null) {
+            try {
+                int productId = Integer.parseInt(request.getParameter("productId"));
+                if (u.getRole().getId() == 3) {
+                    int userId = u.getId();
+                    dao.addToCart(userId, productId, 1);
+                    response.sendRedirect("home");
+                    return;
+                }
+            } catch (Exception e) {
 
-        try {
-            int productId = Integer.parseInt(request.getParameter("productId"));
-            if (u.getRole().getId() == 3) {
-                int userId = u.getId();
-                dao.addToCart(userId, productId, 1);
-                response.sendRedirect("home");
             }
-        } catch (Exception e) {
+        } 
+        if (u.getRole().getId() == 3) {
+            List <CartItem> itemList = dao.getCartItemsByUserId(u.getId());
+            List <Product> productList = new ArrayList<>();
+            for(CartItem i : itemList){
+                 Product p = dao.getProductById(i.getProduct().getId());
+                 productList.add(p);
+            }
+            request.setAttribute("productList", productList);
+            
 
+            request.setAttribute("itemList", itemList);  
+            request.getRequestDispatcher("/view/cart.jsp").forward(request, response);
         }
     }
 
@@ -85,7 +104,7 @@ public class CartServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
     }
 
     /**

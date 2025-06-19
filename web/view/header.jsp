@@ -36,7 +36,7 @@
                     <c:if test="${sessionScope.user.getRole().getId()==3}">
                         <a>Welcome Customer ${sessionScope.user.getName()}</a>    
                         <a href="${pageContext.request.contextPath}/profile">Profile</a>
-                        <a href="cart.jsp">Cart</a>
+                        <a href="${pageContext.request.contextPath}/cart">Cart</a>
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
                         <a href="${pageContext.request.contextPath}/logout">Logout</a>
                         <form class ="search-form" action="search" method="get">                   
