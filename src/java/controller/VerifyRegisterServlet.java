@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.User;
 import utils.Mail;
+import utils.PasswordUtil;
 
 /**
  *
@@ -98,6 +99,9 @@ public class VerifyRegisterServlet extends HttpServlet {
             request.getRequestDispatcher("view/register.jsp").forward(request, response);
             return;
         }
+        
+        //String hashedPasswoord = PasswordUtil.hashPassword(customer.getPassword());
+        //customer.setPassword(hashedPasswoord);
 
         DAOUser dao = new DAOUser();
         dao.addAccount(customer);
