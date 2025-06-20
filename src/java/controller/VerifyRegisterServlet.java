@@ -100,8 +100,8 @@ public class VerifyRegisterServlet extends HttpServlet {
             return;
         }
         
-        String hashedPasswoord = PasswordUtil.hashPassword(customer.getPassword());
-        customer.setPassword(hashedPasswoord);
+        //String hashedPasswoord = PasswordUtil.hashPassword(customer.getPassword());
+        //customer.setPassword(hashedPasswoord);
 
         DAOUser dao = new DAOUser();
         dao.addAccount(customer);

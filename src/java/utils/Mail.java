@@ -20,18 +20,15 @@ import java.util.Properties;
 public class Mail {
     
       public static void sendMail(String toEmail, String subject, String content) {
-        // Thông tin tài khoản email gửi đi (bạn cần thay bằng email thật)
-        final String fromEmail = "healthyfoodshopteam5se1905@gmail.com"; // email của bạn
-        final String password = "oubk vopl ikrz lavi"; // mật khẩu hoặc app password
+        final String fromEmail = "healthyfoodshopteam5se1905@gmail.com"; 
+        final String password = "oubk vopl ikrz lavi"; 
 
-        // Cấu hình SMTP server của Gmail
         Properties props = new Properties();
-        props.put("mail.smtp.host", "smtp.gmail.com"); // SMTP Gmail
-        props.put("mail.smtp.port", "587"); // Port TLS
-        props.put("mail.smtp.auth", "true"); // Yêu cầu xác thực
-        props.put("mail.smtp.starttls.enable", "true"); // Bật STARTTLS
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587"); 
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
 
-        // Tạo session với xác thực
         Session session = Session.getInstance(props, new jakarta.mail.Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(fromEmail, password);
@@ -39,7 +36,6 @@ public class Mail {
         });
 
         try {
-            // Tạo email message
             Message msg = new MimeMessage(session);
 
             msg.setFrom(new InternetAddress(fromEmail));
@@ -48,7 +44,6 @@ public class Mail {
             msg.setText(content);
             msg.setSentDate(new java.util.Date());
 
-            // Gửi email
             Transport.send(msg);
 
         } catch (MessagingException e) {
