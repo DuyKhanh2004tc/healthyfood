@@ -41,7 +41,6 @@ public class AddAccountServlet extends HttpServlet {
         }
         request.setAttribute("roleId", idRole);
 
-        // Lấy danh sách vai trò để kiểm tra tính hợp lệ (tùy chọn, có thể bỏ nếu không cần)
         ArrayList<Role> roles = DAORole.INSTANCE.getAllRoles();
         request.setAttribute("roles", roles);
 
@@ -81,9 +80,9 @@ public class AddAccountServlet extends HttpServlet {
 
             DAOUser daoUser = DAOUser.INSTANCE;
 
-            // Kiểm tra email đã tồn tại
             if (daoUser.checkEmailExists(email, 0)) {
                 request.setAttribute("error", "Email already exists");
+                request.setAttribute("roleId", roleIdStr);
                 request.getRequestDispatcher("view/addAccount.jsp").forward(request, response);
                 return;
             }

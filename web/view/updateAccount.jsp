@@ -41,7 +41,7 @@
                 <div class="form-group">
                     <label for="dob">Date of Birth:</label>
                     <input type="date" id="dob" name="dob" value="${user.dob != null ? user.dob : ''}">
-                    <p class="note">Optional: Format YYYY-MM-DD.</p>
+                    <p class="note">Optional: Format DD-MM-YYYY.</p>
                 </div>
                 <div class="form-group">
                     <label for="address">Address:</label>

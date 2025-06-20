@@ -9,8 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
-import java.util.stream.Collectors;
 import model.User;
 
 public class DisplayAccountServlet extends HttpServlet {
@@ -39,7 +39,6 @@ public class DisplayAccountServlet extends HttpServlet {
             }
             int rId = Integer.parseInt(roleId);
 
-            // Lấy danh sách người dùng
             ArrayList<User> uList = DAOUser.INSTANCE.getUsersByRoleId(rId);
             if (uList == null) {
                 request.setAttribute("error", "Error retrieving users from database");
@@ -47,7 +46,6 @@ public class DisplayAccountServlet extends HttpServlet {
                 return;
             }
 
-            // Xử lý sắp xếp
             String sortBy = request.getParameter("sortBy");
             String sortOrder = request.getParameter("sortOrder");
             if (sortBy != null) {
@@ -56,7 +54,7 @@ public class DisplayAccountServlet extends HttpServlet {
                     if ("desc".equals(sortOrder)) {
                         comparator = comparator.reversed();
                     }
-                    uList = uList.stream().sorted(comparator).collect(Collectors.toCollection(ArrayList::new));
+                    Collections.sort(uList, comparator);
                 }
             }
 
@@ -90,7 +88,6 @@ public class DisplayAccountServlet extends HttpServlet {
             }
             int rId = Integer.parseInt(roleId);
 
-            // Lấy toàn bộ danh sách người dùng theo roleId
             ArrayList<User> uList = DAOUser.INSTANCE.getUsersByRoleId(rId);
             if (uList == null) {
                 request.setAttribute("error", "Error retrieving users from database");
@@ -98,7 +95,6 @@ public class DisplayAccountServlet extends HttpServlet {
                 return;
             }
 
-            // Lọc danh sách thủ công dựa trên keyword
             if (keyWord != null && !keyWord.trim().isEmpty()) {
                 final String searchKey = keyWord.toLowerCase();
                 ArrayList<User> filteredList = new ArrayList<>();
@@ -118,25 +114,9 @@ public class DisplayAccountServlet extends HttpServlet {
                 uList = filteredList;
             }
 
-            // Xử lý sắp xếp
-            String sortBy = request.getParameter("sortBy");
-            String sortOrder = request.getParameter("sortOrder");
-            if (sortBy != null) {
-                Comparator<User> comparator = getComparator(sortBy);
-                if (comparator != null) {
-                    if ("desc".equals(sortOrder)) {
-                        comparator = comparator.reversed();
-                    }
-                    uList = uList.stream().sorted(comparator).collect(Collectors.toCollection(ArrayList::new));
-                }
-            }
-
             request.setAttribute("uList", uList);
             request.setAttribute("roleId", rId);
-            request.setAttribute("sortBy", sortBy);
-            request.setAttribute("sortOrder", sortOrder != null && "desc".equals(sortOrder) ? "desc" : "asc");
 
-            // Lấy thông báo thành công từ session (nếu có)
             String successMessage = (String) session.getAttribute("success");
             if (successMessage != null) {
                 request.setAttribute("success", successMessage);
@@ -153,7 +133,7 @@ public class DisplayAccountServlet extends HttpServlet {
         }
     }
 
-    // Phương thức hỗ trợ để lấy Comparator dựa trên sortBy
+    // Phương thức hỗ trợ để lấy Comparator 
     private Comparator<User> getComparator(String sortBy) {
         switch (sortBy) {
             case "id":

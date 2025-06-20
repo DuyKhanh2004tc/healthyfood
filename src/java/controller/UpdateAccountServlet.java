@@ -110,9 +110,10 @@ public class UpdateAccountServlet extends HttpServlet {
             DAOUser daoUser = DAOUser.INSTANCE;
             if (daoUser.checkEmailExists(email, id)) {
                 request.setAttribute("error", "Email already exists for another user");
+                User user = daoUser.getUserById(id);
+                request.setAttribute("user", user);
+                request.setAttribute("roles", DAORole.INSTANCE.getAllRoles());
                 request.getRequestDispatcher("view/updateAccount.jsp").forward(request, response);
-                session.setAttribute("error", "Email already exists for another user");
-                response.sendRedirect("UpdateAccount?id=" + id + "&roleId=" + roleIdStr);
                 return;
             }
 
@@ -153,7 +154,6 @@ public class UpdateAccountServlet extends HttpServlet {
             Role role = new Role();
             role.setId(roleId);
             user.setRole(role);
-
 
             boolean updated = daoUser.updateUser(user);
             if (updated) {
