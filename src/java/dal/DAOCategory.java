@@ -46,43 +46,5 @@ public class DAOCategory {
         return categoryList;
     }
 
-    public Category getOrCreateCategory(String name) {
-        if (name == null || name.trim().isEmpty()) {
-            LOGGER.log(Level.WARNING, "Invalid category name provided: {0}", name);
-            return null;
-        }
-        name = name.trim();
-        Category category = null;
-        String selectSql = "SELECT id, name FROM Category WHERE name = ?";
-        try (PreparedStatement st = con.prepareStatement(selectSql)) {
-            st.setString(1, name);
-            try (ResultSet rs = st.executeQuery()) {
-                if (rs.next()) {
-                    category = new Category();
-                    category.setId(rs.getInt("id"));
-                    category.setName(rs.getString("name"));
-                    LOGGER.log(Level.INFO, "Found category: {0}", name);
-                    return category;
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "SQL Error in getOrCreateCategory (select): {0}", e.getMessage());
-        }
-        String insertSql = "INSERT INTO Category (name) VALUES (?)";
-        try (PreparedStatement st = con.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
-            st.setString(1, name);
-            st.executeUpdate();
-            try (ResultSet rs = st.getGeneratedKeys()) {
-                if (rs.next()) {
-                    category = new Category();
-                    category.setId(rs.getInt(1));
-                    category.setName(name);
-                    LOGGER.log(Level.INFO, "Created new category: {0}", name);
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "SQL Error in getOrCreateCategory (insert): {0}", e.getMessage());
-        }
-        return category;
-    }
+
 }
