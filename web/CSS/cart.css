@@ -1,0 +1,72 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Jun 19, 2025, 11:55:52 PM
+    Author     : ASUS
+*/
+
+.cart-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    background-color: #fff;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.cart-table th, .cart-table td {
+    border: 1px solid #ddd;
+    padding: 12px 16px;
+    text-align: center;
+}
+
+.cart-table th {
+    background-color: #4CAF50;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.cart-table img {
+    max-width: 60px;
+    height: auto;
+    margin-bottom: 6px;
+}
+
+.cartItem td {
+    vertical-align: middle;
+}
+
+.btnSub,
+.btnAdd {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.btnSub:hover,
+.btnAdd:hover {
+    background-color: #45a049;
+}
+
+td p {
+    display: inline-block;
+    margin: 0 10px;
+    font-weight: bold;
+}
+
+p {
+    text-align: center;
+}
+
+.empty-cart {
+    margin-top: 20px;
+    font-style: italic;
+    color: #888;
+    text-align: center;
+}

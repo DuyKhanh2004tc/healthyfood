@@ -86,59 +86,7 @@ public class DAOProduct {
         return productList;
     }
 
-    public List<CartItem> getCartItemsByUserId(int userId) {
-        List<CartItem> itemList = new ArrayList<>();
-        String sql = "SELECT ci.id AS cart_item_id, ci.quantity, "
-                + "p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, "
-                + "p.image_url, p.shelf_life_hours, p.rate AS average_rate, "
-                + "c.id AS cart_id, c.user_id, c.created_at, "
-                + "ca.id AS category_id, ca.name AS category_name "
-                + "FROM CartItem ci "
-                + "INNER JOIN Product p ON ci.product_id = p.id "
-                + "INNER JOIN Cart c ON ci.cart_id = c.id "
-                + "INNER JOIN Category ca ON p.category_id = ca.id "
-                + "WHERE c.user_id = ?";
-
-        try (PreparedStatement st = con.prepareStatement(sql)) {
-            st.setInt(1, userId);
-            ResultSet rs = st.executeQuery();
-            while (rs.next()) {
-                Product p = new Product();
-                p.setId(rs.getInt("product_id"));
-                p.setName(rs.getString("product_name"));
-                p.setDescription(rs.getString("description"));
-                p.setPrice(rs.getDouble("price"));
-                p.setStock(rs.getInt("stock"));
-                p.setImgUrl(rs.getString("image_url"));
-                p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
-                p.setRate(rs.getDouble("average_rate"));
-
-                Category c = new Category();
-                c.setId(rs.getInt("category_id"));
-                c.setName(rs.getString("category_name"));
-
-                p.setCategory(c);
-
-                Cart cart = new Cart();
-                cart.setId(rs.getInt("cart_id"));
-
-                User user = new User();
-                user.setId(rs.getInt("user_id"));
-                cart.setUser(user);
-
-                CartItem item = new CartItem();
-                item.setId(rs.getInt("cart_item_id"));
-                item.setQuantity(rs.getInt("quantity"));
-                item.setProduct(p);
-                item.setCart(cart);
-
-                itemList.add(item);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return itemList;
-    }
+    
 
     public int getTotalProduct() {
         String sql = " SELECT COUNT(*) FROM PRODUCT ";

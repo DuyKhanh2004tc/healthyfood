@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dal.DAOCart;
 import dal.DAOProduct;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -65,6 +66,19 @@ public class CartServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User u = (User) session.getAttribute("user");
         DAOProduct dao = new DAOProduct();
+        DAOCart daoCart = new DAOCart();
+        if (request.getParameter("number") != null && request.getParameter("id") != null) {
+            try {
+                int number = Integer.parseInt(request.getParameter("number"));
+                int productId = Integer.parseInt(request.getParameter("id"));
+                int userId = u.getId();
+                daoCart.updateCartItemQuantity(userId, productId, number);
+                response.sendRedirect("cart");
+                return;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         if (request.getParameter("productId") != null) {
             try {
                 int productId = Integer.parseInt(request.getParameter("productId"));
@@ -75,20 +89,12 @@ public class CartServlet extends HttpServlet {
                     return;
                 }
             } catch (Exception e) {
-
+                
             }
-        } 
+        }
         if (u.getRole().getId() == 3) {
-            List <CartItem> itemList = dao.getCartItemsByUserId(u.getId());
-            List <Product> productList = new ArrayList<>();
-            for(CartItem i : itemList){
-                 Product p = dao.getProductById(i.getProduct().getId());
-                 productList.add(p);
-            }
-            request.setAttribute("productList", productList);
-            
-
-            request.setAttribute("itemList", itemList);  
+            List<CartItem> itemList = daoCart.getCartItemsByUserId(u.getId());
+            request.setAttribute("itemList", itemList);
             request.getRequestDispatcher("/view/cart.jsp").forward(request, response);
         }
     }
