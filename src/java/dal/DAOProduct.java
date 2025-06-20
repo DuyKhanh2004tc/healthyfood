@@ -206,7 +206,7 @@ public class DAOProduct {
     public void addToCart(int userId, int productId, int quantity) {
         try {
             String checkCartExistSQL = "SELECT id FROM Cart WHERE user_id = ? ";
-            int cartId = -1;
+            int cartId = -1 ;
             try (PreparedStatement st = con.prepareStatement(checkCartExistSQL)) {
                 st.setInt(1, userId);
                 ResultSet rs = st.executeQuery();
@@ -301,6 +301,40 @@ public class DAOProduct {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "SQL Error in getProductByCategory: {0}", e.getMessage());
+        }
+        return productList;
+    }
+    public List<Product> searchProduct(String namesearch) {
+        List<Product> productList = new ArrayList<>();
+        String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, "
+                + "c.id AS category_id, c.name AS category_name "
+                + "FROM Product p "
+                + "INNER JOIN Category c ON p.category_id = c.id "
+                + "WHERE p.name LIKE ?";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setString(1, "%" + namesearch + "%");
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    Product p = new Product();
+                    p.setId(rs.getInt("product_id"));
+                    p.setName(rs.getString("product_name"));
+                    p.setDescription(rs.getString("description"));
+                    p.setPrice(rs.getDouble("price"));
+                    p.setStock(rs.getInt("stock"));
+                    p.setImgUrl(rs.getString("image_url"));
+                    p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
+                    p.setRate(rs.getDouble("rate"));
+
+                    Category c = new Category();
+                    c.setId(rs.getInt("category_id"));
+                    c.setName(rs.getString("category_name"));
+
+                    p.setCategory(c);
+                    productList.add(p);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "SQL Error in searchProduct: {0}", e.getMessage());
         }
         return productList;
     }
