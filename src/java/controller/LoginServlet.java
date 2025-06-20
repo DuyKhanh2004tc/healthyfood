@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import model.User;
+import utils.PasswordUtil;
 
 /**
  *
@@ -84,7 +85,7 @@ public class LoginServlet extends HttpServlet {
                 User matchedUser = null;
 
                 for (User u : userList) {
-                    if (u.getEmail().equals(email) && u.getPassword().equals(password)) {
+                    if (u.getEmail().equals(email) && PasswordUtil.checkPassword(password, u.getPassword())) {
                         matchedUser = u;
                         break;
                     }
