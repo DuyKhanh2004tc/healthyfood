@@ -33,6 +33,10 @@
         <servlet-class>controller.SortProductServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>SearchServlet</servlet-name>
+        <servlet-class>controller.SearchServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>PriceFilterServlet</servlet-name>
         <servlet-class>controller.PriceFilterServlet</servlet-class>
     </servlet>
@@ -107,6 +111,10 @@
     <servlet-mapping>
         <servlet-name>HomeAdminServlet</servlet-name>
         <url-pattern>/HomeAdmin</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SearchServlet</servlet-name>
+        <url-pattern>/search</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CustomerAccountServlet</servlet-name>
