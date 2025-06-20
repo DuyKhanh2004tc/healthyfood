@@ -9,11 +9,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-import model.Feedback;
-import model.Product;
-import model.User;
+import model.*;
+
 
 /**
  *
@@ -106,7 +106,7 @@ public class ProductDetailServlet extends HttpServlet {
         request.setAttribute("rate", product.getRate());
         request.setAttribute("prevId", prevId != 0 ? prevId : p.get(p.size() - 1).getId());
         request.setAttribute("nextId", nextId != 0 ? nextId : p.get(0).getId());
-        
+
         request.getRequestDispatcher("view/productDetail.jsp").forward(request, response);
 
     }
@@ -191,17 +191,39 @@ public class ProductDetailServlet extends HttpServlet {
             doGet(request, response);
             return;
         }
-        double totalPrice = number * product.getPrice();
-        DAOOrder daoOrder = new DAOOrder();
-//        boolean success = daoOrder.orderProduct(user.getId(), productId, number, totalPrice);
-//        
-//        if (success) {
-//            request.setAttribute("message", "Product added to cart successfully!");
-//        } else {
-//            request.setAttribute("error", "Failed to add product to cart. Please try again.");
-//        }
+        if ("addCart".equals(action)) {
+            User user = (User) request.getSession().getAttribute("user");
+            if (user == null) {
+                List<CartItem> cartList = (List<CartItem>) request.getSession().getAttribute("addCart");
+                if (cartList == null) {
+                    cartList = new ArrayList<>();
+                }
+                boolean find = false;
+                for (CartItem cart: cartList) {
+                    if(productId == cart.getProduct().getId()){
+                        cart.setQuantity(cart.getQuantity()+ number);
+                        find = true;
+                        break;
+                    }
+                }
+                if (!find) {
+                    CartItem cart = new CartItem();
+                    cart.setId(cartList.size()+1);
+                    cart.setQuantity(number);
+                    cart.setProduct(product);
+                    cartList.add(cart);
+                }
+                request.getSession().setAttribute("cartList", cartList);
 
-        request.getRequestDispatcher("view/productDetail.jsp").forward(request, response);
+                 request.setAttribute("message", "Product added to cart (session) successfully!");
+            } else {
+                dao.addToCart(user.getId(), productId, number);
+                request.setAttribute("message", "Product added to cart successfully!");
+            }
+            
+        }
+         doGet(request, response);
+
     }
 
     /**

@@ -40,6 +40,16 @@
                     <td>${i.product.shelfLifeHours}</td>
                 </tr>
             </c:forEach>
+                 
+                 <c:forEach items="${requestScope.cartList}" var="i" varStatus="loop">                
+                <tr>
+                    <td>${i.id}</td>
+                    <td><img src="${i.product.imgUrl}" width="80">${i.product.name}</td>
+                    <td>${i.quantity}</td>
+                    <td>${i.product.price}</td>
+                    <td>${i.product.shelfLifeHours}</td>
+                </tr>
+            </c:forEach>
         </table>
         <c:if test="${empty itemList}">
             <p>Your cart is empty.</p>

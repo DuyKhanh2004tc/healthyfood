@@ -26,7 +26,7 @@
 
                         <a href="${pageContext.request.contextPath}/login">Login</a>
                         <a href="${pageContext.request.contextPath}/register">Register</a>
-                        <a href="cart.jsp">Cart</a>
+                        <a href="${pageContext.request.contextPath}/cart">Cart</a>
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
                         <form class ="search-form" action="search" method="get">                   
                             <input type="image" src="${pageContext.request.contextPath}/icons/search_icon.png" alt="Search" width="20" height="20">

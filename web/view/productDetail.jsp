@@ -107,6 +107,7 @@
             }
             .quantity-controls button:hover {
                 background-color: #7ed957;
+
             }
             button[type="submit"] {
                 padding: 10px 20px;
@@ -117,6 +118,8 @@
                 border-radius: 6px;
                 cursor: pointer;
                 margin-right: 10px;
+                justify-content: space-between;
+                display: flex;
             }
             button[type="submit"]:hover {
                 background-color: #3c8d40;
@@ -182,6 +185,12 @@
             .stars label:hover ~ label {
                 color: gold;
             }
+            .twoButton{
+                display: flex;
+            }
+            .productCart{
+                    width: 500px;
+            }
         </style>
     </head>
     <body>
@@ -207,14 +216,7 @@
                 <a href="${pageContext.request.contextPath}/home" class="back-link">Home</a>
                 <span class="breadcrumb-separator">»</span>
                 <a href="${pageContext.request.contextPath}/category?categoryId=<%= categoryId %>" class="back-link"><%= categoryName %></a>
-            </div>
-
-            <%
-                String message = (String) request.getAttribute("message");
-                if (message != null) {
-            %>
-            <p class="success"><%= message %></p>
-            <% } %>           
+            </div>              
             <div class="nav-buttons">
                 <a href="${pageContext.request.contextPath}/productDetail?productId=<%= prevId%>" class="nav-button" <%= prevId == null ? "disabled" : "" %>>⇐ Previous</a>
                 <a href="${pageContext.request.contextPath}/productDetail?productId=<%= nextId%>" class="nav-button" <%= nextId == null ? "disabled" : "" %>>Next ⇒</a>
@@ -225,7 +227,7 @@
                 <div>
                     <img src="<%= img %>" alt="<%= productName %>" class="product-img"/>
                 </div>
-                <div>
+                <div class="productCart">
                     <div class="name-rate">
                         <h3><%= productName %></h3>
                         <p><%= String.format("%.1f", rate) %> ★</p> 
@@ -251,9 +253,19 @@
                         %>
                         <p class="error"><%= error %></p>
                         <% } %>
+                        <%
+               String message = (String) request.getAttribute("message");
+               if (message != null) {
+                        %>
+                        <p class="success"><%= message %></p>
+                        <% } %>   
                         <c:if test="${sessionScope.user.getRole().getId() == null || sessionScope.user.getRole().getId() == 3}">
-                            <button type="submit" name="action" value="addCart">🛒 Add to Cart</button>
-                            <button type="submit" name="action" value="buy">💰 Buy</button>
+                            <div class="twoButton">
+                            <form action="cart" method="get">                                   
+                                <button class="card-button" type="submit">🛒 Add to Cart</button>
+                            </form>
+                            <button class="card-button" type="submit" value="buy">💰 Buy</button>
+                            </div>
                         </c:if>
                     </form>
                 </div>
@@ -284,14 +296,15 @@
 
                 <form method="post" action="${pageContext.request.contextPath}/productDetail">
                     <input type="hidden" name="productId" value="<%= productId %>">
-                    <div class="stars">
-                        <input type="radio" id="star5" name="rating" value="1"><label for="star5">★</label>
-                        <input type="radio" id="star4" name="rating" value="2"><label for="star4">★</label>
-                        <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
-                        <input type="radio" id="star2" name="rating" value="4"><label for="star2">★</label>
-                        <input type="radio" id="star1" name="rating" value="5"><label for="star1">★</label>
-                    </div>
+
                     <c:if test="${sessionScope.user.getRole().getId() == 3}">
+                        <div class="stars">
+                            <input type="radio" id="star5" name="rating" value="1"><label for="star5">★</label>
+                            <input type="radio" id="star4" name="rating" value="2"><label for="star4">★</label>
+                            <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+                            <input type="radio" id="star2" name="rating" value="4"><label for="star2">★</label>
+                            <input type="radio" id="star1" name="rating" value="5"><label for="star1">★</label>
+                        </div>
                         <textarea name="content" placeholder="Write your comment..." required></textarea>
                         <button type="submit" name="action" value="comment">Submit Comment</button>
                     </c:if>
