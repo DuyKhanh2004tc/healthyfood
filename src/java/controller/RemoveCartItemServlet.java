@@ -13,17 +13,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 import model.CartItem;
-import model.Product;
 import model.User;
 
 /**
  *
  * @author ASUS
  */
-public class CartServlet extends HttpServlet {
+public class RemoveCartItemServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,10 +40,10 @@ public class CartServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet CartServlet</title>");
+            out.println("<title>Servlet RemoveCartItemServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet CartServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet RemoveCartItemServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -65,91 +63,32 @@ public class CartServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         User u = (User) session.getAttribute("user");
-        DAOProduct dao = new DAOProduct();
         DAOCart daoCart = new DAOCart();
-
         if (u != null) {
-            if (request.getParameter("productId") != null) {
+            if (request.getParameter("removePId") != null) {
                 try {
-                    int productId = Integer.parseInt(request.getParameter("productId"));
+                    int productId = Integer.parseInt(request.getParameter("removePId"));
                     if (u.getRole().getId() == 3) {
                         int userId = u.getId();
-                        dao.addToCart(userId, productId, 1);
-                        response.sendRedirect("home");
+                        daoCart.removeCartItem(u.getId(), productId);
+                        response.sendRedirect("cart");
                         return;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            if (u.getRole().getId() == 3) {
-                List<CartItem> itemList = daoCart.getCartItemsByUserId(u.getId());
-                List<Product> productList = new ArrayList<>();
-                for (CartItem i : itemList) {
-                    Product p = dao.getProductById(i.getProduct().getId());
-                    productList.add(p);
-                }
-                request.setAttribute("productList", productList);
-
-                request.setAttribute("itemList", itemList);
-                request.getRequestDispatcher("/view/cart.jsp").forward(request, response);
-            }
         } else {
-            if (request.getParameter("productId") != null) {
+            if (request.getParameter("removePId") != null) {
                 try {
-                    int productId = Integer.parseInt(request.getParameter("productId"));
+                    int productId = Integer.parseInt(request.getParameter("removePId"));
                     List<CartItem> itemList = (List<CartItem>) session.getAttribute("itemList");
-                    if (itemList == null) {
-                        itemList = new ArrayList<>();
-                        session.setAttribute("itemList", itemList);
-                    }
-
-                    boolean exist = false;
-                    for (CartItem ci : itemList) {
-                        if (ci.getProduct().getId() == productId) {
-                            ci.setQuantity(ci.getQuantity() + 1);
-                            exist = true;
+                    for (int i = 0; i < itemList.size(); i++) {
+                        if (itemList.get(i).getProduct().getId() == productId) {
+                            itemList.remove(i);
                             break;
                         }
                     }
-
-                    if (!exist) {
-                        Product p = dao.getProductById(productId);
-                        CartItem item = new CartItem();
-                        item.setProduct(p);
-                        item.setQuantity(1);
-                        itemList.add(item);
-                    }
-                    session.setAttribute("itemList", itemList);
-                    response.sendRedirect("home");
-                    return;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-            if (request.getParameter("number") != null && request.getParameter("id") != null) {
-                try {
-                    int productId = Integer.parseInt(request.getParameter("id"));
-                    int number = Integer.parseInt(request.getParameter("number")); // +1 hoặc -1
-
-                    List<CartItem> itemList = (List<CartItem>) session.getAttribute("itemList");
-                    if (itemList != null) {
-                        for (int i = 0; i < itemList.size(); i++) {
-                            CartItem ci = itemList.get(i);
-                            if (ci.getProduct().getId() == productId) {
-                                int newQuantity = ci.getQuantity() + number;
-                                if (newQuantity <= 0) {
-                                    itemList.remove(i); // Xóa nếu số lượng về 0
-                                } else {
-                                    ci.setQuantity(newQuantity); // Cập nhật số lượng
-                                }
-                                break;
-                            }
-                        }
-                    }
-
-                    session.setAttribute("itemList", itemList);
                     response.sendRedirect("cart");
                     return;
 
@@ -157,8 +96,8 @@ public class CartServlet extends HttpServlet {
                     e.printStackTrace();
                 }
             }
-            request.getRequestDispatcher("/view/cart.jsp").forward(request, response);
         }
+
     }
 
     /**

@@ -260,8 +260,9 @@
                         <p class="success"><%= message %></p>
                         <% } %>   
                         <c:if test="${sessionScope.user.getRole().getId() == null || sessionScope.user.getRole().getId() == 3}">
-                            <div class="twoButton">
-                            <form action="cart" method="get">                                   
+                            <div class="twoButton">                            
+                            <form action="cart" method="get">      
+                                <input type="hidden" name="productId" value="<%= productId %>" />
                                 <button class="card-button" type="submit">🛒 Add to Cart</button>
                             </form>
                             <button class="card-button" type="submit" value="buy">💰 Buy</button>

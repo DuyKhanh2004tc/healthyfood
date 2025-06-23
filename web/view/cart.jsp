@@ -4,6 +4,7 @@
     Author     : ASUS
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -23,35 +24,55 @@
                     <th>Quantity</th>
                     <th>Total Price</th>
                     <th>Shelf Life Hours</th>
+                    <th>Remove</th>
                 </tr>
-            <c:forEach items="${requestScope.itemList}" var="i">
-                <tr class="cartItem">
-                    <td>${i.id}</td>
-                    <td>
-                        <img src="${i.product.imgUrl}" width="80">
-                        ${i.product.name}
-                    </td>
-                    <td>
-                        <button class="btnSub" onclick="location.href = 'cart?number=-1&id=${i.product.id}'">-</button>
-                        ${i.quantity}</span>
-                        <button class="btnAdd" onclick="location.href = 'cart?number=1&id=${i.product.id}'">+</button>   
-                    </td>
-                    <td>${i.product.price * i.quantity}</td>
-                    <td>${i.product.shelfLifeHours}</td>
-                </tr>
-            </c:forEach>
-                 
-                 <c:forEach items="${requestScope.cartList}" var="i" varStatus="loop">                
-                <tr>
-                    <td>${i.id}</td>
-                    <td><img src="${i.product.imgUrl}" width="80">${i.product.name}</td>
-                    <td>${i.quantity}</td>
-                    <td>${i.product.price}</td>
-                    <td>${i.product.shelfLifeHours}</td>
-                </tr>
-            </c:forEach>
+            <c:if test="${sessionScope.user.getRole().getId()== 3}">
+                <c:forEach items="${requestScope.itemList}" var="i" varStatus="loop">
+                    <tr class="cartItem">
+                        <td>${loop.index + 1}</td>
+                        <td>
+                            <a href="${pageContext.request.contextPath}/productDetail?productId=${i.product.id}">
+                                <img src="${i.product.imgUrl}" width="80"></a>
+                                ${i.product.name}
+                        </td>
+                        <td>
+                            <button class="btnSub" onclick="location.href = 'cart?number=-1&id=${i.product.id}'">-</button>
+                            ${i.quantity}
+                            <button class="btnAdd" onclick="location.href = 'cart?number=1&id=${i.product.id}'">+</button>  
+
+                        </td>
+                        <td><fmt:formatNumber value="${i.product.price * i.quantity}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
+                        <td>${i.product.shelfLifeHours}</td>
+                        <td><button class="btnRemove" onclick="location.href = 'removeItem?removePId=${i.product.id}'">Remove</button></td>
+                    </tr>
+                </c:forEach>
+            </c:if>
+            <c:if test="${sessionScope.user == null}">
+                <c:forEach items="${sessionScope.itemList}" var="i" varStatus="loop">
+                    <tr class="cartItem">
+                        <td>${loop.index + 1}</td>
+                        <td>
+                            <a href="${pageContext.request.contextPath}/productDetail?productId=${i.product.id}">
+                                <img src="${i.product.imgUrl}" width="80"></a>
+                                ${i.product.name}
+                        </td>
+                        <td>
+                            <button class="btnSub" onclick="location.href = 'cart?number=-1&id=${i.product.id}'">-</button>
+                            ${i.quantity}
+                            <button class="btnAdd" onclick="location.href = 'cart?number=1&id=${i.product.id}'">+</button>  
+
+                        </td>
+                        <td><fmt:formatNumber value="${i.product.price * i.quantity}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
+                        <td>${i.product.shelfLifeHours}</td>
+                        <td><button class="btnRemove" onclick="location.href = 'removeItem?removePId=${i.product.id}'">Remove</button></td>
+                    </tr>
+                </c:forEach>
+            </c:if>
+
+
+
         </table>
-        <c:if test="${empty itemList}">
+        <c:if test="${empty requestScope.itemList and empty sessionScope.itemList}">
             <p>Your cart is empty.</p>
         </c:if>
         <jsp:include page="footer.jsp"></jsp:include>
