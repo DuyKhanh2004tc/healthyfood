@@ -1,4 +1,4 @@
-/*
+ /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
@@ -131,7 +131,7 @@ public class CartServlet extends HttpServlet {
             if (request.getParameter("number") != null && request.getParameter("id") != null) {
                 try {
                     int productId = Integer.parseInt(request.getParameter("id"));
-                    int number = Integer.parseInt(request.getParameter("number")); // +1 hoặc -1
+                    int number = Integer.parseInt(request.getParameter("number"));
 
                     List<CartItem> itemList = (List<CartItem>) session.getAttribute("itemList");
                     if (itemList != null) {
@@ -140,9 +140,9 @@ public class CartServlet extends HttpServlet {
                             if (ci.getProduct().getId() == productId) {
                                 int newQuantity = ci.getQuantity() + number;
                                 if (newQuantity <= 0) {
-                                    itemList.remove(i); // Xóa nếu số lượng về 0
+                                    itemList.remove(i);
                                 } else {
-                                    ci.setQuantity(newQuantity); // Cập nhật số lượng
+                                    ci.setQuantity(newQuantity);
                                 }
                                 break;
                             }
