@@ -24,7 +24,7 @@
                     <th>Quantity</th>
                     <th>Total Price</th>
                     <th>Shelf Life Hours</th>
-                    <th>Remove</th>
+                    <th><a href="home">Back to Home</a></th>
                 </tr>
             <c:if test="${sessionScope.user.getRole().getId()== 3}">
                 <c:forEach items="${requestScope.itemList}" var="i" varStatus="loop">
@@ -32,7 +32,7 @@
                         <td>${loop.index + 1}</td>
                         <td>
                             <a href="${pageContext.request.contextPath}/productDetail?productId=${i.product.id}">
-                                <img src="${i.product.imgUrl}" width="80"></a>
+                                <img src="${i.product.imgUrl}" width="80" alt="Product"></a>
                                 ${i.product.name}
                         </td>
                         <td>
@@ -75,6 +75,13 @@
         <c:if test="${empty requestScope.itemList and empty sessionScope.itemList}">
             <p>Your cart is empty.</p>
         </c:if>
+        <form class="btnBuy" action="placeOrder" method="get">
+            <input type="hidden" name="productId" value="${o.id}" />
+            <button class="card-button" type="submit" value="buy">💰 Buy</button>
+        </form>
+
         <jsp:include page="footer.jsp"></jsp:include>
+
+
     </body>
 </html>
