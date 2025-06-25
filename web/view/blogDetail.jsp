@@ -172,8 +172,47 @@
                 </div>
                 <p class="description">${description}</p>
             </div>
+            <% if (sessionUser != null && sessionUser.getId() ==%>${blogId}<%){ %>
+                    <div>
+                        <form method="post" action="${pageContext.request.contextPath}/blogDetail" >                       
+                            <input type="hidden" name="blogId" value="${blogId} %>">
+                            <button type="button" onclick="openPopup(${blogId}, '<%= f.getContent().replace("'", "\\'") %>', <%= f.getRate() %>)">Edit</button>
+                            <button type="submit" name="action" value="deleteFeedback">Delete</button>
+                        </form>
+                    </div>
+                    <% } %>
         </div>
+            <div class="overlay" id="overlay"></div>
+                <div class="popup" id="popup">
+                    <h3>Edit Blog</h3>
+                    <form id="editBlog" method="post" action="${pageContext.request.contextPath}/blogDetail">
+                        <input type="hidden" name="productId" value="<%= productId %>">
+                        <input type="hidden" name="feedbackId" id="feedbackId">
+                        <input type="hidden" name="action" value="editBlog">
+                        <p>ảnh sửa</p>
+                        <textarea id="title" name="title" placeholder="Enter your content here..." required></textarea>
+                        <textarea id="content" name="content" placeholder="Enter your content here..." required></textarea>
+                        <button type="submit" class="button">Save</button>
+                        <button type="button" class="button" onclick="closePopup()">Cancel</button>
+                    </form>
+                </div>
     </div>
+        <script>     
+            function openPopup(blogId, image, title,content ) {
+                document.getElementById('popup').style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+                document.getElementById('tittle').value = title;
+                document.getElementById('blogid').value = blogId;
+                document.getElementById('content').value = content;
+                document.getElementById('image').value = image;
+            }
+
+            function closePopup() {
+                document.getElementById('popup').style.display = 'none';
+                document.getElementById('overlay').style.display = 'none';
+            }
+
+        </script>           
     <jsp:include page="footer.jsp" />
 </body>
 </html>

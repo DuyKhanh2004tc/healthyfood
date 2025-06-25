@@ -132,7 +132,7 @@
                 color: green;
                 font-weight: bold;
             }
-            .product-list {
+            .feedback-list {
                 margin-top: 40px;
             }
             .feedback-card {
@@ -189,7 +189,58 @@
                 display: flex;
             }
             .productCart{
-                    width: 500px;
+                width: 500px;
+            }
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+            }
+            .popup {
+                display: none;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: white;
+                padding: 20px;
+                border: 1px solid #ccc;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                z-index: 1000;
+                width: 400px;
+                border-radius: 10px;
+            }
+            .popup h3 {
+                margin: 0 0 10px 0;
+                color: #4CAF50;
+            }
+            .popup textarea {
+                width: 100%;
+                height: 100px;
+                margin-bottom: 10px;
+                padding: 10px;
+                border: 1px solid #cdeccd;
+                border-radius: 8px;
+            }
+            .popup .stars {
+                margin-bottom: 10px;
+            }
+            .popup .button {
+                padding: 8px 15px;
+                background-color: #a8e6a1;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+                color: #2e4d32;
+            }
+            .popup .button:hover {
+                background-color: #7ed957;
             }
         </style>
     </head>
@@ -222,6 +273,7 @@
                 <a href="${pageContext.request.contextPath}/productDetail?productId=<%= nextId%>" class="nav-button" <%= nextId == null ? "disabled" : "" %>>Next ⇒</a>
             </div>
 
+
             <div class="product-details">
                 <% if (productId != null) { %>
                 <div>
@@ -247,36 +299,52 @@
                                 <button type="button" onclick="updateQuantity(1)">+</button>
                             </div>
                         </c:if>
-                        <%
-                            String error = (String) request.getAttribute("error");
-                            if (error != null) {
-                        %>
-                        <p class="error"><%= error %></p>
-                        <% } %>
-                        <%
-               String message = (String) request.getAttribute("message");
-               if (message != null) {
-                        %>
-                        <p class="success"><%= message %></p>
-                        <% } %>   
-                        <c:if test="${sessionScope.user.getRole().getId() == null || sessionScope.user.getRole().getId() == 3}">
-                            <div class="twoButton">
-                            <form action="cart" method="get">                                   
-                                <button class="card-button" type="submit">🛒 Add to Cart</button>
+                    </form>
+                    <%
+                        String error = (String) session.getAttribute("error");
+                        if (error != null) {
+                    %>
+                    <p class="error"><%= error %></p>
+                    <% session.removeAttribute("error");  } %>
+                    <%
+           String message = (String) session.getAttribute("message");
+           if (message != null) {
+                    %>
+                    <p class="success"><%= message %></p>
+                    <% session.removeAttribute("message");  } %> 
+                    <div class="twoButton">
+                        <c:if test="${sessionScope.user.getRole().getId()== null ||sessionScope.user.getRole().getId()== 3 }">
+                            <form action="cart" method="get">
+
+                                <input type="hidden" name="productId" value="<%= productId%>" />
+                                <input type="hidden" name="checkDetailPage"  value="1" />
+                                <button class="card-button" type="submit" name="action" value="add">🛒 Add to Cart</button>
                             </form>
                             <button class="card-button" type="submit" value="buy">💰 Buy</button>
-                            </div>
-                        </c:if>
-                    </form>
+                        </c:if> 
+                    </div>
                 </div>
                 <% } else { %>
                 <p class="error">Product not found.</p>
                 <% } %>
             </div>
 
-            <div class="product-list">
+            <div class="feedback-list">
+                <%
+                              String errorf = (String) session.getAttribute("errorFeedback");
+                              if (errorf != null) {
+                %>
+                <p class="error"><%= errorf %></p>
+                <% session.removeAttribute("errorf");}   %>
+                <%
+       String messagef = (String) session.getAttribute("messageFeedback");
+       if (messagef != null) {
+                %>
+                <p class="success"><%= messagef %></p>
+                <% session.removeAttribute("messagef");  } %> 
                 <%
                     ArrayList<Feedback> feedback = (ArrayList<Feedback>) request.getAttribute("feedbackList");
+                    User sessionUser = (User) session.getAttribute("user"); // Get user from session
                     if (feedback != null && !feedback.isEmpty()) {
                         for (Feedback f : feedback) {
                 %>
@@ -285,7 +353,18 @@
                         <h3><%= f.getUser().getName() %></h3>
                         <p><%= f.getContent() %></p>
                         <p><%= f.getCreatedAt() %></p>
+                        <p><%= f.getRate() %> ★</p>
                     </div>
+                    <% if (sessionUser != null && sessionUser.getId() == f.getUser().getId()) { %>
+                    <div>
+                        <form method="post" action="${pageContext.request.contextPath}/productDetail" >
+                            <input type="hidden" name="productId" value="<%= productId %>">
+                            <input type="hidden" name="feedbackId" value="<%= f.getId() %>">
+                            <button type="button" onclick="openPopup(<%= f.getId() %>, '<%= f.getContent().replace("'", "\\'") %>', <%= f.getRate() %>)">Edit</button>
+                            <button type="submit" name="action" value="deleteFeedback">Delete</button>
+                        </form>
+                    </div>
+                    <% } %>
                 </div>
                 <%
                         }
@@ -293,22 +372,42 @@
                 %>
                 <p class="no-results">This product doesn't have feedback.</p>
                 <% } %>
-
-                <form method="post" action="${pageContext.request.contextPath}/productDetail">
-                    <input type="hidden" name="productId" value="<%= productId %>">
-
-                    <c:if test="${sessionScope.user.getRole().getId() == 3}">
-                        <div class="stars">
-                            <input type="radio" id="star5" name="rating" value="1"><label for="star5">★</label>
-                            <input type="radio" id="star4" name="rating" value="2"><label for="star4">★</label>
-                            <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
-                            <input type="radio" id="star2" name="rating" value="4"><label for="star2">★</label>
-                            <input type="radio" id="star1" name="rating" value="5"><label for="star1">★</label>
+                <div class="overlay" id="overlay"></div>
+                <div class="popup" id="popup">
+                    <h3>Edit Feedback</h3>
+                    <form id="editFeedbackForm" method="post" action="${pageContext.request.contextPath}/productDetail">
+                        <input type="hidden" name="productId" value="<%= productId %>">
+                        <input type="hidden" name="feedbackId" id="feedbackId">
+                        <input type="hidden" name="action" value="editFeedback">
+                        <div class="stars" >
+                            <input type="radio" id="editStar5" name="rating" value="5"><label for="editStar5">★</label>
+                            <input type="radio" id="editStar4" name="rating" value="4"><label for="editStar4">★</label>
+                            <input type="radio" id="editStar3" name="rating" value="3"><label for="editStar3">★</label>
+                            <input type="radio" id="editStar2" name="rating" value="2"><label for="editStar2">★</label>
+                            <input type="radio" id="editStar1" name="rating" value="1"><label for="editStar1">★</label>
                         </div>
-                        <textarea name="content" placeholder="Write your comment..." required></textarea>
-                        <button type="submit" name="action" value="comment">Submit Comment</button>
-                    </c:if>
-                </form>
+                        <textarea id="feedbackText" name="content" placeholder="Enter your feedback here..." required></textarea>
+                        <button type="submit" class="button">Save</button>
+                        <button type="button" class="button" onclick="closePopup()">Cancel</button>
+                    </form>
+                </div>
+
+                <div>
+                    <form method="post" action="${pageContext.request.contextPath}/productDetail">
+                        <input type="hidden" name="productId" value="<%= productId %>">
+                        <c:if test="${sessionScope.user.role.id == 3}">
+                            <div class="stars" >
+                                <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+                                <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+                                <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+                                <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+                                <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+                            </div>
+                            <textarea name="content" placeholder="Write your comment..." required></textarea>
+                            <button type="submit" name="action" value="comment">Submit Comment</button>
+                        </c:if>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -321,6 +420,21 @@
                     quantityInput.value = newQuantity;
                 }
             }
+
+            function openPopup(feedbackId, content, rating) {
+                document.getElementById('popup').style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+                document.getElementById('feedbackText').value = content;
+                document.getElementById('feedbackId').value = feedbackId;
+
+                document.querySelector(`input[name="rating"][value="${rating}"]`).checked = true;
+            }
+
+            function closePopup() {
+                document.getElementById('popup').style.display = 'none';
+                document.getElementById('overlay').style.display = 'none';
+            }
+
         </script>
 
         <jsp:include page="footer.jsp"></jsp:include>

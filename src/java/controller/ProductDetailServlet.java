@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import model.*;
 
-
 /**
  *
  * @author HP
@@ -60,6 +59,7 @@ public class ProductDetailServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String productIdStr = request.getParameter("productId");
+
         int productId;
         try {
             productId = Integer.parseInt(productIdStr);
@@ -120,11 +120,30 @@ public class ProductDetailServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        if ("comment".equals(action)) {
+        String productIdStr = request.getParameter("productId");
+        int productId;
+        try {
+            productId = Integer.parseInt(productIdStr);
+        } catch (NumberFormatException e) {
+            request.setAttribute("error", "Invalid product ID.");
+            doGet(request, response);
+            return;
+        }
 
+        DAOFeedback daoFeedback = new DAOFeedback();
+        DAOProduct daoProduct = new DAOProduct();
+        Product product = daoProduct.getProductById(productId);
+
+        if (product == null) {
+            request.setAttribute("error", "Product not found.");
+            doGet(request, response);
+            return;
+        }
+        if ("comment".equals(action)) {
             User user = (User) request.getSession().getAttribute("user");
             if (user == null || user.getRole().getId() != 3) {
                 response.sendRedirect("login.jsp");
@@ -132,108 +151,118 @@ public class ProductDetailServlet extends HttpServlet {
             }
 
             String content = request.getParameter("content");
-            if (content == null || content.trim().isEmpty()) {
-                request.setAttribute("error", "Comment cannot be empty.");
+            String ratingStr = request.getParameter("rating");
+
+            if (ratingStr == null || ratingStr.trim().isEmpty()) {
+                request.getSession().setAttribute("errorFeedback", "Please select a rating.");
+                doGet(request, response);
+                return;
+            }
+
+            double rate;
+            try {
+                rate = Double.parseDouble(ratingStr);
+            } catch (NumberFormatException e) {
+                request.getSession().setAttribute("errorFeedback", "Invalid rating value.");
                 doGet(request, response);
                 return;
             }
 
             Feedback feedback = new Feedback();
             feedback.setUser(user);
-            Product product = new Product();
-            product.setId(Integer.parseInt(request.getParameter("productId")));
             feedback.setProduct(product);
-
             feedback.setContent(content);
             feedback.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
+            feedback.setRate(rate);
 
-            DAOFeedback daoFeedback = new DAOFeedback();
             daoFeedback.insertFeedback(feedback);
-
-            request.setAttribute("message", "Comment submitted successfully.");
-            doGet(request, response); // Load lại feedback list và trang chi tiết
+            request.getSession().setAttribute("messageFeedback", "Comment submitted successfully.");
+            response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
             return;
-        }
 
-        String productIdStr = request.getParameter("productId");
-        int productId;
-        try {
-            productId = Integer.parseInt(productIdStr);
-        } catch (NumberFormatException e) {
-            request.setAttribute("error", "Invalid product ID.");
-            doGet(request, response); // Re-fetch product details
-            return;
-        }
-        String numberStr = request.getParameter("number");
-        int number;
-        try {
-            number = Integer.parseInt(numberStr);
-            if (number <= 0) {
-                throw new NumberFormatException("Number must be greater than 0.");
+        } else if ("deleteFeedback".equals(action)) {
+            String feedbackIdStr = request.getParameter("feedbackId");
+            int feedbackId;
+            try {
+                feedbackId = Integer.parseInt(feedbackIdStr);
+            } catch (NumberFormatException e) {
+                request.getSession().setAttribute("errorFeedback", "Invalid feedback ID.");
+                doGet(request, response);
+                return;
             }
-        } catch (NumberFormatException e) {
-            request.setAttribute("error", "Invalid quantity.");
-            doGet(request, response); // Re-fetch product details
-            return;
-        }
 
-        DAOProduct dao = new DAOProduct();
-        Product product = dao.getProductById(productId);
-
-        if (product == null) {
-            request.setAttribute("error", "Product not found.");
-            doGet(request, response);
+            daoFeedback.deleteFeedbackById(feedbackId);
+            request.getSession().setAttribute("messageFeedback", "Feedback deleted successfully.");
+            response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
             return;
-        }
 
-        if (number > product.getStock()) {
-            request.setAttribute("error", "Requested quantity exceeds available stock.");
-            doGet(request, response);
-            return;
-        }
-        if ("addCart".equals(action)) {
+        } else if ("editFeedback".equals(action)) {
             User user = (User) request.getSession().getAttribute("user");
-            if (user == null) {
-                List<CartItem> cartList = (List<CartItem>) request.getSession().getAttribute("addCart");
-                if (cartList == null) {
-                    cartList = new ArrayList<>();
-                }
-                boolean find = false;
-                for (CartItem cart: cartList) {
-                    if(productId == cart.getProduct().getId()){
-                        cart.setQuantity(cart.getQuantity()+ number);
-                        find = true;
-                        break;
-                    }
-                }
-                if (!find) {
-                    CartItem cart = new CartItem();
-                    cart.setId(cartList.size()+1);
-                    cart.setQuantity(number);
-                    cart.setProduct(product);
-                    cartList.add(cart);
-                }
-                request.getSession().setAttribute("cartList", cartList);
-
-                 request.setAttribute("message", "Product added to cart (session) successfully!");
-            } else {
-                dao.addToCart(user.getId(), productId, number);
-                request.setAttribute("message", "Product added to cart successfully!");
+            if (user == null || user.getRole().getId() != 3) {
+                response.sendRedirect("login.jsp");
+                return;
             }
-            
-        }
-         doGet(request, response);
 
+            String feedbackIdStr = request.getParameter("feedbackId");
+            String content = request.getParameter("content");
+            String ratingStr = request.getParameter("rating");
+
+            int feedbackId;
+            feedbackId = Integer.parseInt(feedbackIdStr);
+            if (ratingStr == null || ratingStr.trim().isEmpty()) {
+                request.getSession().setAttribute("errorFeedback", "Please select a rating.");
+                doGet(request, response);
+                return;
+            }
+            double rate = Double.parseDouble(ratingStr);
+            Feedback feedback = new Feedback();
+            feedback.setId(feedbackId);
+            feedback.setUser(user);
+            feedback.setProduct(product);
+            feedback.setContent(content);
+            feedback.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
+            feedback.setRate(rate);
+
+            daoFeedback.updateFeedbackById(feedbackId, feedback);
+            request.getSession().setAttribute("messageFeedback", "Feedback edited successfully.");
+            response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
+            return;
+
+        } else if ("add".equals(action)) {
+            String numberStr = request.getParameter("number");
+            int number;
+            try {
+                number = Integer.parseInt(numberStr);
+                if (number <= 0) {
+                    request.getSession().setAttribute("error", "Quantity must be greater than 0.");
+                    doGet(request, response);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                request.getSession().setAttribute("error", "Invalid quantity.");
+                doGet(request, response);
+                return;
+            }
+
+            if (number > product.getStock()) {
+                request.getSession().setAttribute("error", "Requested quantity exceeds available stock.");
+                doGet(request, response);
+                return;
+            }
+
+            request.getSession().setAttribute("message", "Added to cart successfully.");
+            response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
+            return;
+        }
+
+        
+        request.setAttribute("error", "Invalid action.");
+        doGet(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
 
 }

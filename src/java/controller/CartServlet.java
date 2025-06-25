@@ -70,12 +70,18 @@ public class CartServlet extends HttpServlet {
         if (u!=null) {     
         if (request.getParameter("productId") != null) {
             try {
-                int productId = Integer.parseInt(request.getParameter("productId"));
+                int productId = Integer.parseInt(request.getParameter("productId"));               
                 if (u.getRole().getId() == 3) {
                     int userId = u.getId();
                     dao.addToCart(userId, productId, 1);
-                    response.sendRedirect("home");
+                    if(request.getParameter("checkDetailPage")==null){
+                        response.sendRedirect("home");
                     return;
+                    }else {
+                         response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
+                    return;
+                    }
+                    
                 }
             } catch (Exception e) {
 

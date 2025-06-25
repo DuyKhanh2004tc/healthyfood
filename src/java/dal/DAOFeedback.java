@@ -12,10 +12,6 @@ import model.Feedback;
 import model.Product;
 import model.User;
 
-/**
- *
- * @author Cuong
- */
 public class DAOFeedback {
 
     public static DAOFeedback INSTANCE = new DAOFeedback();
@@ -94,6 +90,29 @@ public class DAOFeedback {
             ps.executeUpdate();
         } catch (SQLException e) {
             Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
+    public void deleteFeedbackById(int feedbackId) {
+        String sql = "DELETE FROM Feedback WHERE id = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, feedbackId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            Logger.getLogger(DAOFeedback.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
+
+    public void updateFeedbackById(int id,Feedback feedback) {
+        String sql = "UPDATE Feedback SET content = ?, rate = ?, created_at = ? WHERE id = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, feedback.getContent());
+            ps.setDouble(2, feedback.getRate());
+            ps.setTimestamp(3, feedback.getCreatedAt());
+            ps.setInt(4, id);
+           
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            Logger.getLogger(DAOFeedback.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 }
