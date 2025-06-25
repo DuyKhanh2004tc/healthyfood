@@ -13,17 +13,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 import model.CartItem;
-import model.Product;
 import model.User;
 
 /**
  *
  * @author ASUS
  */
-public class CartServlet extends HttpServlet {
+public class RemoveCartItemServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,61 +40,61 @@ public class CartServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet CartServlet</title>");
+            out.println("<title>Servlet RemoveCartItemServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet CartServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet RemoveCartItemServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
     }
 
-   
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         User u = (User) session.getAttribute("user");
-        DAOProduct dao = new DAOProduct();
         DAOCart daoCart = new DAOCart();
-        if (u!=null) {     
-        if (request.getParameter("productId") != null) {
-            try {
-                int productId = Integer.parseInt(request.getParameter("productId"));               
-                if (u.getRole().getId() == 3) {
-                    int userId = u.getId();
-                    dao.addToCart(userId, productId, 1);
-                    if(request.getParameter("checkDetailPage")==null){
-                        response.sendRedirect("home");
-                    return;
-                    }else {
-                         response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
-                    return;
+        if (u != null) {
+            if (request.getParameter("removePId") != null) {
+                try {
+                    int productId = Integer.parseInt(request.getParameter("removePId"));
+                    if (u.getRole().getId() == 3) {
+                        int userId = u.getId();
+                        daoCart.removeCartItem(u.getId(), productId);
+                        response.sendRedirect("cart");
+                        
                     }
-                    
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-
             }
-        } 
-        if (u.getRole().getId() == 3) {
-            List <CartItem> itemList = daoCart.getCartItemsByUserId(u.getId());
-            List <Product> productList = new ArrayList<>();
-            for(CartItem i : itemList){
-                 Product p = dao.getProductById(i.getProduct().getId());
-                 productList.add(p);
+        } else {
+            if (request.getParameter("removePId") != null) {
+                try {
+                    int productId = Integer.parseInt(request.getParameter("removePId"));
+                    List<CartItem> itemList = (List<CartItem>) session.getAttribute("itemList");
+                    for (int i = 0; i < itemList.size(); i++) {
+                        if (itemList.get(i).getProduct().getId() == productId) {
+                            itemList.remove(i);
+                            break;
+                        }
+                    }
+                    response.sendRedirect("cart"); 
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-            request.setAttribute("productList", productList);
-            
-
-            request.setAttribute("itemList", itemList);  
-            request.getRequestDispatcher("/view/cart.jsp").forward(request, response);
         }
-        }else{
-             List<CartItem> cartList = (List<CartItem>) session.getAttribute("cartList");
-    request.setAttribute("cartList", cartList);
-        }
-            request.getRequestDispatcher("/view/cart.jsp").forward(request, response);
     }
 
     /**
@@ -110,7 +108,7 @@ public class CartServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+    
     }
 
     /**

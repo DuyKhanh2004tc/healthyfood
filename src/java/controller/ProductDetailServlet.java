@@ -63,6 +63,7 @@ public class ProductDetailServlet extends HttpServlet {
         int productId;
         try {
             productId = Integer.parseInt(productIdStr);
+            
         } catch (NumberFormatException e) {
             request.setAttribute("error", "Invalid product ID.");
             request.getRequestDispatcher("view/productDetail.jsp").forward(request, response);

@@ -30,6 +30,38 @@ public class DAOCart {
         con = new DBContext().connect;
     }
 
+    public void removeCartItem(int userId, int productId) {
+        try {
+            String getCartIdSQL = " SELECT id FROM Cart WHERE user_id = ? ";
+            int cartId = -1;
+            try (PreparedStatement st = con.prepareStatement(getCartIdSQL)) {
+                st.setInt(1, userId);
+                ResultSet rs = st.executeQuery();
+                if (rs.next()) {
+                    cartId = rs.getInt("id");
+                }
+            }
+
+            String getItemSQL = "SELECT id  FROM CartItem WHERE cart_id = ? AND product_id = ?";
+            try (PreparedStatement st = con.prepareStatement(getItemSQL)) {
+                st.setInt(1, cartId);
+                st.setInt(2, productId);
+                ResultSet rs = st.executeQuery();
+                if (rs.next()) {
+                    int itemId = rs.getInt("id");
+                    String deleteItemSQL = "DELETE FROM CartItem WHERE id = ?";
+                    try (PreparedStatement st2 = con.prepareStatement(deleteItemSQL)) {
+                        st2.setInt(1, itemId);
+                        st2.executeUpdate();
+
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public List<CartItem> getCartItemsByUserId(int userId) {
         List<CartItem> itemList = new ArrayList<>();
         String sql = "SELECT ci.id AS cart_item_id, ci.quantity, "
@@ -124,5 +156,5 @@ public class DAOCart {
             e.printStackTrace();
         }
     }
-    
+
 }
