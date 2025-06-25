@@ -108,6 +108,10 @@
         <servlet-name>PlaceOrderServlet</servlet-name>
         <servlet-class>controller.PlaceOrderServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>OrderCheckoutServlet</servlet-name>
+        <servlet-class>controller.OrderCheckoutServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeDisplayServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -215,6 +219,10 @@
     <servlet-mapping>
         <servlet-name>PlaceOrderServlet</servlet-name>
         <url-pattern>/placeOrder</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>OrderCheckoutServlet</servlet-name>
+        <url-pattern>/orderCheckout</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>

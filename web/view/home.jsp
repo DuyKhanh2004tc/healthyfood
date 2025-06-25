@@ -16,8 +16,8 @@
     <body>
         <jsp:include page="header.jsp"></jsp:include>
             <!-- Main Content -->
-            <div>
-                <h1>Welcome to Healthy Food!</h1>
+            <div class="content-welcome">
+                <h1>Welcome to Healthy Food Store🥦</h1>
                 <p>Enjoy shopping fresh and nutritious food tailored to your health goals.</p>
             </div>
 

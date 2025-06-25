@@ -4,7 +4,6 @@
  */
 package model;
 
-
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -13,6 +12,7 @@ import java.util.List;
  * @author ASUS
  */
 public class Order {
+
     private int id;
     private User user;
     private Timestamp orderDate;
@@ -21,8 +21,15 @@ public class Order {
     private String status;
     private User shipper;
     private List<OrderDetail> orderDetails;
+    private String receiverName;
+    private String receiverPhone;
+    private String receiverEmail;
+    private String shippingAddress;
 
-    public Order(int id, User user, Timestamp orderDate, double totalAmount, String paymentMethod, String status, User shipper, List<OrderDetail> orderDetails) {
+    public Order() {
+    }
+
+    public Order(int id, User user, Timestamp orderDate, double totalAmount, String paymentMethod, String status, User shipper, List<OrderDetail> orderDetails, String receiverName, String receiverPhone, String receiverEmail, String shippingAddress) {
         this.id = id;
         this.user = user;
         this.orderDate = orderDate;
@@ -31,9 +38,10 @@ public class Order {
         this.status = status;
         this.shipper = shipper;
         this.orderDetails = orderDetails;
-    }
-
-    public Order() {
+        this.receiverName = receiverName;
+        this.receiverPhone = receiverPhone;
+        this.receiverEmail = receiverEmail;
+        this.shippingAddress = shippingAddress;
     }
 
     public int getId() {
@@ -99,6 +107,39 @@ public class Order {
     public void setOrderDetails(List<OrderDetail> orderDetails) {
         this.orderDetails = orderDetails;
     }
+
+    public String getReceiverName() {
+        return receiverName;
+    }
+
+    public void setReceiverName(String receiverName) {
+        this.receiverName = receiverName;
+    }
+
+    public String getReceiverPhone() {
+        return receiverPhone;
+    }
+
+    public void setReceiverPhone(String receiverPhone) {
+        this.receiverPhone = receiverPhone;
+    }
+
+    public String getReceiverEmail() {
+        return receiverEmail;
+    }
+
+    public void setReceiverEmail(String receiverEmail) {
+        this.receiverEmail = receiverEmail;
+    }
+
+    public String getShippingAddress() {
+        return shippingAddress;
+    }
+
+    public void setShippingAddress(String shippingAddress) {
+        this.shippingAddress = shippingAddress;
+    }
+
     
-    
+
 }

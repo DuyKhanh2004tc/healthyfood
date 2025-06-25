@@ -72,48 +72,94 @@
                 </c:if>
             </table>
         </div>
-        <form class="form-placeOrder" action="orderHistory" method="get">
-            <table>
-                <tr>
-                    <td>Receiver Name:</td>
-                    <td>Phone Number:</td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="userName" name="userName" value=""></td>
-                    <td><input type="text" id="phone" name="phone" value=""></td>
+        <c:if test="${sessionScope.user != null}">        
+                <form class="form-placeOrder" action="orderCheckout" method="get" onsubmit="return confirmOrder()">
+                    <table>
+                        <tr>
+                            <td>Receiver Name:</td>
+                            <td>Phone Number:</td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" id="userName" name="userName" value="${sessionScope.user.name}"></td>
+                            <td><input type="text" id="phone" name="phone" value="${sessionScope.user.phone}"></td>
 
-                </tr>
-                <tr>
-                    <td><p class="error-message" id="errorName"></p></td>
-                    <td><p class="error-message" id="errorPhone"></p></td>
-                </tr>
+                        </tr>
+                        <tr>
+                            <td><p class="error-message" id="errorName"></p></td>
+                            <td><p class="error-message" id="errorPhone"></p></td>
+                        </tr>
 
-                <tr>
-                    <td>Address:</td>
-                    <td>Email:</td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="address" name="address" value=""></td>
-                    <td><input type="email" id="email" name="email" value=""></td>
-                </tr>
-                <tr>
-                    <td><p class="error-message" id="errorAddress"></p></td>
-                    <td><p class="error-message" id="errorEmail"></p></td>
-                </tr>
-                <tr>
-                    <td>Select payment method:</td>
-                    <td>
-                        <input type="radio" id="pmOnline" name="paymentMethod" value="online">Online Payment
-                        <input type="radio" id="pmOffline" name="paymentMethod" value="offline">Payment after received                        
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td><p class="error-message" id="errorPayment"></td></p>
-                </tr>
-            </table>
-            <input class="btn_placeOrder" type="submit" value="Place Order">
-        </form>
+                        <tr>
+                            <td>Address:</td>
+                            <td>Email:</td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" id="address" name="address" value="${sessionScope.user.address}"></td>
+                            <td><input type="email" id="email" name="email" value="${sessionScope.user.email}"></td>
+                        </tr>
+                        <tr>
+                            <td><p class="error-message" id="errorAddress"></p></td>
+                            <td><p class="error-message" id="errorEmail"></p></td>
+                        </tr>
+                        <tr>
+                            <td>Select payment method:</td>
+                            <td>
+                                <input type="radio" id="pmOnline" name="paymentMethod" value="online">Online Payment
+                                <input type="radio" id="pmOffline" name="paymentMethod" value="offline">Payment after received                        
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td><p class="error-message" id="errorPayment"></td></p>
+                        </tr>
+                    </table>
+                    <input class="btn_placeOrder" type="submit" value="Place Order">
+                </form>
+        </c:if>
+        <c:if test="${sessionScope.user == null}">        
+                <form class="form-placeOrder" action="orderCheckout" method="get" onsubmit="return confirmOrder()">
+                    <table>
+                        <tr>
+                            <td>Receiver Name:</td>
+                            <td>Phone Number:</td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" id="userName" name="userName" value=""></td>
+                            <td><input type="text" id="phone" name="phone" value=""></td>
+
+                        </tr>
+                        <tr>
+                            <td><p class="error-message" id="errorName"></p></td>
+                            <td><p class="error-message" id="errorPhone"></p></td>
+                        </tr>
+
+                        <tr>
+                            <td>Address:</td>
+                            <td>Email:</td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" id="address" name="address" value=""></td>
+                            <td><input type="email" id="email" name="email" value=""></td>
+                        </tr>
+                        <tr>
+                            <td><p class="error-message" id="errorAddress"></p></td>
+                            <td><p class="error-message" id="errorEmail"></p></td>
+                        </tr>
+                        <tr>
+                            <td>Select payment method:</td>
+                            <td>
+                                <input type="radio" id="pmOnline" name="paymentMethod" value="online">Online Payment
+                                <input type="radio" id="pmOffline" name="paymentMethod" value="offline">Payment after received                        
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td><p class="error-message" id="errorPayment"></td></p>
+                        </tr>
+                    </table>
+                    <input class="btn_placeOrder" type="submit" value="Place Order">
+                </form>
+        </c:if>
         <jsp:include page="footer.jsp"></jsp:include>
         <script>
             document.querySelector(".form-placeOrder").addEventListener("submit", function (e) {
@@ -175,7 +221,9 @@
                 if (!valid)
                     e.preventDefault();
             });
-
+            function confirmOrder(){
+                return confirm("Are you sure to place the order?");
+            }
         </script>
     </body>
 </html>

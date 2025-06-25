@@ -61,17 +61,6 @@ public class PriceFilterServlet extends HttpServlet {
 //        processRequest(request, response);
         DAOProduct dao = new DAOProduct();
         List<Product> productList;
-        String index_raw = request.getParameter("index");
-        if (index_raw == null) {
-            index_raw = "1";
-        }
-        int index = Integer.parseInt(index_raw);
-        int totalProduct = dao.getTotalProduct();
-        int pages = totalProduct / 12;
-        if (totalProduct % 12 != 0) {
-            pages++;
-        }
-        request.setAttribute("totalPage", pages);
 
         if (request.getParameter("minPrice") != null || request.getParameter("maxPrice") != null) {
             String min_raw = request.getParameter("minPrice");
@@ -85,6 +74,17 @@ public class PriceFilterServlet extends HttpServlet {
                     min = Double.parseDouble(min_raw);
                     max = Double.parseDouble(max_raw);
                     if (min > max) {
+                        String index_raw = request.getParameter("index");
+                        if (index_raw == null) {
+                            index_raw = "1";
+                        }
+                        int index = Integer.parseInt(index_raw);
+                        int totalProduct = dao.getTotalProduct();
+                        int pages = totalProduct / 12;
+                        if (totalProduct % 12 != 0) {
+                            pages++;
+                        }
+                        request.setAttribute("totalPage", pages);
                         request.setAttribute("eMessage", "Min price must be less than or equal Max price");
                         request.setAttribute("minPrice", min);
                         request.setAttribute("maxPrice", max);
@@ -96,6 +96,17 @@ public class PriceFilterServlet extends HttpServlet {
                     } else {
                         productList = dao.getPriceInRange(min, max);
                         if (productList == null || productList.isEmpty()) {
+                            String index_raw = request.getParameter("index");
+                            if (index_raw == null) {
+                                index_raw = "1";
+                            }
+                            int index = Integer.parseInt(index_raw);
+                            int totalProduct = dao.getTotalProduct();
+                            int pages = totalProduct / 12;
+                            if (totalProduct % 12 != 0) {
+                                pages++;
+                            }
+                            request.setAttribute("totalPage", pages);
                             request.setAttribute("notFoundMessage", "Not found product in entered price range! ");
                             productList = dao.getProductPagination(index, 12);
                             request.setAttribute("minPrice", min);
@@ -127,6 +138,17 @@ public class PriceFilterServlet extends HttpServlet {
                     return;
 
                 } else {
+                    String index_raw = request.getParameter("index");
+                    if (index_raw == null) {
+                        index_raw = "1";
+                    }
+                    int index = Integer.parseInt(index_raw);
+                    int totalProduct = dao.getTotalProduct();
+                    int pages = totalProduct / 12;
+                    if (totalProduct % 12 != 0) {
+                        pages++;
+                    }
+                    request.setAttribute("totalPage", pages);
 
                     productList = dao.getProductPagination(index, 12);
                     request.setAttribute("productList", productList);
