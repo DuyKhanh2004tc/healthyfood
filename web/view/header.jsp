@@ -41,7 +41,7 @@
                         <a href="${pageContext.request.contextPath}/logout">Logout</a>
                         <form class ="search-form" action="search" method="get">                   
                             <input type="image" src="${pageContext.request.contextPath}/icons/search_icon.png" alt="Search" width="20" height="20">
-                            <input type="text" name="keyword" placeholder="Search...">
+                            <input type="text" name="keyword" value="${param.keyword}" placeholder="Search...">
                         </form>
                     </c:if>
                     <c:if test="${sessionScope.user.getRole().getId()==2}">

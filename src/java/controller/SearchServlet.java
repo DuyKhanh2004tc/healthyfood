@@ -73,9 +73,7 @@ public class SearchServlet extends HttpServlet {
             userRoleId = u.getRole().getId();
         }
         String searchName = request.getParameter("keyword");
-        session.setAttribute("keyword", searchName);
- 
-        
+        session.setAttribute("keyword", searchName);       
         searchList = dao.searchProduct(searchName);
         
         request.setAttribute("keyword", searchName);

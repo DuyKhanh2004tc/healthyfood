@@ -5,6 +5,8 @@
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ page import="java.util.List" %>
+<%@ page import="model.CartItem" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -27,6 +29,7 @@
                     <th><a href="home">Back to Home</a></th>
                 </tr>
             <c:if test="${sessionScope.user.getRole().getId()== 3}">
+                <c:set var="totalAmount" value="0"/>
                 <c:forEach items="${requestScope.itemList}" var="i" varStatus="loop">
                     <tr class="cartItem">
                         <td>${loop.index + 1}</td>
@@ -45,9 +48,16 @@
                         <td>${i.product.shelfLifeHours}</td>
                         <td><button class="btnRemove" onclick="location.href = 'removeItem?removePId=${i.product.id}'">Remove</button></td>
                     </tr>
+                    <c:set var="totalAmount" value="${totalAmount + (i.product.price * i.quantity)}"/>
                 </c:forEach>
+                <tr class="totalAmount">
+                    <td colspan="4"></td>
+                    <td>Total Amount:</td>
+                    <td><fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
+                </tr>
             </c:if>
             <c:if test="${sessionScope.user == null}">
+                <c:set var="totalAmount" value="0"/>
                 <c:forEach items="${sessionScope.itemList}" var="i" varStatus="loop">
                     <tr class="cartItem">
                         <td>${loop.index + 1}</td>
@@ -66,7 +76,13 @@
                         <td>${i.product.shelfLifeHours}</td>
                         <td><button class="btnRemove" onclick="location.href = 'removeItem?removePId=${i.product.id}'">Remove</button></td>
                     </tr>
+                    <c:set var="totalAmount" value="${totalAmount + (i.product.price * i.quantity)}"/>
                 </c:forEach>
+                <tr class="totalAmount">
+                    <td colspan="4"></td>
+                    <td>Total Amount:</td>
+                    <td><fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
+                </tr>
             </c:if>
 
 
@@ -75,6 +91,12 @@
         <c:if test="${empty requestScope.itemList and empty sessionScope.itemList}">
             <p>Your cart is empty.</p>
         </c:if>
+        <% if(request.getAttribute("itemList")!=null){
+            HttpSession Session = request.getSession();
+            List<CartItem> itemList = (List<CartItem>)request.getAttribute("itemList");
+            session.setAttribute("itemList",itemList);
+        }      
+        %>
         <form class="btnBuy" action="placeOrder" method="get">
             <input type="hidden" name="productId" value="${o.id}" />
             <button class="card-button" type="submit" value="buy">💰 Buy</button>

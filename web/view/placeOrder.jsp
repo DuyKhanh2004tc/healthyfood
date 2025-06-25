@@ -28,7 +28,8 @@
                         <th>Shelf Life Hours</th>
                     </tr>
                 <c:if test="${sessionScope.user.getRole().getId()== 3}">
-                    <c:forEach items="${requestScope.itemList}" var="i" varStatus="loop">
+                    <c:set var="totalAmount" value="0"/>
+                    <c:forEach items="${sessionScope.itemList}" var="i" varStatus="loop">
                         <tr class="cartItem">
                             <td>${loop.index + 1}</td>
                             <td>
@@ -40,7 +41,13 @@
                             <td><fmt:formatNumber value="${i.product.price * i.quantity}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                             <td>${i.product.shelfLifeHours}</td>
                         </tr>
+                        <c:set var="totalAmount" value="${totalAmount + (i.product.price * i.quantity)}"/>
                     </c:forEach>
+                    <tr class="totalAmount">
+                        <td colspan="4"></td>
+                        <td>Total Amount:</td>
+                        <td><fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
+                    </tr>
                 </c:if>
                 <c:if test="${sessionScope.user == null}">
                     <c:forEach items="${sessionScope.itemList}" var="i" varStatus="loop">
@@ -55,7 +62,13 @@
                             <td><fmt:formatNumber value="${i.product.price * i.quantity}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                             <td>${i.product.shelfLifeHours}</td>
                         </tr>
+                        <c:set var="totalAmount" value="${totalAmount + (i.product.price * i.quantity)}"/>
                     </c:forEach>
+                    <tr class="totalAmount">
+                        <td colspan="4"></td>
+                        <td>Total Amount:</td>
+                        <td><fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
+                    </tr>
                 </c:if>
             </table>
         </div>
@@ -66,28 +79,37 @@
                     <td>Phone Number:</td>
                 </tr>
                 <tr>
-                    <td><input type="text" id="userName" name="userName" value=""><span class="error-message" id="errorName"></span></td>
-
-                    <td><input type="text" id="phone" name="phone" value=""><span class="error-message" id="errorPhone"></span></td>
+                    <td><input type="text" id="userName" name="userName" value=""></td>
+                    <td><input type="text" id="phone" name="phone" value=""></td>
 
                 </tr>
+                <tr>
+                    <td><p class="error-message" id="errorName"></p></td>
+                    <td><p class="error-message" id="errorPhone"></p></td>
+                </tr>
+
                 <tr>
                     <td>Address:</td>
                     <td>Email:</td>
                 </tr>
                 <tr>
-                    <td><input type="text" id="address" name="address" value=""><span class="error-message" id="errorAddress"></span></td>
-
-                    <td><input type="email" id="email" name="email" value=""><span class="error-message" id="errorEmail"></span></td>
-
+                    <td><input type="text" id="address" name="address" value=""></td>
+                    <td><input type="email" id="email" name="email" value=""></td>
+                </tr>
+                <tr>
+                    <td><p class="error-message" id="errorAddress"></p></td>
+                    <td><p class="error-message" id="errorEmail"></p></td>
                 </tr>
                 <tr>
                     <td>Select payment method:</td>
                     <td>
                         <input type="radio" id="pmOnline" name="paymentMethod" value="online">Online Payment
-                        <input type="radio" id="pmOffline" name="paymentMethod" value="offline">Payment after received
-                        <span class="error-message" id="errorPayment"></span>
+                        <input type="radio" id="pmOffline" name="paymentMethod" value="offline">Payment after received                        
                     </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><p class="error-message" id="errorPayment"></td></p>
                 </tr>
             </table>
             <input class="btn_placeOrder" type="submit" value="Place Order">
@@ -97,10 +119,8 @@
             document.querySelector(".form-placeOrder").addEventListener("submit", function (e) {
                 let valid = true;
 
-                // Clear old errors
                 document.querySelectorAll(".error-message").forEach(el => el.innerText = "");
 
-                // Get values
                 const name = document.getElementById("userName").value.trim();
                 const phone = document.getElementById("phone").value.trim();
                 const address = document.getElementById("address").value.trim();
@@ -108,31 +128,36 @@
                 const paymentOnline = document.getElementById("pmOnline").checked;
                 const paymentOffline = document.getElementById("pmOffline").checked;
 
-                // Validate Name
                 if (name === "") {
                     document.getElementById("errorName").innerText = "Receiver name is required.";
                     valid = false;
                 } else if (name.split(" ").length < 2) {
                     document.getElementById("errorName").innerText = "Name must contain at least two words.";
                     valid = false;
+                } else if (!/^[^0-9$%!@#^&*()+=\[\]{};:"\\|<>\/?~`]+$/.test(name)) {
+                    document.getElementById("errorName").innerText = "Name must not contain numbers or special characters like $ % ! @ etc.";
+                    valid = false;
                 }
 
-                // Validate Phone
+
                 if (phone === "") {
                     document.getElementById("errorPhone").innerText = "Phone number is required.";
                     valid = false;
                 } else if (!/^\d{10,11}$/.test(phone)) {
-                    document.getElementById("errorPhone").innerText = "Phone must be 10 or 11 digits.";
+                    document.getElementById("errorPhone").innerText = "Phone number must be 10 or 11 digits.";
                     valid = false;
                 }
 
-                // Validate Address
+
                 if (address === "") {
                     document.getElementById("errorAddress").innerText = "Address is required.";
                     valid = false;
+                } else if (!/^[^$%!@#^*=\[\]{};:"\\|<>?~`]+$/.test(address)) {
+                    document.getElementById("errorAddress").innerText = "Address contains invalid special characters.";
+                    valid = false;
                 }
 
-                // Validate Email
+
                 if (email === "") {
                     document.getElementById("errorEmail").innerText = "Email is required.";
                     valid = false;
@@ -141,7 +166,7 @@
                     valid = false;
                 }
 
-                // Validate Payment
+
                 if (!paymentOnline && !paymentOffline) {
                     document.getElementById("errorPayment").innerText = "Please select a payment method.";
                     valid = false;
