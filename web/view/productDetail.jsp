@@ -295,7 +295,7 @@
                         <c:if test="${sessionScope.user.getRole().getId() == null || sessionScope.user.getRole().getId() == 3}">
                             <div class="quantity-controls">
                                 <button type="button" onclick="updateQuantity(-1)">-</button>
-                                <input type="text" name="number" id="quantity" value="1" min="1" max="<%= stock %>">
+                                <input type="text" name="number1" id="quantity" value="1" min="1" max="<%= stock %>">
                                 <button type="button" onclick="updateQuantity(1)">+</button>
                             </div>
                         </c:if>
@@ -314,12 +314,12 @@
                     <% session.removeAttribute("message");  } %> 
                     <div class="twoButton">
                         <c:if test="${sessionScope.user.getRole().getId()== null ||sessionScope.user.getRole().getId()== 3 }">
-                            <form action="cart" method="get">
-
+                            <form action="cart" method="get" onsubmit="syncQuantity()">
                                 <input type="hidden" name="productId" value="<%= productId%>" />
-                                <input type="hidden" name="checkDetailPage"  value="1" />
-                                <button class="card-button" type="submit" name="action" value="add">🛒 Add to Cart</button>
+                                <input type="hidden" name="number1" id="hiddenQuantity">
+                                <button class="card-button" type="submit">🛒 Add to Cart</button>
                             </form>
+
                             <button class="card-button" type="submit" value="buy">💰 Buy</button>
                         </c:if> 
                     </div>
@@ -434,6 +434,11 @@
                 document.getElementById('popup').style.display = 'none';
                 document.getElementById('overlay').style.display = 'none';
             }
+function syncQuantity() {
+    const visibleInput = document.getElementById("quantity");
+    const hiddenInput = document.getElementById("hiddenQuantity");
+    hiddenInput.value = visibleInput.value;
+}
 
         </script>
 

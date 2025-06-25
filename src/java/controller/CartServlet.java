@@ -51,7 +51,15 @@ public class CartServlet extends HttpServlet {
         }
     }
 
-   
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -59,44 +67,118 @@ public class CartServlet extends HttpServlet {
         User u = (User) session.getAttribute("user");
         DAOProduct dao = new DAOProduct();
         DAOCart daoCart = new DAOCart();
-        if (u!=null) {     
-        if (request.getParameter("productId") != null) {
-            try {
-                int productId = Integer.parseInt(request.getParameter("productId"));               
-                if (u.getRole().getId() == 3) {
+
+        if (u != null) {
+            if (request.getParameter("number") != null && request.getParameter("id") != null) {
+                try {
+                    int number = Integer.parseInt(request.getParameter("number"));
+                    int productId = Integer.parseInt(request.getParameter("id"));
                     int userId = u.getId();
-                    dao.addToCart(userId, productId, 1);
-                    if(request.getParameter("checkDetailPage")==null){
-                        response.sendRedirect("home");
+                    daoCart.updateCartItemQuantity(userId, productId, number);
+                    response.sendRedirect("cart");
                     return;
-                    }else {
-                         response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
-                    return;
-                    }
-                    
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
+            }
+            if (request.getParameter("productId") != null) {
+                try {
+                    int productId = Integer.parseInt(request.getParameter("productId"));
+                    if (u.getRole().getId() == 3) {
+                        int userId = u.getId();
+
+                        if (request.getParameter("number1") != null) {
+                            String number1 = request.getParameter("number1");
+                            dao.addToCart(userId, productId, Integer.parseInt(number1));
+                            response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
+                        } else {
+                            dao.addToCart(userId, productId, 1);
+                            response.sendRedirect("home");
+                            return;
+                        }
+
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (u.getRole().getId() == 3) {
+                List<CartItem> itemList = daoCart.getCartItemsByUserId(u.getId());
+                List<Product> productList = new ArrayList<>();
+                for (CartItem i : itemList) {
+                    Product p = dao.getProductById(i.getProduct().getId());
+                    productList.add(p);
+                }
+                request.setAttribute("productList", productList);
+
+                request.setAttribute("itemList", itemList);
+                request.getRequestDispatcher("/view/cart.jsp").forward(request, response);
+            }
+        } else {
+            if (request.getParameter("productId") != null) {
+                try {
+                    int productId = Integer.parseInt(request.getParameter("productId"));
+                    List<CartItem> itemList = (List<CartItem>) session.getAttribute("itemList");
+                    if (itemList == null) {
+                        itemList = new ArrayList<>();
+                        session.setAttribute("itemList", itemList);
+                    }
+
+                    boolean exist = false;
+                    for (CartItem ci : itemList) {
+                        if (ci.getProduct().getId() == productId) {
+                            ci.setQuantity(ci.getQuantity() + 1);
+                            exist = true;
+                            break;
+                        }
+                    }
+
+                    if (!exist) {
+                        Product p = dao.getProductById(productId);
+                        CartItem item = new CartItem();
+                        item.setProduct(p);
+                        item.setQuantity(1);
+                        itemList.add(item);
+                    }
+                    session.setAttribute("itemList", itemList);
+                    response.sendRedirect("home");
+                    return;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
             }
-        } 
-        if (u.getRole().getId() == 3) {
-            List <CartItem> itemList = daoCart.getCartItemsByUserId(u.getId());
-            List <Product> productList = new ArrayList<>();
-            for(CartItem i : itemList){
-                 Product p = dao.getProductById(i.getProduct().getId());
-                 productList.add(p);
-            }
-            request.setAttribute("productList", productList);
-            
+            if (request.getParameter("number") != null && request.getParameter("id") != null) {
+                try {
+                    int productId = Integer.parseInt(request.getParameter("id"));
+                    int number = Integer.parseInt(request.getParameter("number"));
 
-            request.setAttribute("itemList", itemList);  
+                    List<CartItem> itemList = (List<CartItem>) session.getAttribute("itemList");
+                    if (itemList != null) {
+                        for (int i = 0; i < itemList.size(); i++) {
+                            CartItem ci = itemList.get(i);
+                            if (ci.getProduct().getId() == productId) {
+                                int newQuantity = ci.getQuantity() + number;
+                                if (newQuantity <= 0) {
+                                    itemList.remove(i);
+                                } else {
+                                    ci.setQuantity(newQuantity);
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+                    session.setAttribute("itemList", itemList);
+                    response.sendRedirect("cart");
+                    return;
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             request.getRequestDispatcher("/view/cart.jsp").forward(request, response);
         }
-        }else{
-             List<CartItem> cartList = (List<CartItem>) session.getAttribute("cartList");
-    request.setAttribute("cartList", cartList);
-        }
-            request.getRequestDispatcher("/view/cart.jsp").forward(request, response);
     }
 
     /**
