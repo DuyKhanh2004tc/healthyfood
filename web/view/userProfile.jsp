@@ -6,7 +6,7 @@
     <head>
         <meta charset="UTF-8" />
         <title>User Profile</title>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/register.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/profile.css">
     </head>
     <body>
         <jsp:include page="header.jsp"></jsp:include>
@@ -14,11 +14,11 @@
             <h1>User Profile</h1>
             <form action="updateProfile" method="post">
                 <div class="txt_field">
-                    <input type="text" name="fullname" placeholder="Fullname" value="${sessionScope.user.name}" required />
+                    <input type="text" name="fullname" placeholder="Fullname" value="${user.name}" required />
                 </div>
 
                 <div class="txt_field">
-                    <input type="email" name="email" placeholder="Email" value="${sessionScope.user.getEmail()}" required />
+                    <input type="email" name="email" placeholder="Email" value="${user.email}" required />
                 </div>
 
                 <div class="txt_field">

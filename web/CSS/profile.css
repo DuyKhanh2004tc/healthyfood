@@ -1,0 +1,115 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #d9fdd3; 
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.center {
+  max-width: 550px;
+  margin: 40px auto;
+  background-color: white;
+  padding: 30px 35px;
+  border-radius: 10px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+}
+
+.center h1 {
+  text-align: center;
+  color: #222;
+  margin-bottom: 25px;
+}
+
+.txt_field {
+  margin-bottom: 18px;
+}
+
+.txt_field label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 6px;
+  font-size: 15px;
+  color: #333;
+}
+
+.txt_field input[type="text"],
+.txt_field input[type="email"],
+.txt_field input[type="password"],
+.txt_field input[type="date"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s;
+}
+
+.txt_field input:focus {
+  border-color: #28a745;
+  outline: none;
+  background-color: white;
+}
+
+.gender-group {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.gender-group > label {
+  font-weight: bold;
+  margin-right: 15px;
+  color: #333;
+}
+
+.radio-options {
+  display: flex;
+  gap: 20px;
+  margin-top: 8px;
+}
+
+.radio-options label {
+  display: flex;
+  align-items: center;
+  font-weight: normal;
+  gap: 5px;
+}
+
+input[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+input[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+.error-message {
+  color: red;
+  text-align: center;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+footer {
+  background-color: #e3fbe1;
+  padding: 12px;
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+  border-top: 1px solid #ccc;
+}
