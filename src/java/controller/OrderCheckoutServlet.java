@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dal.DAOOrder;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -59,16 +60,17 @@ public class OrderCheckoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        User u = (User)session.getAttribute("user");
+        DAOOrder dao = new DAOOrder();
+        User u = (User) session.getAttribute("user");
         if (request.getParameter("userName") != null && request.getParameter("phone") != null && request.getParameter("paymentMethod") != null
-                && request.getParameter("address") != null && request.getParameter("email") != null) {
+                && request.getParameter("address") != null && request.getParameter("email") != null && request.getParameter("totalAmount") != null) {
             try {
                 String userName = request.getParameter("userName");
                 String phone = request.getParameter("phone");
                 String address = request.getParameter("address");
                 String email = request.getParameter("email");
                 String paymentMethod = request.getParameter("paymentMethod");
-                
+                Double totalAmount = Double.parseDouble(request.getParameter("totalAmount"));
                 Order order = new Order();
                 order.setUser(u);
                 order.setPaymentMethod(paymentMethod);
@@ -78,6 +80,9 @@ public class OrderCheckoutServlet extends HttpServlet {
                 order.setShippingAddress(address);
                 order.setStatus("pending");
                 order.setShipper(null);
+                order.setTotalAmount(totalAmount);
+                
+                int orderId = dao.insertOrder(order);
             } catch (Exception e) {
                 e.printStackTrace();
             }

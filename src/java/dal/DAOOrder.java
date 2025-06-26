@@ -25,13 +25,36 @@ public class DAOOrder {
     public int insertOrder(Order order){
         int orderId = -1;
         String sql = "INSERT INTO Orders (user_id, total_amount, payment_method, status, shipper_id, "
-                + "receiver_name, receiver_phone, receiver_emaill, shipping_address) "
+                + "receiver_name, receiver_phone, receiver_email, shipping_address) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try(PreparedStatement st = con.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {
-//            st.setInt(1, order.getUser().getId() != null ? order.getUser().getId() : null);
+            if(order.getUser()!= null){
+                st.setInt(1,order.getUser().getId());
+            } else {
+                st.setNull(1,Types.INTEGER );
+            }
             st.setDouble(2, order.getTotalAmount());
             st.setString(3, order.getPaymentMethod());
             st.setString(4, order.getStatus());
+            if(order.getShipper()!= null){
+                st.setInt(5,order.getShipper().getId());
+            } else {
+                st.setNull(5,Types.INTEGER );
+            }
+            st.setString(6, order.getReceiverName());
+            st.setString(7, order.getReceiverPhone());
+            st.setString(8, order.getReceiverEmail());
+            st.setString(9, order.getShippingAddress());
+            
+            int insertedRows = st.executeUpdate();
+            if(insertedRows > 0){
+                try(ResultSet rs = st.getGeneratedKeys()){
+                    if (rs.next()){
+                        orderId=rs.getInt(1);
+                    }
+                }
+            }
+                   
         } catch (SQLException e) {
             e.printStackTrace();
         }
