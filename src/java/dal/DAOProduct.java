@@ -33,14 +33,12 @@ public class DAOProduct {
             INSTANCE = this;
         }
     }
-    
+
     // Placeholder for connection retrieval
     public Connection getConnection() throws SQLException {
         // Implement connection logic, e.g., using DataSource or DriverManager
         return con; // Replace with actual connection logic
     }
-
-
 
     public List<Product> getAllProduct() {
         List<Product> productList = new ArrayList<>();
@@ -75,8 +73,6 @@ public class DAOProduct {
         return productList;
     }
 
-    
-
     public int getTotalProduct() {
         String sql = " SELECT COUNT(*) FROM PRODUCT ";
         try (PreparedStatement st = con.prepareStatement(sql)) {
@@ -106,6 +102,7 @@ public class DAOProduct {
         }
         return 0;
     }
+
     public Product getProductById(int productId) {
         Product product = null;
         String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, "
@@ -218,7 +215,7 @@ public class DAOProduct {
     public void addToCart(int userId, int productId, int quantity) {
         try {
             String checkCartExistSQL = "SELECT id FROM Cart WHERE user_id = ? ";
-            int cartId = -1 ;
+            int cartId = -1;
             try (PreparedStatement st = con.prepareStatement(checkCartExistSQL)) {
                 st.setInt(1, userId);
                 ResultSet rs = st.executeQuery();
@@ -267,7 +264,30 @@ public class DAOProduct {
         }
     }
 
-    
+    public void reduceStock(int productId, int quantity) {
+        String sql = "UPDATE Product SET stock = stock - ? WHERE id = ? ";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setInt(1, quantity);
+            st.setInt(2, productId);
+            st.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public int getProductStock(int productId) {
+    int stock = 0;
+    String sql = "SELECT stock FROM Product WHERE id = ?";
+    try (PreparedStatement st = con.prepareStatement(sql)){
+        st.setInt(1, productId);
+        ResultSet rs = st.executeQuery();
+        if (rs.next()) {
+            stock = rs.getInt("stock");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return stock;
+}
 
     public List<Product> getProductByCategory(int categoryId) {
         List<Product> productList = new ArrayList<>();
@@ -305,6 +325,7 @@ public class DAOProduct {
         }
         return productList;
     }
+
     public List<Product> searchProduct(String namesearch) {
         List<Product> productList = new ArrayList<>();
         String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, "
@@ -339,9 +360,6 @@ public class DAOProduct {
         }
         return productList;
     }
-
-   
-   
 
     public List<Product> sortSearchedProduct(String namesearch, String orderBy) {
         List<Product> productList = new ArrayList<>();
@@ -484,8 +502,6 @@ public class DAOProduct {
         }
         return productList;
     }
-
-    
 
     public List<Category> getAllCategories() {
         List<Category> categoryList = new ArrayList<>();
