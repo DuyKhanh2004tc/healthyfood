@@ -270,8 +270,8 @@ public class DAOUser {
                 return false;
             }
 
-            // Kiểm tra email đã tồn tại
-            if (checkEmailExists(user.getEmail(), 0)) { // 0 vì đây là tài khoản mới, không có ID
+            
+            if (checkEmailExists(user.getEmail(), 0)) { 
                 status = "Error: Email already exists";
                 return false;
             }
@@ -285,7 +285,7 @@ public class DAOUser {
             ps.setString(6, user.getAddress());
             ps.setBoolean(7, user.isGender());
             ps.setInt(8, user.getRole().getId());
-            ps.setTimestamp(9, new Timestamp(System.currentTimeMillis())); // Thời gian tạo hiện tại
+            ps.setTimestamp(9, new Timestamp(System.currentTimeMillis())); 
 
             int rowsAffected = ps.executeUpdate();
             ps.close();

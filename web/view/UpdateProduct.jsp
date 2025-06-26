@@ -84,7 +84,7 @@
                 <c:if test="${not empty errorMessage}">
                     <p class="general-error">${errorMessage}</p>
                 </c:if>
-                <form action="productmanagement" method="post" enctype="multipart/form-data">
+                <form action="seller" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="service" value="update"/>
                     <input type="hidden" name="productId" value="${product.id}"/>
 
@@ -156,7 +156,7 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-save me-1"></i>Update Product
                         </button>
-                        <a href="productmanagement?service=list" class="btn btn-secondary">Cancel</a>
+                        <a href="seller?service=list" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>
             </div>

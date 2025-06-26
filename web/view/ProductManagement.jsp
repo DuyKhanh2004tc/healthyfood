@@ -4,7 +4,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Product Management</title>
+        <title>Product Seller</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet">
         <link href="${pageContext.request.contextPath}/css/bootstrap-icons.css" rel="stylesheet">
@@ -34,9 +34,11 @@
                 padding: 6px 12px;
                 font-size: 14px;
                 border-radius: 5px;
+                
             }
             .btn-edit, .btn-delete {
                 transition: all 0.3s ease;
+                
             }
             .btn-edit:hover, .btn-delete:hover {
                 transform: scale(1.05);
@@ -66,10 +68,10 @@
         </style>
     </head>
     <body>
-        <div class="d-flex justify-content-between align-items-center p-3 bg-white shadow-sm">
+        <div class="d-flex justify-content-between align-items-center p-3 bg-dark shadow-sm">
             <div class="d-flex align-items-center">
                 <img src="${pageContext.request.contextPath}/images/logo_1.png" alt="Logo" height="50">
-                <h4 class="ms-3 mb-0 text-success">Welcome Management, ${sessionScope.user.getName()}</h4>
+                <h4 class="ms-3 mb-0 text-success">Welcome Sheller, ${sessionScope.user.getName()}</h4>
             </div>
             <a href="${pageContext.request.contextPath}/logout" class="btn btn-outline-danger">Logout</a>
         </div>
@@ -85,13 +87,13 @@
                     <div class="card-body">
                         <!-- Insert Button -->
                         <div class="text-center mb-4">
-                            <a href="productmanagement?service=requestInsert" class="btn btn-insert">
+                            <a href="seller?service=requestInsert" class="btn btn-insert">
                                 <i class="bi bi-plus-circle me-1"></i> Insert New Product
                             </a>
                         </div>
 
                         <!-- Search Form -->
-                        <form action="productmanagement" class="input-group search-form shadow-sm" method="get">
+                        <form action="seller" class="input-group search-form shadow-sm" method="get">
                             <input type="hidden" name="service" value="searchByKeywords"/>
                             <input type="text" class="form-control" id="keywords" name="keywords" placeholder="Search by product name" value="${keywords}">
                             <button class="btn btn-outline-primary" type="submit">
@@ -137,18 +139,45 @@
                                                     <td class="text-center">${product.category != null ? product.category.name : 'N/A'}</td>
                                                     <td class="text-center">${String.format("%.1f", product.rate)}</td>
                                                     <td class="text-center">
-                                                        <a href="productmanagement?service=requestUpdate&productId=${product.id}" class="btn btn-action btn-edit">
+                                                        <a href="seller?service=requestUpdate&productId=${product.id}" class="btn btn-success btn-edit">
                                                             <i class="bi bi-pencil"></i> Edit
                                                         </a>
-                                                        <a href="productmanagement?service=requestDelete&productId=${product.id}" class="btn btn-action btn-delete" onclick="return confirm('Are you sure you want to delete ${product.name}?');">
+                                                        <a href="seller?service=requestDelete&productId=${product.id}" class="btn btn-action btn-delete" onclick="return confirm('Are you sure you want to delete ${product.name}?');">
                                                             <i class="bi bi-trash"></i> Delete
                                                         </a>
                                                     </td>
                                                 </tr>
+                                                
                                             </c:forEach>
+                                                
                                         </tbody>
+                                        
                                     </table>
+                                    
                                 </div>
+                                <!-- Pagination Controls -->
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination">
+                                        <!-- Previous Button -->
+                                        <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                                            <a class="page-link" href="seller?service=${service}&keywords=${keywords}&page=${currentPage - 1}" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <!-- Page Numbers -->
+                                        <c:forEach begin="1" end="${totalPages}" var="i">
+                                            <li class="page-item ${currentPage == i ? 'active' : ''}">
+                                                <a class="page-link" href="seller?service=${service}&keywords=${keywords}&page=${i}">${i}</a>
+                                            </li>
+                                        </c:forEach>
+                                        <!-- Next Button -->
+                                        <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                                            <a class="page-link" href="seller?service=${service}&keywords=${keywords}&page=${currentPage + 1}" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
                             </c:when>
                             <c:otherwise>
                                 <p class="text-center error-message">No products found!</p>
