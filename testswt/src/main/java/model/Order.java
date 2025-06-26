@@ -1,9 +1,15 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package model;
+
 
 import java.sql.Timestamp;
 import java.util.List;
 
 /**
+ *
  * @author ASUS
  */
 public class Order {
@@ -12,20 +18,11 @@ public class Order {
     private Timestamp orderDate;
     private double totalAmount;
     private String paymentMethod;
-    private OrderStatus status; // Sử dụng đối tượng OrderStatus thay vì int
+    private String status;
     private User shipper;
-    private String receiverName;
-    private String receiverPhone;
-    private String receiverEmail;
-    private String shippingAddress;
     private List<OrderDetail> orderDetails;
 
-    public Order() {
-    }
-
-    public Order(int id, User user, Timestamp orderDate, double totalAmount, String paymentMethod, 
-                 OrderStatus status, User shipper, String receiverName, String receiverPhone, 
-                 String receiverEmail, String shippingAddress, List<OrderDetail> orderDetails) {
+    public Order(int id, User user, Timestamp orderDate, double totalAmount, String paymentMethod, String status, User shipper, List<OrderDetail> orderDetails) {
         this.id = id;
         this.user = user;
         this.orderDate = orderDate;
@@ -33,11 +30,10 @@ public class Order {
         this.paymentMethod = paymentMethod;
         this.status = status;
         this.shipper = shipper;
-        this.receiverName = receiverName;
-        this.receiverPhone = receiverPhone;
-        this.receiverEmail = receiverEmail;
-        this.shippingAddress = shippingAddress;
         this.orderDetails = orderDetails;
+    }
+
+    public Order() {
     }
 
     public int getId() {
@@ -80,11 +76,11 @@ public class Order {
         this.paymentMethod = paymentMethod;
     }
 
-    public OrderStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(OrderStatus status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -96,38 +92,6 @@ public class Order {
         this.shipper = shipper;
     }
 
-    public String getReceiverName() {
-        return receiverName;
-    }
-
-    public void setReceiverName(String receiverName) {
-        this.receiverName = receiverName;
-    }
-
-    public String getReceiverPhone() {
-        return receiverPhone;
-    }
-
-    public void setReceiverPhone(String receiverPhone) {
-        this.receiverPhone = receiverPhone;
-    }
-
-    public String getReceiverEmail() {
-        return receiverEmail;
-    }
-
-    public void setReceiverEmail(String receiverEmail) {
-        this.receiverEmail = receiverEmail;
-    }
-
-    public String getShippingAddress() {
-        return shippingAddress;
-    }
-
-    public void setShippingAddress(String shippingAddress) {
-        this.shippingAddress = shippingAddress;
-    }
-
     public List<OrderDetail> getOrderDetails() {
         return orderDetails;
     }
@@ -135,4 +99,6 @@ public class Order {
     public void setOrderDetails(List<OrderDetail> orderDetails) {
         this.orderDetails = orderDetails;
     }
+    
+    
 }

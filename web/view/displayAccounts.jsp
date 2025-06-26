@@ -45,7 +45,7 @@
                     <thead>
                         <tr>
                             <th>
-                                <a href="DisplayAccount?idRole=${roleId}&sortBy=id&sortOrder=${sortBy == 'id' && sortOrder == 'asc' ? 'desc' : 'asc'}">
+                                <a href="DisplayAccount?idRole=${roleId}&sortBy=id&sortOrder=${sortBy == 'id' && sortOrder == 'asc' ? 'desc' : 'asc'}&page=${currentPage}">
                                     User ID
                                     <c:if test="${sortBy == 'id'}">
                                         <c:choose>
@@ -56,7 +56,7 @@
                                 </a>
                             </th>
                             <th>
-                                <a href="DisplayAccount?idRole=${roleId}&sortBy=name&sortOrder=${sortBy == 'name' && sortOrder == 'asc' ? 'desc' : 'asc'}">
+                                <a href="DisplayAccount?idRole=${roleId}&sortBy=name&sortOrder=${sortBy == 'name' && sortOrder == 'asc' ? 'desc' : 'asc'}&page=${currentPage}">
                                     Username
                                     <c:if test="${sortBy == 'name'}">
                                         <c:choose>
@@ -67,7 +67,7 @@
                                 </a>
                             </th>
                             <th>
-                                <a href="DisplayAccount?idRole=${roleId}&sortBy=email&sortOrder=${sortBy == 'email' && sortOrder == 'asc' ? 'desc' : 'asc'}">
+                                <a href="DisplayAccount?idRole=${roleId}&sortBy=email&sortOrder=${sortBy == 'email' && sortOrder == 'asc' ? 'desc' : 'asc'}&page=${currentPage}">
                                     Email
                                     <c:if test="${sortBy == 'email'}">
                                         <c:choose>
@@ -109,7 +109,16 @@
                     <c:if test="${currentPage > 1}">
                         <a href="DisplayAccount?idRole=${roleId}&page=${currentPage - 1}&sortBy=${sortBy}&sortOrder=${sortOrder}">Previous</a>
                     </c:if>
-                    <span>Page ${currentPage} of ${totalPages}</span>
+                    <c:forEach begin="1" end="${totalPages}" var="page">
+                        <c:choose>
+                            <c:when test="${page == currentPage}">
+                                <span class="current-page">${page}</span>
+                            </c:when>
+                            <c:otherwise>
+                                <a href="DisplayAccount?idRole=${roleId}&page=${page}&sortBy=${sortBy}&sortOrder=${sortOrder}">${page}</a>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
                     <c:if test="${currentPage < totalPages}">
                         <a href="DisplayAccount?idRole=${roleId}&page=${currentPage + 1}&sortBy=${sortBy}&sortOrder=${sortOrder}">Next</a>
                     </c:if>

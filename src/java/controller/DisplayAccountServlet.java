@@ -9,11 +9,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
+import java.util.stream.Collectors;
 import model.User;
 
 public class DisplayAccountServlet extends HttpServlet {
+
+    // Số bản ghi trên mỗi trang
+    private static final int RECORDS_PER_PAGE = 5;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -39,6 +42,7 @@ public class DisplayAccountServlet extends HttpServlet {
             }
             int rId = Integer.parseInt(roleId);
 
+            // Lấy danh sách người dùng
             ArrayList<User> uList = DAOUser.INSTANCE.getUsersByRoleId(rId);
             if (uList == null) {
                 request.setAttribute("error", "Error retrieving users from database");
@@ -46,6 +50,7 @@ public class DisplayAccountServlet extends HttpServlet {
                 return;
             }
 
+            // Xử lý sắp xếp
             String sortBy = request.getParameter("sortBy");
             String sortOrder = request.getParameter("sortOrder");
             if (sortBy != null) {
@@ -54,14 +59,25 @@ public class DisplayAccountServlet extends HttpServlet {
                     if ("desc".equals(sortOrder)) {
                         comparator = comparator.reversed();
                     }
-                    Collections.sort(uList, comparator);
+                    uList = uList.stream().sorted(comparator).collect(Collectors.toCollection(ArrayList::new));
                 }
             }
 
-            request.setAttribute("uList", uList);
+            // Xử lý phân trang
+            int totalRecords = uList.size();
+            int totalPages = (int) Math.ceil((double) totalRecords / RECORDS_PER_PAGE);
+            int currentPage = getCurrentPage(request, totalPages);
+            int startIndex = (currentPage - 1) * RECORDS_PER_PAGE;
+            int endIndex = Math.min(startIndex + RECORDS_PER_PAGE, totalRecords);
+
+            ArrayList<User> paginatedList = new ArrayList<>(uList.subList(startIndex, endIndex));
+
+            request.setAttribute("uList", paginatedList);
             request.setAttribute("roleId", rId);
             request.setAttribute("sortBy", sortBy);
             request.setAttribute("sortOrder", sortOrder != null && "desc".equals(sortOrder) ? "desc" : "asc");
+            request.setAttribute("currentPage", currentPage);
+            request.setAttribute("totalPages", totalPages);
             RequestDispatcher requestDispatcher = request.getRequestDispatcher("view/displayAccounts.jsp");
             requestDispatcher.forward(request, response);
         } catch (NumberFormatException e) {
@@ -88,6 +104,7 @@ public class DisplayAccountServlet extends HttpServlet {
             }
             int rId = Integer.parseInt(roleId);
 
+            // Lấy toàn bộ danh sách người dùng theo roleId
             ArrayList<User> uList = DAOUser.INSTANCE.getUsersByRoleId(rId);
             if (uList == null) {
                 request.setAttribute("error", "Error retrieving users from database");
@@ -95,6 +112,7 @@ public class DisplayAccountServlet extends HttpServlet {
                 return;
             }
 
+            // Lọc danh sách thủ công dựa trên keyword
             if (keyWord != null && !keyWord.trim().isEmpty()) {
                 final String searchKey = keyWord.toLowerCase();
                 ArrayList<User> filteredList = new ArrayList<>();
@@ -114,9 +132,36 @@ public class DisplayAccountServlet extends HttpServlet {
                 uList = filteredList;
             }
 
-            request.setAttribute("uList", uList);
-            request.setAttribute("roleId", rId);
+            // Xử lý sắp xếp
+            String sortBy = request.getParameter("sortBy");
+            String sortOrder = request.getParameter("sortOrder");
+            if (sortBy != null) {
+                Comparator<User> comparator = getComparator(sortBy);
+                if (comparator != null) {
+                    if ("desc".equals(sortOrder)) {
+                        comparator = comparator.reversed();
+                    }
+                    uList = uList.stream().sorted(comparator).collect(Collectors.toCollection(ArrayList::new));
+                }
+            }
 
+            // Xử lý phân trang
+            int totalRecords = uList.size();
+            int totalPages = (int) Math.ceil((double) totalRecords / RECORDS_PER_PAGE);
+            int currentPage = getCurrentPage(request, totalPages);
+            int startIndex = (currentPage - 1) * RECORDS_PER_PAGE;
+            int endIndex = Math.min(startIndex + RECORDS_PER_PAGE, totalRecords);
+
+            ArrayList<User> paginatedList = new ArrayList<>(uList.subList(startIndex, endIndex));
+
+            request.setAttribute("uList", paginatedList);
+            request.setAttribute("roleId", rId);
+            request.setAttribute("sortBy", sortBy);
+            request.setAttribute("sortOrder", sortOrder != null && "desc".equals(sortOrder) ? "desc" : "asc");
+            request.setAttribute("currentPage", currentPage);
+            request.setAttribute("totalPages", totalPages);
+
+            // Lấy thông báo thành công từ session (nếu có)
             String successMessage = (String) session.getAttribute("success");
             if (successMessage != null) {
                 request.setAttribute("success", successMessage);
@@ -133,7 +178,7 @@ public class DisplayAccountServlet extends HttpServlet {
         }
     }
 
-    // Phương thức hỗ trợ để lấy Comparator 
+    // Phương thức hỗ trợ để lấy Comparator dựa trên sortBy
     private Comparator<User> getComparator(String sortBy) {
         switch (sortBy) {
             case "id":
@@ -145,6 +190,22 @@ public class DisplayAccountServlet extends HttpServlet {
             default:
                 return null;
         }
+    }
+
+    // Phương thức hỗ trợ để lấy trang hiện tại
+    private int getCurrentPage(HttpServletRequest request, int totalPages) {
+        String pageParam = request.getParameter("page");
+        int currentPage = 1;
+        if (pageParam != null && !pageParam.trim().isEmpty()) {
+            try {
+                currentPage = Integer.parseInt(pageParam);
+                if (currentPage < 1) currentPage = 1;
+                if (currentPage > totalPages) currentPage = totalPages;
+            } catch (NumberFormatException e) {
+                currentPage = 1;
+            }
+        }
+        return currentPage;
     }
 
     @Override
