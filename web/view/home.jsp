@@ -113,7 +113,10 @@
                                     <input type="hidden" name="productId" value="${o.id}" />
                                     <button class="card-button" type="submit">🛒 Add to Cart</button>
                                 </form>
-                                <button class="card-button" type="submit" value="buy">💰 Buy</button>
+                                <form class="btnBuy" action="placeOrder" method="get">
+                                    <input type="hidden" name="productId" value="${o.id}" />
+                                    <button class="card-button" type="submit" value="buy">💰 Buy</button>
+                                </form>
                             </c:if> 
                         </div>
                     </c:forEach>

@@ -6,6 +6,65 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     Created on : Jun 26, 2025, 1:36:55 PM
     Author     : ASUS
 */
-.order-itemTable{
-   width: 100%;
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0 20px;
+}
+
+h1, h2 {
+    text-align: center;
+    color: #333;
+}
+
+.Table-OrderInfor {
+    width: 100%;
+    max-width: 700px;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.Table-OrderInfor td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    vertical-align: top;
+}
+
+.Table-OrderInfor tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.Table-OrderInfor td:first-child {
+    font-weight: bold;
+    width: 40%;
+    background-color: #f0f0f0;
+}
+
+.Table-Product {
+    width: 100%;
+    max-width: 1000px;
+    margin: 30px auto;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.Table-Product th, .Table-Product td {
+    padding: 12px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+.Table-Product th {
+    background-color: #e9ecef;
+    font-weight: bold;
+}
+
+.Table-Product img {
+    max-width: 80px;
+    height: auto;
+    border-radius: 8px;
 }

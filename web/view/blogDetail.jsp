@@ -177,7 +177,7 @@
                         <form method="post" action="${pageContext.request.contextPath}/blogDetail" >                       
                             <input type="hidden" name="blogId" value="${blogId} %>">
                             <button type="button" onclick="openPopup(${blogId}, '<%= f.getContent().replace("'", "\\'") %>', <%= f.getRate() %>)">Edit</button>
-                            <button type="submit" name="action" value="deleteFeedback">Delete</button>
+                            <button type="submit" name="action" value="deleteBlog">Delete</button>
                         </form>
                     </div>
                     <% } %>
@@ -186,12 +186,12 @@
                 <div class="popup" id="popup">
                     <h3>Edit Blog</h3>
                     <form id="editBlog" method="post" action="${pageContext.request.contextPath}/blogDetail">
-                        <input type="hidden" name="productId" value="<%= productId %>">
-                        <input type="hidden" name="feedbackId" id="feedbackId">
+                        <input type="hidden" name="blogId" value="${blogId}">
+                        
                         <input type="hidden" name="action" value="editBlog">
-                        <p>ảnh sửa</p>
+                        <p>image</p>
                         <textarea id="title" name="title" placeholder="Enter your content here..." required></textarea>
-                        <textarea id="content" name="content" placeholder="Enter your content here..." required></textarea>
+                        <textarea id="description" name="content" placeholder="Enter your content here..." required></textarea>
                         <button type="submit" class="button">Save</button>
                         <button type="button" class="button" onclick="closePopup()">Cancel</button>
                     </form>

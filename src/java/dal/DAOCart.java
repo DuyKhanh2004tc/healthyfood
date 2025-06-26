@@ -157,4 +157,25 @@ public class DAOCart {
         }
     }
 
-}
+    public void deleteCartItemsByUserId(int userId) {
+        try {
+            String getCartIdSQL = " SELECT id FROM Cart WHERE user_id = ? ";
+            int cartId = -1;
+            try (PreparedStatement st = con.prepareStatement(getCartIdSQL)) {
+                st.setInt(1, userId);
+                ResultSet rs = st.executeQuery();
+                if (rs.next()) {
+                    cartId = rs.getInt("id");
+                    String sql = "DELETE FROM CartItem WHERE cart_id = ?";
+                    try (PreparedStatement st2 = con.prepareStatement(sql)) {
+                        st2.setInt(1, cartId);
+                        st2.executeUpdate();
+                    }
+                }
+            }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }

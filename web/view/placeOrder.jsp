@@ -24,10 +24,11 @@
                         <th>Number</th>
                         <th>Product</th>
                         <th>Quantity</th>
+                        <th>In stock</th>
                         <th>Total Price</th>
                         <th>Shelf Life Hours</th>
                     </tr>
-                <c:if test="${sessionScope.user.getRole().getId()== 3}">
+                <c:if test="${sessionScope.user.getRole().getId()== 3 && requestScope.product == null}">
                     <c:set var="totalAmount" value="0"/>
                     <c:forEach items="${sessionScope.itemList}" var="i" varStatus="loop">
                         <tr class="cartItem">
@@ -38,18 +39,19 @@
                                     ${i.product.name}
                             </td>
                             <td>${i.quantity}</td>
+                            <td>${i.product.stock}</td>
                             <td><fmt:formatNumber value="${i.product.price * i.quantity}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                             <td>${i.product.shelfLifeHours}</td>
                         </tr>
                         <c:set var="totalAmount" value="${totalAmount + (i.product.price * i.quantity)}"/>
                     </c:forEach>
                     <tr class="totalAmount">
-                        <td colspan="3"></td>
+                        <td colspan="4"></td>
                         <td>Total Amount:</td>
                         <td><fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                     </tr>
                 </c:if>
-                <c:if test="${sessionScope.user == null}">
+                <c:if test="${sessionScope.user == null && requestScope.product == null}">
                     <c:forEach items="${sessionScope.itemList}" var="i" varStatus="loop">
                         <tr class="cartItem">
                             <td>${loop.index + 1}</td>
@@ -59,21 +61,41 @@
                                     ${i.product.name}
                             </td>
                             <td>${i.quantity}</td>
+                            <td>${i.product.stock}</td>
                             <td><fmt:formatNumber value="${i.product.price * i.quantity}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                             <td>${i.product.shelfLifeHours}</td>
                         </tr>
                         <c:set var="totalAmount" value="${totalAmount + (i.product.price * i.quantity)}"/>
                     </c:forEach>
                     <tr class="totalAmount">
-                        <td colspan="3"></td>
+                        <td colspan="4"></td>
                         <td>Total Amount:</td>
                         <td><fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
+                    </tr>
+                    
+                </c:if>
+                <c:if test="${sessionScope.user.getRole().getId()== 3 && requestScope.product != null}">
+                    <tr class="cartItem">
+                        <td>1</td>
+                        <td>
+                            <a href="${pageContext.request.contextPath}/productDetail?productId=${requestScope.product.id}">
+                                <img src="${requestScope.product.imgUrl}" width="80" alt="Product"></a>
+                                ${requestScope.product.name}
+                        </td>
+                        <td>1</td>
+                        <td><fmt:formatNumber value="${requestScope.product.price}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
+                        <td>${requestScope.product.shelfLifeHours}</td>
+                    </tr>
+                    <tr class="totalAmount">
+                        <td colspan="4"></td>
+                        <td>Total Amount:</td>
+                        <td><fmt:formatNumber value="${requestScope.product.price}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                     </tr>
                 </c:if>
             </table>
         </div>
         <c:if test="${sessionScope.user != null}">        
-            <form class="form-placeOrder" action="orderCheckout" method="get" onsubmit="return confirmOrder()">
+            <form class="form-placeOrder" action="orderCheckout" method="post" onsubmit="return confirmOrder()">
                 <table>
                     <tr>
                         <td>Receiver Name:</td>
@@ -118,7 +140,7 @@
             </form>
         </c:if>
         <c:if test="${sessionScope.user == null}">        
-            <form class="form-placeOrder" action="orderCheckout" method="get" onsubmit="return confirmOrder()">
+            <form class="form-placeOrder" action="orderCheckout" method="post" onsubmit="return confirmOrder()">
                 <table>
                     <tr>
                         <td>Receiver Name:</td>
@@ -159,6 +181,7 @@
                     </tr>
                 </table>
                 <input type="hidden" name="totalAmount" value="${totalAmount}">
+                <input type="hidden" name="pId" value="${requestScope.product.id}">
                 <input class="btn_placeOrder" type="submit" value="Place Order">
             </form>
         </c:if>

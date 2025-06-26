@@ -5,12 +5,14 @@
 
 package controller;
 
+import dal.DAOProduct;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.Product;
 
 /**
  *
@@ -53,6 +55,13 @@ public class PlaceOrderServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        DAOProduct dao = new DAOProduct();
+        if(request.getParameter("productId")!=null){
+            int productId = Integer.parseInt(request.getParameter("productId"));
+            Product p = dao.getProductById(productId);
+            request.setAttribute("product", p);
+            request.getRequestDispatcher("/view/placeOrder.jsp").forward(request, response);
+        }
         request.getRequestDispatcher("/view/placeOrder.jsp").forward(request, response);
     } 
 

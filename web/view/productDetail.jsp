@@ -290,16 +290,7 @@
                     <p>Description: <%= description %></p>
                     <p>Shelf Life: <%= shelfLifeHours %> hours</p>
 
-                    <form action="${pageContext.request.contextPath}/productDetail" method="post">
-                        <input type="hidden" name="productId" value="<%= productId %>">
-                        <c:if test="${sessionScope.user.getRole().getId() == null || sessionScope.user.getRole().getId() == 3}">
-                            <div class="quantity-controls">
-                                <button type="button" onclick="updateQuantity(-1)">-</button>
-                                <input type="text" name="number1" id="quantity" value="1" min="1" max="<%= stock %>">
-                                <button type="button" onclick="updateQuantity(1)">+</button>
-                            </div>
-                        </c:if>
-                    </form>
+
                     <%
                         String error = (String) session.getAttribute("error");
                         if (error != null) {
@@ -314,13 +305,16 @@
                     <% session.removeAttribute("message");  } %> 
                     <div class="twoButton">
                         <c:if test="${sessionScope.user.getRole().getId()== null ||sessionScope.user.getRole().getId()== 3 }">
-                            <form action="cart" method="get" onsubmit="syncQuantity()">
+                            <form action="productDetail" method="post">
                                 <input type="hidden" name="productId" value="<%= productId%>" />
-                                <input type="hidden" name="number1" id="hiddenQuantity">
-                                <button class="card-button" type="submit">🛒 Add to Cart</button>
+                                <div class="quantity-controls">
+                                    <button type="button" onclick="updateQuantity(-1)">-</button>
+                                    <input type="text" name="number" id="quantity" value="1" min="1" max="<%= stock %>">
+                                    <button type="button" onclick="updateQuantity(1)">+</button>
+                                </div>
+                                <button class="card-button" type="submit" name="action" value="add">🛒 Add to Cart</button>
                             </form>
-
-                            <button class="card-button" type="submit" value="buy">💰 Buy</button>
+                            <button class="card-button" type="submit" name= "action"value="buy">💰 Buy</button>
                         </c:if> 
                     </div>
                 </div>
@@ -344,7 +338,7 @@
                 <% session.removeAttribute("messagef");  } %> 
                 <%
                     ArrayList<Feedback> feedback = (ArrayList<Feedback>) request.getAttribute("feedbackList");
-                    User sessionUser = (User) session.getAttribute("user"); // Get user from session
+                    User sessionUser = (User) session.getAttribute("user");
                     if (feedback != null && !feedback.isEmpty()) {
                         for (Feedback f : feedback) {
                 %>
@@ -434,11 +428,6 @@
                 document.getElementById('popup').style.display = 'none';
                 document.getElementById('overlay').style.display = 'none';
             }
-function syncQuantity() {
-    const visibleInput = document.getElementById("quantity");
-    const hiddenInput = document.getElementById("hiddenQuantity");
-    hiddenInput.value = visibleInput.value;
-}
 
         </script>
 

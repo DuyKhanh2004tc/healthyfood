@@ -24,7 +24,7 @@ public class DAOOrder {
     
     public int insertOrder(Order order){
         int orderId = -1;
-        String sql = "INSERT INTO Orders (user_id, total_amount, payment_method, status, shipper_id, "
+        String sql = "INSERT INTO Orders (user_id, total_amount, payment_method, status_id, shipper_id, "
                 + "receiver_name, receiver_phone, receiver_email, shipping_address) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try(PreparedStatement st = con.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)) {
@@ -35,7 +35,7 @@ public class DAOOrder {
             }
             st.setDouble(2, order.getTotalAmount());
             st.setString(3, order.getPaymentMethod());
-            st.setString(4, order.getStatus());
+            st.setInt(4, order.getStatus().getId());
             if(order.getShipper()!= null){
                 st.setInt(5,order.getShipper().getId());
             } else {

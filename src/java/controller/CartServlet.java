@@ -67,7 +67,11 @@ public class CartServlet extends HttpServlet {
         User u = (User) session.getAttribute("user");
         DAOProduct dao = new DAOProduct();
         DAOCart daoCart = new DAOCart();
-
+        String stockError = (String) session.getAttribute("stockError");
+        if (stockError != null) {
+            request.setAttribute("stockError", stockError);
+            session.removeAttribute("stockError");
+        }
         if (u != null) {
             if (request.getParameter("number") != null && request.getParameter("id") != null) {
                 try {
@@ -91,6 +95,7 @@ public class CartServlet extends HttpServlet {
                             String number1 = request.getParameter("number1");
                             dao.addToCart(userId, productId, Integer.parseInt(number1));
                             response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
+                            return;
                         } else {
                             dao.addToCart(userId, productId, 1);
                             response.sendRedirect("home");
@@ -113,6 +118,7 @@ public class CartServlet extends HttpServlet {
 
                 request.setAttribute("itemList", itemList);
                 request.getRequestDispatcher("/view/cart.jsp").forward(request, response);
+                return;
             }
         } else {
             if (request.getParameter("productId") != null) {

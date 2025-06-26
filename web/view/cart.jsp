@@ -24,6 +24,7 @@
                     <th>Number</th>
                     <th>Product</th>
                     <th>Quantity</th>
+                    <th>In stock</th>
                     <th>Total Price</th>
                     <th>Shelf Life Hours</th>
                     <th><a href="home">Back to Home</a></th>
@@ -42,8 +43,8 @@
                             <button class="btnSub" onclick="location.href = 'cart?number=-1&id=${i.product.id}'">-</button>
                             ${i.quantity}
                             <button class="btnAdd" onclick="location.href = 'cart?number=1&id=${i.product.id}'">+</button>  
-
                         </td>
+                        <td>${i.product.stock}</td>
                         <td><fmt:formatNumber value="${i.product.price * i.quantity}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                         <td>${i.product.shelfLifeHours}</td>
                         <td><button class="btnRemove" onclick="location.href = 'removeItem?removePId=${i.product.id}'">Remove</button></td>
@@ -51,7 +52,9 @@
                     <c:set var="totalAmount" value="${totalAmount + (i.product.price * i.quantity)}"/>
                 </c:forEach>
                 <tr class="totalAmount">
-                    <td colspan="4"></td>
+                    <td colspan="5"><c:if test="${not empty stockError}">
+                            ${stockError}
+                        </c:if></td>
                     <td>Total Amount:</td>
                     <td><fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                 </tr>
@@ -72,6 +75,7 @@
                             <button class="btnAdd" onclick="location.href = 'cart?number=1&id=${i.product.id}'">+</button>  
 
                         </td>
+                        <td>${i.product.stock}</td>
                         <td><fmt:formatNumber value="${i.product.price * i.quantity}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                         <td>${i.product.shelfLifeHours}</td>
                         <td><button class="btnRemove" onclick="location.href = 'removeItem?removePId=${i.product.id}'">Remove</button></td>
@@ -79,7 +83,7 @@
                     <c:set var="totalAmount" value="${totalAmount + (i.product.price * i.quantity)}"/>
                 </c:forEach>
                 <tr class="totalAmount">
-                    <td colspan="4"></td>
+                    <td colspan="5"></td>
                     <td>Total Amount:</td>
                     <td><fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                 </tr>
@@ -91,6 +95,7 @@
         <c:if test="${empty requestScope.itemList and empty sessionScope.itemList}">
             <p>Your cart is empty.</p>
         </c:if>
+
         <% if(request.getAttribute("itemList")!=null){
             HttpSession Session = request.getSession();
             List<CartItem> itemList = (List<CartItem>)request.getAttribute("itemList");
@@ -98,7 +103,6 @@
         }      
         %>
         <form class="btnBuy" action="placeOrder" method="get">
-            <input type="hidden" name="productId" value="${o.id}" />
             <button class="card-button" type="submit" value="buy">💰 Buy</button>
         </form>
 

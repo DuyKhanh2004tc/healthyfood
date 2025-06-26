@@ -1,5 +1,6 @@
 package controller;
 
+import dal.DAOCart;
 import dal.DAOFeedback;
 import dal.DAOOrder;
 import dal.DAOProduct;
@@ -63,7 +64,7 @@ public class ProductDetailServlet extends HttpServlet {
         int productId;
         try {
             productId = Integer.parseInt(productIdStr);
-            
+
         } catch (NumberFormatException e) {
             request.setAttribute("error", "Invalid product ID.");
             request.getRequestDispatcher("view/productDetail.jsp").forward(request, response);
@@ -126,6 +127,7 @@ public class ProductDetailServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         String productIdStr = request.getParameter("productId");
+        User user = (User) request.getSession().getAttribute("user");
         int productId;
         try {
             productId = Integer.parseInt(productIdStr);
@@ -145,7 +147,7 @@ public class ProductDetailServlet extends HttpServlet {
             return;
         }
         if ("comment".equals(action)) {
-            User user = (User) request.getSession().getAttribute("user");
+
             if (user == null || user.getRole().getId() != 3) {
                 response.sendRedirect("login.jsp");
                 return;
@@ -198,7 +200,7 @@ public class ProductDetailServlet extends HttpServlet {
             return;
 
         } else if ("editFeedback".equals(action)) {
-            User user = (User) request.getSession().getAttribute("user");
+
             if (user == null || user.getRole().getId() != 3) {
                 response.sendRedirect("login.jsp");
                 return;
@@ -229,36 +231,35 @@ public class ProductDetailServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
             return;
 
-        } else if ("add".equals(action)) {
-            String numberStr = request.getParameter("number");
-            int number;
-            try {
-                number = Integer.parseInt(numberStr);
-                if (number <= 0) {
-                    request.getSession().setAttribute("error", "Quantity must be greater than 0.");
-                    doGet(request, response);
-                    return;
-                }
-            } catch (NumberFormatException e) {
-                request.getSession().setAttribute("error", "Invalid quantity.");
-                doGet(request, response);
-                return;
-            }
-
-            if (number > product.getStock()) {
-                request.getSession().setAttribute("error", "Requested quantity exceeds available stock.");
-                doGet(request, response);
-                return;
-            }
-
-            request.getSession().setAttribute("message", "Added to cart successfully.");
-            response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
+        } if ("add".equals(action)) {
+    String numberStr = request.getParameter("number");
+    int number;
+    try {
+        number = Integer.parseInt(numberStr);
+        if (number <= 0) {
+            request.getSession().setAttribute("error", "Quantity must be greater than 0.");
+            doGet(request, response);
             return;
         }
-
-        
-        request.setAttribute("error", "Invalid action.");
+    } catch (NumberFormatException e) {
+        request.getSession().setAttribute("error", "Invalid quantity.");
         doGet(request, response);
+        return;
+    }
+
+    if (number > product.getStock()) {
+        request.getSession().setAttribute("error", "Requested quantity exceeds available stock.");
+        doGet(request, response);
+        return;
+    } else {
+        daoProduct.addToCart(user.getId(), productId, number);
+        request.getSession().setAttribute("message", "Added to cart successfully.");
+        response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
+        return; 
+    }
+}     
+        doGet(request, response);
+        return;
     }
 
     @Override

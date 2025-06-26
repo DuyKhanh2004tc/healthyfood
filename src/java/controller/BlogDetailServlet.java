@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 
 import model.Blog;
+import model.User;
 
 /**
  *
@@ -72,11 +73,11 @@ public class BlogDetailServlet extends HttpServlet {
         Blog blog = dao.getBlogById(blogId);
         List<Blog> b = dao.getAllBlog();
         int prevId = 0;
-        int nextId= 0;
+        int nextId = 0;
         for (int i = 0; i < b.size(); i++) {
             if (b.get(i).getId() == blogId) {
                 if (i > 0) {
-                    prevId =b.get(i - 1).getId();
+                    prevId = b.get(i - 1).getId();
                 }
                 if (i < b.size() - 1) {
                     nextId = b.get(i + 1).getId();
@@ -84,7 +85,7 @@ public class BlogDetailServlet extends HttpServlet {
                 break;
             }
         }
-        
+
         request.setAttribute("blogId", blog.getId());
         request.setAttribute("title", blog.getTitle());
         request.setAttribute("description", blog.getDescription());
@@ -107,7 +108,21 @@ public class BlogDetailServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String action = request.getParameter("action");
+        User user = (User) request.getSession().getAttribute("user");
+        if("editBlog".equals(action)){
+        String blogIdstr = request.getParameter("blogId");
+        String title = request.getParameter("title");
+        String description = request.getParameter("description");
         
+        int blogId = Integer.parseInt(blogIdstr);
+        Blog blog = new Blog();
+        blog.setId(blogId);
+        blog.setCreated_at(new java.sql.Timestamp(System.currentTimeMillis()));
+        blog.setDescription(description);
+        blog.setTitle(title);
+        blog.setUser(user);
+        }
     }
 
     /**

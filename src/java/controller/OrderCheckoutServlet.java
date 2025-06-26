@@ -4,7 +4,9 @@
  */
 package controller;
 
+import dal.DAOCart;
 import dal.DAOOrder;
+import dal.DAOProduct;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,7 +14,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import model.CartItem;
 import model.Order;
+import model.OrderStatus;
 import model.User;
 
 /**
@@ -59,36 +64,7 @@ public class OrderCheckoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        DAOOrder dao = new DAOOrder();
-        User u = (User) session.getAttribute("user");
-        if (request.getParameter("userName") != null && request.getParameter("phone") != null && request.getParameter("paymentMethod") != null
-                && request.getParameter("address") != null && request.getParameter("email") != null && request.getParameter("totalAmount") != null) {
-            try {
-                String userName = request.getParameter("userName");
-                String phone = request.getParameter("phone");
-                String address = request.getParameter("address");
-                String email = request.getParameter("email");
-                String paymentMethod = request.getParameter("paymentMethod");
-                Double totalAmount = Double.parseDouble(request.getParameter("totalAmount"));
-                Order order = new Order();
-                order.setUser(u);
-                order.setPaymentMethod(paymentMethod);
-                order.setReceiverEmail(email);
-                order.setReceiverName(userName);
-                order.setReceiverPhone(phone);
-                order.setShippingAddress(address);
-                order.setStatus("pending");
-                order.setShipper(null);
-                order.setTotalAmount(totalAmount);
-                
-                int orderId = dao.insertOrder(order);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
-        request.getRequestDispatcher("/view/orderCheckout.jsp").forward(request, response);
     }
 
     /**
@@ -102,7 +78,71 @@ public class OrderCheckoutServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        DAOProduct daoProduct = new DAOProduct();
+        DAOOrder daoOrder = new DAOOrder();
+        DAOCart daoCart = new DAOCart();
+        User u = (User) session.getAttribute("user");
+        String userName = request.getParameter("userName");
+        String phone = request.getParameter("phone");
+        String address = request.getParameter("address");
+        String email = request.getParameter("email");
+        String paymentMethod = request.getParameter("paymentMethod");
+        Double totalAmount = Double.parseDouble(request.getParameter("totalAmount"));
+        if (request.getParameter("userName") != null && request.getParameter("phone") != null && request.getParameter("paymentMethod") != null
+                && request.getParameter("address") != null && request.getParameter("email") != null && request.getParameter("totalAmount") != null) {
+            try {
+                boolean isEnoughStock = true;
+                List<CartItem> itemList = (List<CartItem>) session.getAttribute("itemList");
+                for (CartItem item : itemList) {
+                    int productId = item.getProduct().getId();
+                    int quantityOrdered = item.getQuantity();
+                    int stock = daoProduct.getProductStock(productId);
+                    if (stock < quantityOrdered) {
+                        isEnoughStock = false;
+                        break;
+                    }
+                }
 
+                if (!isEnoughStock) {
+                    session.setAttribute("stockError", "Some items in your cart are out of stock or not enough stock.");
+                    response.sendRedirect("cart");
+                    return;
+                }
+
+                Order order = new Order();
+                order.setUser(u);
+                order.setPaymentMethod(paymentMethod);
+                order.setReceiverEmail(email);
+                order.setReceiverName(userName);
+                order.setReceiverPhone(phone);
+                order.setShippingAddress(address);
+                OrderStatus orderStatus = new OrderStatus();
+                orderStatus.setId(1);
+                order.setStatus(orderStatus);
+                order.setShipper(null);
+                order.setTotalAmount(totalAmount);
+                int orderId = daoOrder.insertOrder(order);
+                order.setId(orderId);
+
+                for (CartItem item : itemList) {
+                    int productId = item.getProduct().getId();
+                    int quantityOrdered = item.getQuantity();
+                    daoProduct.reduceStock(productId, quantityOrdered);
+                }
+
+                daoCart.deleteCartItemsByUserId(u.getId());
+
+                request.setAttribute("order", order);
+                request.setAttribute("itemList", itemList);
+                session.removeAttribute("itemList");
+                request.getRequestDispatcher("/view/orderCheckout.jsp").forward(request, response);
+                return;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        request.getRequestDispatcher("/view/orderCheckout.jsp").forward(request, response);
     }
 
     /**
