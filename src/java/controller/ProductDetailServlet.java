@@ -247,11 +247,8 @@ public class ProductDetailServlet extends HttpServlet {
         return;
     }
 
-    if (number > product.getStock()) {
-        request.getSession().setAttribute("error", "Requested quantity exceeds available stock.");
-        doGet(request, response);
-        return;
-    } else {
+ 
+     {
         daoProduct.addToCart(user.getId(), productId, number);
         request.getSession().setAttribute("message", "Added to cart successfully.");
         response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
