@@ -231,30 +231,31 @@ public class ProductDetailServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
             return;
 
-        } if ("add".equals(action)) {
-    String numberStr = request.getParameter("number");
-    int number;
-    try {
-        number = Integer.parseInt(numberStr);
-        if (number <= 0) {
-            request.getSession().setAttribute("error", "Quantity must be greater than 0.");
-            doGet(request, response);
+        }
+        if ("add".equals(action)) {
+            String numberStr = request.getParameter("number");
+            int number;
+            try {
+                number = Integer.parseInt(numberStr);
+                if (number <= 0) {
+                    request.getSession().setAttribute("error", "Quantity must be greater than 0.");
+                    doGet(request, response);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                request.getSession().setAttribute("error", "Invalid quantity.");
+                doGet(request, response);
+                return;
+            }
+
+            if (number > product.getStock()) {
+                request.getSession().setAttribute("stockError", "Some items in your cart are out of stock or not enough stock.");
+            }
+            daoProduct.addToCart(user.getId(), productId, number);
+            request.getSession().setAttribute("message", "Added to cart successfully.");
+            response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
             return;
         }
-    } catch (NumberFormatException e) {
-        request.getSession().setAttribute("error", "Invalid quantity.");
-        doGet(request, response);
-        return;
-    }
-
- 
-     {
-        daoProduct.addToCart(user.getId(), productId, number);
-        request.getSession().setAttribute("message", "Added to cart successfully.");
-        response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
-        return; 
-    }
-}     
         doGet(request, response);
         return;
     }
