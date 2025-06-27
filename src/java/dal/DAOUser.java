@@ -370,6 +370,39 @@ public class DAOUser {
         return false;
     }
 }
+    
+public boolean updateProfile(String name, String email, String phone, Date dob, String address, Boolean gender) {
+    String sql = "UPDATE Users SET name = ?, phone = ?, dob = ?, address = ?, gender = ? WHERE email = ?";
+    try {
+        if (con == null) {
+            status = "Error: Database connection is null";
+            return false;
+        }
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setString(1, name);
+        ps.setString(2, phone);
+        ps.setDate(3, dob);
+        ps.setString(4, address);
+        ps.setBoolean(5, gender);
+        ps.setString(6, email);
+
+        int rowsAffected = ps.executeUpdate();
+        ps.close();
+
+        if (rowsAffected > 0) {
+            status = "OK: Profile updated successfully for email " + email;
+            return true;
+        } else {
+            status = "Error: No user found with email " + email;
+            return false;
+        }
+    } catch (SQLException e) {
+        status = "Error at updateProfile: " + e.getMessage();
+        System.err.println(status);
+        return false;
+    }
+}
+
 
     
     public static void main(String[] args) {

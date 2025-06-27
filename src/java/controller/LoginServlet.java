@@ -86,7 +86,7 @@ public class LoginServlet extends HttpServlet {
 
                 for (User u : userList) {
                     //if (u.getEmail().equals(email) && PasswordUtil.checkPassword(password, u.getPassword())) {
-                    if (u.getEmail().equals(email) && u.getPassword().equals(password)) {
+                    if (u.getEmail() != null && u.getEmail().equals(email) && u.getPassword().equals(password)) {
                         matchedUser = u;
                         break;
                     }

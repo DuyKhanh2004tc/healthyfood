@@ -35,7 +35,7 @@
                     </c:if>
                     <c:if test="${sessionScope.user.getRole().getId()==3}">
                         <a>Welcome Customer ${sessionScope.user.getName()}</a>    
-                        <a href="${pageContext.request.contextPath}/profile">Profile</a>
+                        <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
                         <a href="${pageContext.request.contextPath}/cart">Cart</a>
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
                         <a href="${pageContext.request.contextPath}/logout">Logout</a>
@@ -46,7 +46,7 @@
                     </c:if>
                     <c:if test="${sessionScope.user.getRole().getId()==2}">
                         <a>Welcome Manager ${sessionScope.user.getName()}</a>    
-                        <a href="${pageContext.request.contextPath}/profile">Profile</a>
+                        <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
                         <a href="${pageContext.request.contextPath}/manageproduct">Manage Product</a>
                         <a href="${pageContext.request.contextPath}/approveProduct">Approve new products</a>                   
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
@@ -58,7 +58,7 @@
                     </c:if>
                     <c:if test="${sessionScope.user.getRole().getId()==5}">
                         <a>Welcome Seller ${sessionScope.user.getName()}</a>    
-                        <a href="${pageContext.request.contextPath}/profile">Profile</a>
+                        <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
                         <a href="${pageContext.request.contextPath}/manageproduct">Manage Product</a>                 
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
                         <a href="${pageContext.request.contextPath}/logout">Logout</a>
