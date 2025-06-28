@@ -79,7 +79,8 @@ public class UpdateProfileServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         //processRequest(request, response);
-        try {
+        HttpSession session = request.getSession();
+                try {
             String fullName = request.getParameter("fullname");
             String email = request.getParameter("email");
             String phoneNumber = request.getParameter("phonenumber");
@@ -87,38 +88,80 @@ public class UpdateProfileServlet extends HttpServlet {
             String address = request.getParameter("address");
             String gender = request.getParameter("gender");
 
-            HttpSession session = request.getSession();
-            DAOUser dao = new DAOUser();
+            boolean hasError = false;
 
-            if (!phoneNumber.matches("^(0|\\+84)[0-9]{9}$")) {
-                request.setAttribute("errorPhone", "Invalid phone number. It must start with 0 or +84 and contain 9 digits after.");
-                request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
-                return;
+
+            if (fullName != null) {
+                fullName = fullName.trim().replaceAll("\\s+", " ");
+            }
+            if (address != null) {
+                address = address.trim().replaceAll("\\s+", " ");
+            }
+            if (phoneNumber != null) {
+                phoneNumber = phoneNumber.trim().replaceAll("\\s+", "");
+            }
+
+            if (fullName == null || fullName.isEmpty() || fullName.length() < 2 || fullName.length() > 50 || !fullName.matches("^[\\p{L}\\s]+$")) {
+                request.setAttribute("errorName", "Full name must be 2-50 characters and contain only letters and spaces.");
+                hasError = true;
+            }
+
+            if (phoneNumber == null || phoneNumber.isEmpty() || !phoneNumber.matches("^(0|\\+84)[0-9]{9}$")) {
+                request.setAttribute("errorPhone", "Phone number must start with 0 or +84 and contain exactly 9 digits.");
+                hasError = true;
             }
 
             Date dob = null;
-            if (dateOfBirth != null && !dateOfBirth.trim().isEmpty()) {
+            if (dateOfBirth == null || dateOfBirth.trim().isEmpty()) {
+                request.setAttribute("errorDOB", "Date of birth is required.");
+                hasError = true;
+            } else {
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    sdf.setLenient(false);
                     java.util.Date parsedDate = sdf.parse(dateOfBirth);
                     dob = new Date(parsedDate.getTime());
 
                     LocalDate birthDate = LocalDate.parse(dateOfBirth);
                     if (birthDate.plusYears(13).isAfter(LocalDate.now())) {
-                        request.setAttribute("errorDOB", "You must be at least 13 years old to register.");
-                        request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
-                        return;
+                        request.setAttribute("errorDOB", "You must be at least 13 years old.");
+                        hasError = true;
                     }
                 } catch (ParseException e) {
-                    request.setAttribute("errorDOB", "Invalid date format for DOB. Use YYYY-MM-DD");
-                    request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
-                    return;
+                    request.setAttribute("errorDOB", "Invalid date of birth format. Use YYYY-MM-DD.");
+                    hasError = true;
                 }
             }
 
+            if (address == null || address.isEmpty() || address.length() < 5 || address.length() > 100) {
+                request.setAttribute("errorAddress", "Address must be 5-100 characters.");
+                hasError = true;
+            }
+
+            if (gender == null || (!gender.equals("0") && !gender.equals("1"))) {
+                request.setAttribute("errorGender", "Please select a gender.");
+                hasError = true;
+            }
+
+            if (hasError) {
+                request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
+                return;
+            }
+
+            User currentUser = (User) session.getAttribute("user");
             boolean genderSQL = "1".equals(gender);
-
-
+            if (currentUser != null &&
+                fullName.equals(currentUser.getName()) &&
+                phoneNumber.equals(currentUser.getPhone()) &&
+                dateOfBirth.equals(currentUser.getDob() != null ? new SimpleDateFormat("yyyy-MM-dd").format(currentUser.getDob()) : "") &&
+                address.equals(currentUser.getAddress()) &&
+                genderSQL == currentUser.isGender()) {
+                request.setAttribute("success", "No changes made.");
+                request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
+                return;
+            }
+            
+            DAOUser dao = new DAOUser();
             boolean updated = dao.updateProfile(fullName, email, phoneNumber, dob, address, genderSQL);
             if (updated) {
                 User u = (User) session.getAttribute("user");
@@ -129,14 +172,11 @@ public class UpdateProfileServlet extends HttpServlet {
                     u.setAddress(address);
                     u.setGender(genderSQL);
                 }
-
                 request.setAttribute("success", "Profile updated successfully.");
-                request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
             } else {
                 request.setAttribute("error", "Failed to update profile. Please try again.");
-                request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
             }
-
+            request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
         } catch (Exception e) {
             request.setAttribute("error", "Error: " + e.getMessage());
             request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
