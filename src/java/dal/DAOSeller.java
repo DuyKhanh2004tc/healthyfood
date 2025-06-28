@@ -36,6 +36,18 @@ public class DAOSeller {
         return INSTANCE;
     }
     
+        public String getStatus() {
+        try {
+            if (con == null || con.isClosed()) {
+                return "Database connection is null or closed";
+            }
+            return "OK";
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error checking connection status: {0}", e.getMessage());
+            return "SQL Error: " + e.getMessage();
+        }
+    }
+    
     public List<Product> getAll() {
         List<Product> productList = new ArrayList<>();
         String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, "
@@ -317,15 +329,6 @@ public class DAOSeller {
         throw new SQLException("Failed to insert or retrieve category ID");
     }
 
-    public String getStatus() {
-        try {
-            if (con == null || con.isClosed()) {
-                return "Database connection is null or closed";
-            }
-            return "OK";
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error checking connection status: {0}", e.getMessage());
-            return "SQL Error: " + e.getMessage();
-        }
-    }
+    
+
 }

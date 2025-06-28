@@ -66,20 +66,15 @@
                 margin: 20px auto;
             }
         </style>
+        
     </head>
     <body>
-        <div class="d-flex justify-content-between align-items-center p-3 bg-dark shadow-sm">
-            <div class="d-flex align-items-center">
-                <img src="${pageContext.request.contextPath}/images/logo_1.png" alt="Logo" height="50">
-                <h4 class="ms-3 mb-0 text-success">Welcome Sheller, ${sessionScope.user.getName()}</h4>
-            </div>
-            <a href="${pageContext.request.contextPath}/logout" class="btn btn-outline-danger">Logout</a>
-        </div>
+        <jsp:include page="header.jsp"></jsp:include>
 
         <jsp:include page="SideBarOfSheller.jsp"></jsp:include>
 
-        <div class="container-fluid mt-4">
-            <div class="d-flex justify-content-center">
+        <div class="container-fluid mt-4" ">
+            <div class="d-flex justify-content-center" >
                 <div class="card shadow border-0" style="width: 95%;">
                     <div class="card-header bg-success text-white fs-5">
                         <i class="bi bi-box-seam me-2"></i>Product Management

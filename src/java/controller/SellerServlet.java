@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 import model.Product;
 import model.Category;
 
-@WebServlet(name = "SellerServlet", urlPatterns = {"/seller"})
+
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 10)
 public class SellerServlet extends HttpServlet {
     private DAOSeller DAOSeller;
