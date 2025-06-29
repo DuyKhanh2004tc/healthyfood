@@ -14,23 +14,18 @@ public class OrderDetail {
     private Order order;
     private Product product;
     private int quantity;
-    private BigDecimal price;
-    private int rating;
-    private String comment;
-    private Timestamp CreatedAt;
+    private double price;
+    
 
     public OrderDetail() {
     }
 
-    public OrderDetail(int id, Order order, Product product, int quantity, BigDecimal price, int rating, String comment, Timestamp CreatedAt) {
+    public OrderDetail(int id, Order order, Product product, int quantity, double price) {
         this.id = id;
         this.order = order;
         this.product = product;
         this.quantity = quantity;
         this.price = price;
-        this.rating = rating;
-        this.comment = comment;
-        this.CreatedAt = CreatedAt;
     }
 
     public int getId() {
@@ -65,37 +60,19 @@ public class OrderDetail {
         this.quantity = quantity;
     }
 
-    public BigDecimal getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
-    public int getRating() {
-        return rating;
-    }
+    
 
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
+    
 
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public Timestamp getCreatedAt() {
-        return CreatedAt;
-    }
-
-    public void setCreatedAt(Timestamp CreatedAt) {
-        this.CreatedAt = CreatedAt;
-    }
+    
     
     
 }

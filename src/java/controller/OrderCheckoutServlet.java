@@ -17,7 +17,9 @@ import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import model.CartItem;
 import model.Order;
+import model.OrderDetail;
 import model.OrderStatus;
+import model.Product;
 import model.User;
 
 /**
@@ -88,19 +90,40 @@ public class OrderCheckoutServlet extends HttpServlet {
         String address = request.getParameter("address");
         String email = request.getParameter("email");
         String paymentMethod = request.getParameter("paymentMethod");
-        Double totalAmount = Double.parseDouble(request.getParameter("totalAmount"));
+        String productId_raw = request.getParameter("productId");
+        String totalAmount_raw = request.getParameter("totalAmount");
+        Double totalAmount = 0.0;
         if (request.getParameter("userName") != null && request.getParameter("phone") != null && request.getParameter("paymentMethod") != null
-                && request.getParameter("address") != null && request.getParameter("email") != null && request.getParameter("totalAmount") != null) {
+                && request.getParameter("address") != null && request.getParameter("email") != null) {
             try {
+                List<CartItem> itemList;
                 boolean isEnoughStock = true;
-                List<CartItem> itemList = (List<CartItem>) session.getAttribute("itemList");
-                for (CartItem item : itemList) {
-                    int productId = item.getProduct().getId();
-                    int quantityOrdered = item.getQuantity();
-                    int stock = daoProduct.getProductStock(productId);
-                    if (stock < quantityOrdered) {
-                        isEnoughStock = false;
-                        break;
+                if (productId_raw != null) {
+                    int productId = Integer.parseInt(productId_raw);
+                    Product p = daoProduct.getProductById(productId);
+                    totalAmount = p.getPrice();
+                    if (p.getStock() < 1) {
+                        session.setAttribute("stockError", "The selected item in your cart is out of stock.");
+                        response.sendRedirect("home");
+                        return;
+                    }
+                    CartItem item = new CartItem();
+                    item.setProduct(p);
+                    item.setQuantity(1);
+                    itemList = List.of(item);
+                } else {
+                    if (totalAmount_raw != null) {
+                        totalAmount = Double.parseDouble(totalAmount_raw);
+                    }
+                    itemList = (List<CartItem>) session.getAttribute("itemList");
+                    for (CartItem item : itemList) {
+                        int productId = item.getProduct().getId();
+                        int quantityOrdered = item.getQuantity();
+                        int stock = daoProduct.getProductStock(productId);
+                        if (stock < quantityOrdered) {
+                            isEnoughStock = false;
+                            break;
+                        }
                     }
                 }
 
@@ -126,13 +149,18 @@ public class OrderCheckoutServlet extends HttpServlet {
                 order.setId(orderId);
 
                 for (CartItem item : itemList) {
-                    int productId = item.getProduct().getId();
-                    int quantityOrdered = item.getQuantity();
-                    daoProduct.reduceStock(productId, quantityOrdered);
+                    OrderDetail od = new OrderDetail();
+                    od.setOrder(order);
+                    od.setProduct(item.getProduct());
+                    od.setQuantity(item.getQuantity());
+                    od.setPrice(item.getProduct().getPrice());
+                    daoOrder.insertOrderDetail(od);
+                    daoProduct.reduceStock(item.getProduct().getId(), item.getQuantity());
                 }
-
-                daoCart.deleteCartItemsByUserId(u.getId());
-
+                if (productId_raw == null && u != null) {
+                    daoCart.deleteCartItemsByUserId(u.getId());                   
+                }
+                
                 request.setAttribute("order", order);
                 request.setAttribute("itemList", itemList);
                 session.removeAttribute("itemList");

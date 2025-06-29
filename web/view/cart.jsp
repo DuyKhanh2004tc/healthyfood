@@ -102,9 +102,11 @@
             session.setAttribute("itemList",itemList);
         }      
         %>
+        <c:if test="${not empty requestScope.itemList or not empty sessionScope.itemList}">
         <form class="btnBuy" action="placeOrder" method="get">
             <button class="card-button" type="submit" value="buy">💰 Buy</button>
         </form>
+        </c:if>
 
         <jsp:include page="footer.jsp"></jsp:include>
 

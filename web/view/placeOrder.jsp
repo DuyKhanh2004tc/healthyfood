@@ -72,7 +72,7 @@
                         <td>Total Amount:</td>
                         <td><fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                     </tr>
-                    
+
                 </c:if>
                 <c:if test="${sessionScope.user.getRole().getId()== 3 && requestScope.product != null}">
                     <tr class="cartItem">
@@ -83,6 +83,7 @@
                                 ${requestScope.product.name}
                         </td>
                         <td>1</td>
+                        <td>${requestScope.product.stock}</td>
                         <td><fmt:formatNumber value="${requestScope.product.price}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                         <td>${requestScope.product.shelfLifeHours}</td>
                     </tr>
@@ -136,6 +137,9 @@
                     </tr>
                 </table>
                 <input type="hidden" name="totalAmount" value="${totalAmount}">
+                <c:if test="${requestScope.product != null}">
+                    <input type="hidden" name="productId" value="${requestScope.product.id}">
+                </c:if>
                 <input class="btn_placeOrder" type="submit" value="Place Order">
             </form>
         </c:if>
@@ -181,7 +185,7 @@
                     </tr>
                 </table>
                 <input type="hidden" name="totalAmount" value="${totalAmount}">
-                <input type="hidden" name="pId" value="${requestScope.product.id}">
+                <input type="hidden" name="productId" value="${requestScope.product.id}">
                 <input class="btn_placeOrder" type="submit" value="Place Order">
             </form>
         </c:if>
