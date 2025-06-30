@@ -72,8 +72,10 @@
             <c:if test="${not empty error}">
                 <div class="error-message">${error}</div>
             </c:if>
-
             <input type="submit" value="Update" />
+            <div class="auth-switch">
+                    <a href="changePassword">Change Password</a>
+            </div>
         </form>
     </div>
 

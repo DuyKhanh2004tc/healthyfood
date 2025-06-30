@@ -14,35 +14,29 @@
 
     <div class="center">
         <h1>Change Password</h1>
-        <form action="" method="post">
+        <form action="changePassword" method="post">
 
             <div class="txt_field password-wrapper">
-                <label for="oldPassword">Old Password:</label>
-                <input type="password" id="oldPassword" name="oldpassword" placeholder="Old Password" required />
-                <i class="fa fa-eye-slash" id="toggleOldPassword" onclick="togglePassword('oldPassword', 'toggleOldPassword')"></i>
-                <span class="error-message">
-                    <c:if test="${not empty errorOldPassword}">${errorOldPassword}</c:if>
-                </span>
+                <label for="currentPassword">Current Password:</label>
+                <input type="password" id="currentPassword" name="currentpassword" placeholder="Current Password" required />
+                <i class="fa fa-eye-slash" id="toggleCurrentPassword" onclick="togglePassword('currentPassword', 'toggleCurrentPassword')"></i>
             </div>
 
             <div class="txt_field password-wrapper">
                 <label for="newPassword">New Password:</label>
                 <input type="password" id="newPassword" name="newpassword" placeholder="New Password" required />
                 <i class="fa fa-eye-slash" id="toggleNewPassword" onclick="togglePassword('newPassword', 'toggleNewPassword')"></i>
-                <span class="error-message">
-                    <c:if test="${not empty errorNewPassword}">${errorNewPassword}</c:if>
-                </span>
             </div>
 
             <div class="txt_field password-wrapper">
                 <label for="confirmPassword">Confirm Password:</label>
                 <input type="password" id="confirmPassword" name="confirmpassword" placeholder="Confirm Password" required />
                 <i class="fa fa-eye-slash" id="toggleConfirmPassword" onclick="togglePassword('confirmPassword', 'toggleConfirmPassword')"></i>
-                <span class="error-message">
-                    <c:if test="${not empty errorConfirmPassword}">${errorConfirmPassword}</c:if>
-                </span>
             </div>
 
+            <c:if test="${not empty success}">
+                <div class="success-message">${success}</div>
+            </c:if>
             <c:if test="${not empty error}">
                 <div class="error-message">${error}</div>
             </c:if>
