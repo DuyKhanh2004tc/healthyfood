@@ -64,6 +64,17 @@ public class RemoveCartItemServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User u = (User) session.getAttribute("user");
         DAOCart daoCart = new DAOCart();
+        if(request.getParameter("remove")!= null){
+            if (u!=null){
+                daoCart.deleteCartItemsByUserId(u.getId());
+                response.sendRedirect("cart");
+                return;
+            }else {
+                session.removeAttribute("itemList");
+                response.sendRedirect("cart");
+                return;
+            }
+        }
         if (u != null) {
             if (request.getParameter("removePId") != null) {
                 try {
@@ -72,7 +83,7 @@ public class RemoveCartItemServlet extends HttpServlet {
                         int userId = u.getId();
                         daoCart.removeCartItem(u.getId(), productId);
                         response.sendRedirect("cart");
-                        
+                        return;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -90,6 +101,7 @@ public class RemoveCartItemServlet extends HttpServlet {
                         }
                     }
                     response.sendRedirect("cart"); 
+                    return;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

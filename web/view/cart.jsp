@@ -27,7 +27,7 @@
                     <th>In stock</th>
                     <th>Total Price</th>
                     <th>Shelf Life Hours</th>
-                    <th><a href="home">Back to Home</a></th>
+                    <th><a href="removeItem?remove=all">Remove All Items</a></th>
                 </tr>
             <c:if test="${sessionScope.user.getRole().getId()== 3}">
                 <c:set var="totalAmount" value="0"/>
