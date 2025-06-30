@@ -64,9 +64,14 @@ public class UpdateProfileServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         //processRequest(request, response);
-        request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
+        HttpSession session = request.getSession();
+        User u = (User) session.getAttribute("user");
+        if (u.getRole().getId() == 4) {
+            request.getRequestDispatcher("view/profileNutritionist.jsp").forward(request, response);
+        } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5) {
+            request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
+        }
     }
-
     /**
      * Handles the HTTP <code>POST</code> method.
      *
@@ -80,6 +85,7 @@ public class UpdateProfileServlet extends HttpServlet {
             throws ServletException, IOException {
         //processRequest(request, response);
         HttpSession session = request.getSession();
+        User u = (User) session.getAttribute("user");
                 try {
             String fullName = request.getParameter("fullname");
             String email = request.getParameter("email");
@@ -144,8 +150,12 @@ public class UpdateProfileServlet extends HttpServlet {
             }
 
             if (hasError) {
-                request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
-                return;
+        if (u.getRole().getId() == 4) {
+            request.getRequestDispatcher("view/profileNutritionist.jsp").forward(request, response);
+        } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5) {
+            request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
+        }
+        return;
             }
 
             User currentUser = (User) session.getAttribute("user");
@@ -164,7 +174,6 @@ public class UpdateProfileServlet extends HttpServlet {
             DAOUser dao = new DAOUser();
             boolean updated = dao.updateProfile(fullName, email, phoneNumber, dob, address, genderSQL);
             if (updated) {
-                User u = (User) session.getAttribute("user");
                 if (u != null) {
                     u.setName(fullName);
                     u.setPhone(phoneNumber);
@@ -176,10 +185,18 @@ public class UpdateProfileServlet extends HttpServlet {
             } else {
                 request.setAttribute("error", "Failed to update profile. Please try again.");
             }
+             if (u.getRole().getId() == 4) {
+            request.getRequestDispatcher("view/profileNutritionist.jsp").forward(request, response);
+        } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5) {
             request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
+        }
         } catch (Exception e) {
             request.setAttribute("error", "Error: " + e.getMessage());
+            if (u.getRole().getId() == 4) {
+            request.getRequestDispatcher("view/profileNutritionist.jsp").forward(request, response);
+        } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5) {
             request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
+        }
         }
     }
         /**

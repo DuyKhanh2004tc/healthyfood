@@ -23,7 +23,7 @@
             <div class="menu-content-left">
                 <h3>Welcome Nutritionist ${sessionScope.user.getName()}</h3>
                 <a href="${pageContext.request.contextPath}/nutritionistHome">View Product List</a>
-                <a href="${pageContext.request.contextPath}/profile">Profile</a>
+                <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
                 <a href="${pageContext.request.contextPath}/proposeProduct">Propose new product</a>                 
                 <a href="${pageContext.request.contextPath}/nutritionBlog">Manage Blog</a>
                 <a href="${pageContext.request.contextPath}/logout">Logout</a>

@@ -1,17 +1,37 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%-- 
+    Document   : profileNutritionist
+    Created on : Jun 30, 2025, 1:01:20 PM
+    Author     : Hoa
+--%>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>User Profile</title>
+    <meta charset="UTF-8">
+    <title>Nutritionist Profile</title>
+    <link href="${pageContext.request.contextPath}/CSS/nutritionistHome.css" rel="stylesheet" type="text/css"/>
+    <link href="${pageContext.request.contextPath}/CSS/home.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/profile.css">
 </head>
 <body>
-    <jsp:include page="header.jsp"></jsp:include>
+
+    <div class="nutrition-header">
+        <div class="logo">
+            <img src="${pageContext.request.contextPath}/images/logo_3.png" alt="Logo">
+        </div>
+        <div class="menu-content-left">
+            <h3>Welcome Nutritionist ${sessionScope.user.name}</h3>
+            <a href="${pageContext.request.contextPath}/nutritionistHome">View Product List</a> 
+            <a href="${pageContext.request.contextPath}/proposeProduct">Propose new product</a>                 
+            <a href="${pageContext.request.contextPath}/nutritionBlog">Manage Blog</a>
+            <a href="${pageContext.request.contextPath}/logout">Logout</a>
+        </div>
+    </div>
 
     <div class="center">
-        <h1>User Profile</h1>
+        <h1>Nutritionist Profile</h1>
         <form action="updateProfile" method="post">
 
             <div class="txt_field">
@@ -77,6 +97,5 @@
         </form>
     </div>
 
-    <jsp:include page="footer.jsp"></jsp:include>
 </body>
 </html>
