@@ -28,6 +28,7 @@
                         <th>Total Price</th>
                         <th>Shelf Life Hours</th>
                     </tr>
+                    <!-- for customer buy in cart -->
                 <c:if test="${sessionScope.user.getRole().getId()== 3 && requestScope.product == null}">
                     <c:set var="totalAmount" value="0"/>
                     <c:forEach items="${sessionScope.itemList}" var="i" varStatus="loop">
@@ -51,6 +52,7 @@
                         <td><fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                     </tr>
                 </c:if>
+                <!-- for guest buy in cart -->
                 <c:if test="${sessionScope.user == null && requestScope.product == null}">
                     <c:forEach items="${sessionScope.itemList}" var="i" varStatus="loop">
                         <tr class="cartItem">
@@ -74,6 +76,7 @@
                     </tr>
 
                 </c:if>
+                <!-- for customer buy in home -->
                 <c:if test="${sessionScope.user.getRole().getId()== 3 && requestScope.product != null}">
                     <tr class="cartItem">
                         <td>1</td>
@@ -93,7 +96,29 @@
                         <td><fmt:formatNumber value="${requestScope.product.price}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                     </tr>
                 </c:if>
+                <!-- for customer buy in home -->
+                <c:if test="${sessionScope.user == null && requestScope.product != null}">
+                    <tr class="cartItem">
+                        <td>1</td>
+                        <td>
+                            <a href="${pageContext.request.contextPath}/productDetail?productId=${requestScope.product.id}">
+                                <img src="${requestScope.product.imgUrl}" width="80" alt="Product"></a>
+                                ${requestScope.product.name}
+                        </td>
+                        <td>1</td>
+                        <td>${requestScope.product.stock}</td>
+                        <td><fmt:formatNumber value="${requestScope.product.price}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
+                        <td>${requestScope.product.shelfLifeHours}</td>
+                    </tr>
+                    <tr class="totalAmount">
+                        <td colspan="4"></td>
+                        <td>Total Amount:</td>
+                        <td><fmt:formatNumber value="${requestScope.product.price}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
+                    </tr>
+                </c:if>
             </table>
+
+
         </div>
         <c:if test="${sessionScope.user != null}">        
             <form class="form-placeOrder" action="orderCheckout" method="post" onsubmit="return confirmOrder()">
@@ -185,7 +210,9 @@
                     </tr>
                 </table>
                 <input type="hidden" name="totalAmount" value="${totalAmount}">
-                <input type="hidden" name="productId" value="${requestScope.product.id}">
+                <c:if test="${requestScope.product != null}">
+                    <input type="hidden" name="productId" value="${requestScope.product.id}">
+                </c:if>
                 <input class="btn_placeOrder" type="submit" value="Place Order">
             </form>
         </c:if>

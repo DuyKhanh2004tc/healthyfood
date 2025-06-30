@@ -18,41 +18,52 @@
         <link href="${pageContext.request.contextPath}/CSS/orderCheckout.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
-        <table class='Table-Product'>
-            <jsp:include page="header.jsp"></jsp:include>
+        <jsp:include page="header.jsp"></jsp:include>
+            
+
                 <h1>Place order successfully, please wait us to confirm your order information!</h1>
             <% if (request.getAttribute("order")!=null && request.getAttribute("itemList")!=null){
                 Order order = (Order)request.getAttribute("order");
                 List<CartItem> itemList = (List<CartItem>)request.getAttribute("itemList");
             %>
-            <h2>Your order information:</h2>
-            <table class='Table-OrderInfor'>
-                <tr>
-                    <td>Order ID:</td> 
-                    <td><%= order.getId()%></td> 
-                </tr>
-                <tr>
-                    <td>Receiver Name:</td>
-                    <td><%= order.getReceiverName() %></td>
-                </tr>
-                <tr>
-                    <td>Phone Number:</td> 
-                    <td><%= order.getReceiverPhone() %></td>
-                </tr>
-                <tr>
-                    <td>Address:</td> 
-                    <td><%= order.getShippingAddress() %></td> 
-                </tr>
-                <tr>
-                    <td>Payment Method:</td> <td><%= order.getPaymentMethod()%></td>
-                </tr>
-                <tr>
-                    <td>Total Amount:</td> <td><fmt:formatNumber value="<%= order.getTotalAmount() %>" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td> 
-                </tr>
-                <tr>
-                    <td>Order Status:</td> <td>Pending</td>
-                </tr>
-            </table>
+            <div class="order-infor"> 
+                <div class ="left">
+                    <% if (order.getPaymentMethod().equalsIgnoreCase("online")) { %>
+                    <img src="images/qrcode.jpg" width="400" height="400" alt="Online Payment" />
+                    <% } %>
+                </div>
+                <div class="right">
+                    <h2>Your order information:</h2>
+                    <table class='Table-OrderInfor'>
+                        <tr>
+                            <td>Order ID:</td> 
+                            <td><%= order.getId()%></td> 
+                        </tr>
+                        <tr>
+                            <td>Receiver Name:</td>
+                            <td><%= order.getReceiverName() %></td>
+                        </tr>
+                        <tr>
+                            <td>Phone Number:</td> 
+                            <td><%= order.getReceiverPhone() %></td>
+                        </tr>
+                        <tr>
+                            <td>Address:</td> 
+                            <td><%= order.getShippingAddress() %></td> 
+                        </tr>
+                        <tr>
+                            <td>Payment Method:</td> <td><%= order.getPaymentMethod()%></td>
+                        </tr>
+                        <tr>
+                            <td>Total Amount:</td> <td><fmt:formatNumber value="<%= order.getTotalAmount() %>" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td> 
+                        </tr>
+                        <tr>
+                            <td>Order Status:</td> <td>Pending</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
             <h2>List of ordered products:</h2>
             <table class='Table-Product'>
                 <tr>

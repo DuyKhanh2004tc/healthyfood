@@ -17,7 +17,30 @@ h1, h2 {
     text-align: center;
     color: #333;
 }
+.order-infor {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 30px;
+}
 
+.left img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.right {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.right h2 {
+    margin-top: 0;
+    text-align: left;
+}
 .Table-OrderInfor {
     width: 100%;
     max-width: 700px;

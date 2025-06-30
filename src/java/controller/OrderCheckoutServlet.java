@@ -134,7 +134,11 @@ public class OrderCheckoutServlet extends HttpServlet {
                 }
 
                 Order order = new Order();
-                order.setUser(u);
+                if (u != null) {
+                    order.setUser(u);
+                } else {
+                    order.setUser(null);
+                }
                 order.setPaymentMethod(paymentMethod);
                 order.setReceiverEmail(email);
                 order.setReceiverName(userName);
@@ -158,9 +162,9 @@ public class OrderCheckoutServlet extends HttpServlet {
                     daoProduct.reduceStock(item.getProduct().getId(), item.getQuantity());
                 }
                 if (productId_raw == null && u != null) {
-                    daoCart.deleteCartItemsByUserId(u.getId());                   
+                    daoCart.deleteCartItemsByUserId(u.getId());
                 }
-                
+
                 request.setAttribute("order", order);
                 request.setAttribute("itemList", itemList);
                 session.removeAttribute("itemList");
