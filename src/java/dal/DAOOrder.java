@@ -5,8 +5,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import model.Order;
 import model.OrderDetail;
+import model.OrderStatus;
+import model.User;
 
 /**
  *
@@ -75,6 +80,76 @@ public class DAOOrder {
             st.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+    public List<Order> getOrdersByStatusIn(List<Integer> statusIds) throws SQLException {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name " +
+                     "FROM [dbo].[Orders] o " +
+                     "LEFT JOIN [dbo].[OrderStatus] os ON o.status_id = os.id " +
+                     "LEFT JOIN [dbo].[Users] u ON o.user_id = u.id " +
+                     "LEFT JOIN [dbo].[Users] s ON o.shipper_id = s.id " +
+                     "WHERE o.status_id IN (" + String.join(",", statusIds.stream().map(String::valueOf).toArray(String[]::new)) + ")";
+        try (PreparedStatement st = con.prepareStatement(sql);
+             ResultSet rs = st.executeQuery()) {
+            while (rs.next()) {
+                Order order = new Order();
+                order.setId(rs.getInt("id"));
+                order.setOrderDate(rs.getTimestamp("order_date"));
+                order.setTotalAmount(rs.getDouble("total_amount"));
+                order.setPaymentMethod(rs.getString("payment_method"));
+                order.setReceiverName(rs.getString("receiver_name"));
+                order.setReceiverPhone(rs.getString("receiver_phone"));
+                order.setReceiverEmail(rs.getString("receiver_email"));
+                order.setShippingAddress(rs.getString("shipping_address"));
+                order.setStatus(new OrderStatus(rs.getInt("status_id"), rs.getString("status_name"), rs.getString("description")));
+                order.setUser(new User(rs.getInt("user_id"), rs.getString("user_name"), null, null, null, null, null, false, null, null));
+                if (rs.getInt("shipper_id") != 0) {
+                    order.setShipper(new User(rs.getInt("shipper_id"), rs.getString("shipper_name"), null, null, null, null, null, false, null, null));
+                }
+                orders.add(order);
+            }
+        }
+        return orders;
+    }
+    public void updateOrderStatus(int orderId, int statusId) throws SQLException {
+        // Kiểm tra trạng thái hiện tại
+        String checkSql = "SELECT status_id FROM [dbo].[Orders] WHERE id = ?";
+        int currentStatusId = 0;
+        try (PreparedStatement checkSt = con.prepareStatement(checkSql)) {
+            checkSt.setInt(1, orderId);
+            try (ResultSet rs = checkSt.executeQuery()) {
+                if (rs.next()) {
+                    currentStatusId = rs.getInt("status_id");
+                } else {
+                    throw new SQLException("No order found with ID: " + orderId);
+                }
+            }
+        }
+
+        // Quy tắc chuyển trạng thái dựa trên dữ liệu OrderStatus
+        Map<Integer, List<Integer>> validTransitions = new HashMap<>();
+        validTransitions.put(1, List.of(2, 7)); // Pending Confirmation -> Confirmed, Cancelled
+        validTransitions.put(2, List.of(3, 7)); // Confirmed -> Processing, Cancelled
+        validTransitions.put(3, List.of(4, 7)); // Processing -> Waiting for Delivery, Cancelled
+        validTransitions.put(4, List.of(5));    // Waiting for Delivery -> Delivering
+        validTransitions.put(5, List.of(6));    // Delivering -> Delivered
+        validTransitions.put(6, List.of(8));    // Delivered -> Returned
+        validTransitions.put(7, List.of());     // Cancelled (không chuyển tiếp)
+        validTransitions.put(8, List.of());     // Returned (không chuyển tiếp)
+
+        if (validTransitions.get(currentStatusId).contains(statusId)) {
+            String sql = "UPDATE [dbo].[Orders] SET status_id = ? WHERE id = ?";
+            try (PreparedStatement st = con.prepareStatement(sql)) {
+                st.setInt(1, statusId);
+                st.setInt(2, orderId);
+                int updatedRows = st.executeUpdate();
+                if (updatedRows == 0) {
+                    throw new SQLException("Failed to update order with ID: " + orderId);
+                }
+            }
+        } else {
+            throw new SQLException("Invalid status transition from " + currentStatusId + " to " + statusId);
         }
     }
 

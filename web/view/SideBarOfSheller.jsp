@@ -54,7 +54,7 @@
             </div>
             <div class="offcanvas-body">
                 <a href="productmanagement"><i class="bi bi-box-seam me-2"></i>Product Management</a>
-                <a href="view/OrderStatus.jsp"><i class="bi bi-truck me-2"></i>Order Status</a>
+                <a href="SellerUpdateSatus"><i class="bi bi-truck me-2"></i>Order Status</a>
                 <a href="OrderHistory.jsp"><i class="bi bi-clock-history me-2"></i>Order History</a>
             </div>
         </div>
