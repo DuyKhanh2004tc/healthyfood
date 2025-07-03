@@ -24,6 +24,7 @@
         <div class="menu-content-left">
             <h3>Welcome Nutritionist ${sessionScope.user.name}</h3>
             <a href="${pageContext.request.contextPath}/nutritionistHome">View Product List</a> 
+            <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
             <a href="${pageContext.request.contextPath}/proposeProduct">Propose new product</a>                 
             <a href="${pageContext.request.contextPath}/nutritionBlog">Manage Blog</a>
             <a href="${pageContext.request.contextPath}/logout">Logout</a>
@@ -94,6 +95,9 @@
             </c:if>
 
             <input type="submit" value="Update" />
+            <div class="auth-switch">
+                    <a href="changePassword">Change Password</a>
+            </div>
         </form>
     </div>
 

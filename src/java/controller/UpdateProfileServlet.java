@@ -67,11 +67,12 @@ public class UpdateProfileServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User u = (User) session.getAttribute("user");
         if (u.getRole().getId() == 4) {
-            request.getRequestDispatcher("view/profileNutritionist.jsp").forward(request, response);
+            request.getRequestDispatcher("view/nutritionistProfile.jsp").forward(request, response);
         } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5) {
             request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
         }
     }
+
     /**
      * Handles the HTTP <code>POST</code> method.
      *
@@ -86,7 +87,7 @@ public class UpdateProfileServlet extends HttpServlet {
         //processRequest(request, response);
         HttpSession session = request.getSession();
         User u = (User) session.getAttribute("user");
-                try {
+        try {
             String fullName = request.getParameter("fullname");
             String email = request.getParameter("email");
             String phoneNumber = request.getParameter("phonenumber");
@@ -95,7 +96,6 @@ public class UpdateProfileServlet extends HttpServlet {
             String gender = request.getParameter("gender");
 
             boolean hasError = false;
-
 
             if (fullName != null) {
                 fullName = fullName.trim().replaceAll("\\s+", " ");
@@ -150,27 +150,31 @@ public class UpdateProfileServlet extends HttpServlet {
             }
 
             if (hasError) {
-        if (u.getRole().getId() == 4) {
-            request.getRequestDispatcher("view/profileNutritionist.jsp").forward(request, response);
-        } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5) {
-            request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
-        }
-        return;
+                if (u.getRole().getId() == 4) {
+                    request.getRequestDispatcher("view/nutritionistProfile.jsp").forward(request, response);
+                } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5) {
+                    request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
+                }
+                return;
             }
 
             User currentUser = (User) session.getAttribute("user");
             boolean genderSQL = "1".equals(gender);
-            if (currentUser != null &&
-                fullName.equals(currentUser.getName()) &&
-                phoneNumber.equals(currentUser.getPhone()) &&
-                dateOfBirth.equals(currentUser.getDob() != null ? new SimpleDateFormat("yyyy-MM-dd").format(currentUser.getDob()) : "") &&
-                address.equals(currentUser.getAddress()) &&
-                genderSQL == currentUser.isGender()) {
+            if (currentUser != null
+                    && fullName.equals(currentUser.getName())
+                    && phoneNumber.equals(currentUser.getPhone())
+                    && dateOfBirth.equals(currentUser.getDob() != null ? new SimpleDateFormat("yyyy-MM-dd").format(currentUser.getDob()) : "")
+                    && address.equals(currentUser.getAddress())
+                    && genderSQL == currentUser.isGender()) {
                 request.setAttribute("success", "No changes made.");
-                request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
+                if (u.getRole().getId() == 4) {
+                    request.getRequestDispatcher("view/nutritionistProfile.jsp").forward(request, response);
+                } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5) {
+                    request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
+                }
                 return;
             }
-            
+
             DAOUser dao = new DAOUser();
             boolean updated = dao.updateProfile(fullName, email, phoneNumber, dob, address, genderSQL);
             if (updated) {
@@ -182,33 +186,35 @@ public class UpdateProfileServlet extends HttpServlet {
                     u.setGender(genderSQL);
                 }
                 request.setAttribute("success", "Profile updated successfully.");
+                if (u.getRole().getId() == 4) {
+                    request.getRequestDispatcher("view/nutritionistProfile.jsp").forward(request, response);
+                } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5) {
+                    request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
+                }
+                return;
             } else {
                 request.setAttribute("error", "Failed to update profile. Please try again.");
+                hasError = true;
             }
-             if (u.getRole().getId() == 4) {
-            request.getRequestDispatcher("view/profileNutritionist.jsp").forward(request, response);
-        } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5) {
-            request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
-        }
+           
         } catch (Exception e) {
             request.setAttribute("error", "Error: " + e.getMessage());
             if (u.getRole().getId() == 4) {
-            request.getRequestDispatcher("view/profileNutritionist.jsp").forward(request, response);
-        } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5) {
-            request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
-        }
+                request.getRequestDispatcher("view/nutritionistProfile.jsp").forward(request, response);
+            } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5) {
+                request.getRequestDispatcher("view/userProfile.jsp").forward(request, response);
+            }
         }
     }
-        /**
-         * Returns a short description of the servlet.
-         *
-         * @return a String containing servlet description
-         */
-        @Override
-        public String getServletInfo
-        
-            () {
-        return "Short description";
-        }// </editor-fold>
 
-    }
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
+}
