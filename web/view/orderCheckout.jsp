@@ -19,73 +19,80 @@
     </head>
     <body>
         <jsp:include page="header.jsp"></jsp:include>
-            
 
-                <h1>Place order successfully, please wait us to confirm your order information!</h1>
-            <% if (request.getAttribute("order")!=null && request.getAttribute("itemList")!=null){
-                Order order = (Order)request.getAttribute("order");
-                List<CartItem> itemList = (List<CartItem>)request.getAttribute("itemList");
-            %>
-            <div class="order-infor"> 
-                <div class ="left">
-                    <% if (order.getPaymentMethod().equalsIgnoreCase("online")) { %>
-                    <img src="images/qrcode.jpg" width="400" height="400" alt="Online Payment" />
-                    <% } %>
-                </div>
-                <div class="right">
-                    <h2>Your order information:</h2>
-                    <table class='Table-OrderInfor'>
-                        <tr>
-                            <td>Order ID:</td> 
-                            <td><%= order.getId()%></td> 
-                        </tr>
-                        <tr>
-                            <td>Receiver Name:</td>
-                            <td><%= order.getReceiverName() %></td>
-                        </tr>
-                        <tr>
-                            <td>Phone Number:</td> 
-                            <td><%= order.getReceiverPhone() %></td>
-                        </tr>
-                        <tr>
-                            <td>Address:</td> 
-                            <td><%= order.getShippingAddress() %></td> 
-                        </tr>
-                        <tr>
-                            <td>Payment Method:</td> <td><%= order.getPaymentMethod()%></td>
-                        </tr>
-                        <tr>
-                            <td>Total Amount:</td> <td><fmt:formatNumber value="<%= order.getTotalAmount() %>" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td> 
-                        </tr>
-                        <tr>
-                            <td>Order Status:</td> <td>Pending</td>
-                        </tr>
-                    </table>
-                </div>
+
+            <h1>Place order successfully, please wait us to confirm your order information!</h1>
+        <% if (request.getAttribute("order")!=null && request.getAttribute("itemList")!=null){
+            Order order = (Order)request.getAttribute("order");
+            List<CartItem> itemList = (List<CartItem>)request.getAttribute("itemList");
+        %>
+        <div class="order-infor"> 
+            <div class ="left">
+                <% if (order.getPaymentMethod().equalsIgnoreCase("online")) { %>
+                <img 
+                    src="https://img.vietqr.io/image/970422-0344051852-compact2.jpg
+                    ?accountName=BUI%20DUY%20KHANH
+                    &addInfo=OD<%= order.getId() %>%20<%= order.getReceiverName().replaceAll(" ", "-") %>%20<%= order.getReceiverPhone() %>
+                    &amount=<%= (int)order.getTotalAmount() %>
+                    &template=compact2" 
+                    width="400" height="400" 
+                    alt="Online Payment" />
+                <% } %>
             </div>
-
-            <h2>List of ordered products:</h2>
-            <table class='Table-Product'>
-                <tr>
-                    <th>Product</th>
-                    <th>Name</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                </tr>
-                <c:forEach var="item" items="${itemList}">
+            <div class="right">
+                <h2>Your order information:</h2>
+                <table class='Table-OrderInfor'>
                     <tr>
-                        <td><a href="productDetail?productId=${item.product.id}">
-                                <img src="${item.product.imgUrl}" alt="Product"/>
-                            </a>
-                        </td>
-                        <td>${item.product.name}</td>
-                        <td>${item.quantity}</td>
-                        <td><fmt:formatNumber value="${item.product.price}" type="number" />$/product</td>
+                        <td>Order ID:</td> 
+                        <td><%= order.getId()%></td> 
                     </tr>
-                </c:forEach>
-            </table>
-            <% } %>
+                    <tr>
+                        <td>Receiver Name:</td>
+                        <td><%= order.getReceiverName() %></td>
+                    </tr>
+                    <tr>
+                        <td>Phone Number:</td> 
+                        <td><%= order.getReceiverPhone() %></td>
+                    </tr>
+                    <tr>
+                        <td>Address:</td> 
+                        <td><%= order.getShippingAddress() %></td> 
+                    </tr>
+                    <tr>
+                        <td>Payment Method:</td> <td><%= order.getPaymentMethod()%></td>
+                    </tr>
+                    <tr>
+                        <td>Total Amount:</td> <td><fmt:formatNumber value="<%= order.getTotalAmount() %>" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td> 
+                    </tr>
+                    <tr>
+                        <td>Order Status:</td> <td>Pending</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
 
-            <jsp:include page="footer.jsp"></jsp:include>
+        <h2>List of ordered products:</h2>
+        <table class='Table-Product'>
+            <tr>
+                <th>Product</th>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+            <c:forEach var="item" items="${itemList}">
+                <tr>
+                    <td><a href="productDetail?productId=${item.product.id}">
+                            <img src="${item.product.imgUrl}" alt="Product"/>
+                        </a>
+                    </td>
+                    <td>${item.product.name}</td>
+                    <td>${item.quantity}</td>
+                    <td><fmt:formatNumber value="${item.product.price}" type="number" />$/product</td>
+                </tr>
+            </c:forEach>
+        </table>
+        <% } %>
+
+        <jsp:include page="footer.jsp"></jsp:include>
     </body>
 </html>
