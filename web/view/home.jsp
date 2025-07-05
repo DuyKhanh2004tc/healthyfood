@@ -115,6 +115,7 @@
                                 </form>
                                 <form class="btnBuy" action="placeOrder" method="get">
                                     <input type="hidden" name="productId" value="${o.id}" />
+                                    <input type="hidden" name="quantity" value="1" />
                                     <button class="card-button" type="submit" value="buy">💰 Buy</button>
                                 </form>
                             </c:if> 
