@@ -77,7 +77,8 @@
 
                 </c:if>
                 <!-- for customer buy in home -->
-                <c:if test="${sessionScope.user.getRole().getId()== 3 && requestScope.product != null}">
+                <c:if test="${sessionScope.user.getRole().getId()== 3 && requestScope.quantity != null && requestScope.product != null}">
+                    <c:set var="totalAmount" value="${requestScope.product.price * requestScope.quantity}" />
                     <tr class="cartItem">
                         <td>1</td>
                         <td>
@@ -85,19 +86,20 @@
                                 <img src="${requestScope.product.imgUrl}" width="80" alt="Product"></a>
                                 ${requestScope.product.name}
                         </td>
-                        <td>1</td>
+                        <td>${requestScope.quantity}</td>
                         <td>${requestScope.product.stock}</td>
-                        <td><fmt:formatNumber value="${requestScope.product.price}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
+                        <td><fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                         <td>${requestScope.product.shelfLifeHours}</td>
                     </tr>
                     <tr class="totalAmount">
                         <td colspan="4"></td>
                         <td>Total Amount:</td>
-                        <td><fmt:formatNumber value="${requestScope.product.price}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
+                        <td><fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                     </tr>
                 </c:if>
-                <!-- for customer buy in home -->
-                <c:if test="${sessionScope.user == null && requestScope.product != null}">
+                <!-- for guest buy in home -->
+                <c:if test="${sessionScope.user == null && requestScope.quantity != null && requestScope.product != null}">
+                    <c:set var="totalAmount" value="${requestScope.product.price * requestScope.quantity}" />
                     <tr class="cartItem">
                         <td>1</td>
                         <td>
@@ -105,15 +107,15 @@
                                 <img src="${requestScope.product.imgUrl}" width="80" alt="Product"></a>
                                 ${requestScope.product.name}
                         </td>
-                        <td>1</td>
+                        <td>${requestScope.quantity}</td>
                         <td>${requestScope.product.stock}</td>
-                        <td><fmt:formatNumber value="${requestScope.product.price}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
+                        <td><fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                         <td>${requestScope.product.shelfLifeHours}</td>
                     </tr>
                     <tr class="totalAmount">
                         <td colspan="4"></td>
                         <td>Total Amount:</td>
-                        <td><fmt:formatNumber value="${requestScope.product.price}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
+                        <td><fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                     </tr>
                 </c:if>
             </table>
@@ -162,8 +164,9 @@
                     </tr>
                 </table>
                 <input type="hidden" name="totalAmount" value="${totalAmount}">
-                <c:if test="${requestScope.product != null}">
+                <c:if test="${requestScope.product != null && requestScope.quantity !=null}">
                     <input type="hidden" name="productId" value="${requestScope.product.id}">
+                    <input type="hidden" name="quantity" value="${requestScope.quantity}">
                 </c:if>
                 <input class="btn_placeOrder" type="submit" value="Place Order">
             </form>
@@ -210,8 +213,9 @@
                     </tr>
                 </table>
                 <input type="hidden" name="totalAmount" value="${totalAmount}">
-                <c:if test="${requestScope.product != null}">
+                <c:if test="${requestScope.product != null && requestScope.quantity != null}">
                     <input type="hidden" name="productId" value="${requestScope.product.id}">
+                    <input type="hidden" name="quantity" value="${requestScope.quantity}">
                 </c:if>
                 <input class="btn_placeOrder" type="submit" value="Place Order">
             </form>

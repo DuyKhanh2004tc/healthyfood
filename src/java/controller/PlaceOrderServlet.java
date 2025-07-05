@@ -56,11 +56,14 @@ public class PlaceOrderServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         DAOProduct dao = new DAOProduct();
-        if(request.getParameter("productId")!=null){
+        if(request.getParameter("productId")!=null && request.getParameter("quantity")!=null){
+            int quantity = Integer.parseInt(request.getParameter("quantity"));
             int productId = Integer.parseInt(request.getParameter("productId"));
             Product p = dao.getProductById(productId);
             request.setAttribute("product", p);
+            request.setAttribute("quantity", quantity);
             request.getRequestDispatcher("/view/placeOrder.jsp").forward(request, response);
+            return;
         }
         request.getRequestDispatcher("/view/placeOrder.jsp").forward(request, response);
     } 

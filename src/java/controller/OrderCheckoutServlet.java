@@ -91,30 +91,32 @@ public class OrderCheckoutServlet extends HttpServlet {
         String email = request.getParameter("email");
         String paymentMethod = request.getParameter("paymentMethod");
         String productId_raw = request.getParameter("productId");
+        String quantity_raw = request.getParameter("quantity");
         String totalAmount_raw = request.getParameter("totalAmount");
-        Double totalAmount = 0.0;
+        
         if (request.getParameter("userName") != null && request.getParameter("phone") != null && request.getParameter("paymentMethod") != null
-                && request.getParameter("address") != null && request.getParameter("email") != null) {
+                && request.getParameter("address") != null && request.getParameter("email") != null  
+                && request.getParameter("totalAmount") != null) {
             try {
                 List<CartItem> itemList;
                 boolean isEnoughStock = true;
-                if (productId_raw != null) {
+                Double totalAmount = Double.parseDouble(totalAmount_raw);
+                if (productId_raw != null && quantity_raw!=null) {
                     int productId = Integer.parseInt(productId_raw);
+                    int quantity = Integer.parseInt(quantity_raw);
                     Product p = daoProduct.getProductById(productId);
-                    totalAmount = p.getPrice();
+
                     if (p.getStock() < 1) {
-                        session.setAttribute("stockError", "The selected item in your cart is out of stock.");
+                        session.setAttribute("stockError", "The selected item product is out of stock.");
                         response.sendRedirect("home");
                         return;
                     }
                     CartItem item = new CartItem();
                     item.setProduct(p);
-                    item.setQuantity(1);
+                    item.setQuantity(quantity);
                     itemList = List.of(item);
                 } else {
-                    if (totalAmount_raw != null) {
-                        totalAmount = Double.parseDouble(totalAmount_raw);
-                    }
+                    
                     itemList = (List<CartItem>) session.getAttribute("itemList");
                     for (CartItem item : itemList) {
                         int productId = item.getProduct().getId();
