@@ -10,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -125,6 +126,7 @@ public class ProductDetailServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+          HttpSession session = request.getSession();
         String action = request.getParameter("action");
         String productIdStr = request.getParameter("productId");
         User user = (User) request.getSession().getAttribute("user");
@@ -251,7 +253,34 @@ public class ProductDetailServlet extends HttpServlet {
             if (number > product.getStock()) {
                 request.getSession().setAttribute("stockError", "Some items in your cart are out of stock or not enough stock.");
             }
-            daoProduct.addToCart(user.getId(), productId, number);
+            if(user==null){
+              List<CartItem> itemList = (List<CartItem>) session.getAttribute("itemList");
+                    if (itemList == null) {
+                        itemList = new ArrayList<>();
+                        session.setAttribute("itemList", itemList);
+                    }
+
+                    boolean exist = false;
+                    for (CartItem ci : itemList) {
+                        if (ci.getProduct().getId() == productId) {
+                            ci.setQuantity(ci.getQuantity() + number);
+                            exist = true;
+                            break;
+                        }
+                    }
+
+                    if (!exist) {
+                        Product p = daoProduct.getProductById(productId);
+                        CartItem item = new CartItem();
+                        item.setProduct(p);
+                        item.setQuantity(number);
+                        itemList.add(item);
+                    }
+                    session.setAttribute("itemList", itemList);
+            }else{
+             daoProduct.addToCart(user.getId(), productId, number);
+        }
+           
             request.getSession().setAttribute("message", "Added to cart successfully.");
             response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
             return;

@@ -312,9 +312,12 @@
                                     <input type="text" name="number" id="quantity" value="1" min="1" max="<%= stock %>">
                                     <button type="button" onclick="updateQuantity(1)">+</button>
                                 </div>
+                                    <div class = "twoButton">
                                 <button class="card-button" type="submit" name="action" value="add">🛒 Add to Cart</button>
+                                <button class="card-button" type="submit" name= "action"value="buy">💰 Buy</button>
+                                </div>
                             </form>
-                            <button class="card-button" type="submit" name= "action"value="buy">💰 Buy</button>
+                            
                         </c:if> 
                     </div>
                 </div>

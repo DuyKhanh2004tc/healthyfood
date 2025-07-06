@@ -75,31 +75,31 @@ public class DAOBlog {
             st.setInt(1, blogId);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
-                blog = new Blog();
-                blog.setId(rs.getInt("id"));
-                blog.setTitle(rs.getString("title"));
-                blog.setImage(rs.getString("image"));
-                blog.setDescription(rs.getString("description"));
-                blog.setCreated_at(rs.getTimestamp("created_at"));
+                    blog = new Blog();
+                    blog.setId(rs.getInt("id"));
+                    blog.setTitle(rs.getString("title"));
+                    blog.setImage(rs.getString("image"));
+                    blog.setDescription(rs.getString("description"));
+                    blog.setCreated_at(rs.getTimestamp("created_at"));
 
-                User u = new User();
-                u.setId(rs.getInt("user_id"));
-                u.setName(rs.getString("name"));
-                u.setEmail(rs.getString("email"));
-                u.setPassword(rs.getString("password"));
-                u.setPhone(rs.getString("phone"));
-                u.setDob(rs.getDate("dob"));
-                u.setAddress(rs.getString("address"));
-                u.setGender(rs.getBoolean("gender"));
-                u.setCreatedAt(rs.getTimestamp("userCreate"));
+                    User u = new User();
+                    u.setId(rs.getInt("user_id"));
+                    u.setName(rs.getString("name"));
+                    u.setEmail(rs.getString("email"));
+                    u.setPassword(rs.getString("password"));
+                    u.setPhone(rs.getString("phone"));
+                    u.setDob(rs.getDate("dob"));
+                    u.setAddress(rs.getString("address"));
+                    u.setGender(rs.getBoolean("gender"));
+                    u.setCreatedAt(rs.getTimestamp("userCreate"));
 
-                Role r = new Role();
-                r.setId(rs.getInt("role_id"));
-                r.setRoleName(rs.getString("role_name"));
+                    Role r = new Role();
+                    r.setId(rs.getInt("role_id"));
+                    r.setRoleName(rs.getString("role_name"));
 
-                u.setRole(r);
-                blog.setUser(u);
-            
+                    u.setRole(r);
+                    blog.setUser(u);
+
                 }
             }
         } catch (SQLException e) {
@@ -107,9 +107,27 @@ public class DAOBlog {
         }
         return blog;
     }
-    public static void main(String[] args) {
-            Blog blog = DAOBlog.INSTANCE.getBlogById(1);
-            System.out.println(blog.getImage());
-            
+
+    public boolean updateBlogById(Blog blog) {
+        String sql = "UPDATE Blog SET title = ?, image = ?, description = ?, user_id = ? WHERE id = ?";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setString(1, blog.getTitle());
+            st.setString(2, blog.getImage());
+            st.setString(3, blog.getDescription());
+            st.setInt(4, blog.getUser().getId());
+            st.setInt(5, blog.getId());
+
+            int rowsUpdated = st.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        return false;
+    }
+
+    public static void main(String[] args) {
+        Blog blog = DAOBlog.INSTANCE.getBlogById(1);
+        System.out.println(blog.getImage());
+
+    }
 }
