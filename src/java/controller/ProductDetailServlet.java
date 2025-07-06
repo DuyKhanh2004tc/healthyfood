@@ -126,7 +126,7 @@ public class ProductDetailServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-          HttpSession session = request.getSession();
+        HttpSession session = request.getSession();
         String action = request.getParameter("action");
         String productIdStr = request.getParameter("productId");
         User user = (User) request.getSession().getAttribute("user");
@@ -234,7 +234,7 @@ public class ProductDetailServlet extends HttpServlet {
             return;
 
         }
-        if ("add".equals(action)) {
+        if ("add".equals(action) || "buy".equals(action)) {
             String numberStr = request.getParameter("number");
             int number;
             try {
@@ -249,12 +249,12 @@ public class ProductDetailServlet extends HttpServlet {
                 doGet(request, response);
                 return;
             }
-
-            if (number > product.getStock()) {
-                request.getSession().setAttribute("stockError", "Some items in your cart are out of stock or not enough stock.");
-            }
-            if(user==null){
-              List<CartItem> itemList = (List<CartItem>) session.getAttribute("itemList");
+            if ("add".equals(action)) {
+                if (number > product.getStock()) {
+                    request.getSession().setAttribute("stockError", "Some items in your cart are out of stock or not enough stock.");
+                }
+                if (user == null) {
+                    List<CartItem> itemList = (List<CartItem>) session.getAttribute("itemList");
                     if (itemList == null) {
                         itemList = new ArrayList<>();
                         session.setAttribute("itemList", itemList);
@@ -277,13 +277,31 @@ public class ProductDetailServlet extends HttpServlet {
                         itemList.add(item);
                     }
                     session.setAttribute("itemList", itemList);
-            }else{
-             daoProduct.addToCart(user.getId(), productId, number);
-        }
-           
-            request.getSession().setAttribute("message", "Added to cart successfully.");
-            response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
-            return;
+                } else {
+                    daoProduct.addToCart(user.getId(), productId, number);
+                }
+
+                request.getSession().setAttribute("message", "Added to cart successfully.");
+                response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
+                return;
+            }
+            if ("buy".equals(action)) {
+                if (number > product.getStock()) {
+                    request.getSession().setAttribute("error", "Item is not enough.");
+                    doGet(request, response);
+                    return;
+                }
+                if (user == null) {
+                    String url = request.getContextPath() + "/placeOrder?productId=" + productId + "&quantity=" + number;
+                    response.sendRedirect(url);
+                   return;
+                } else {
+                    String url = request.getContextPath() + "/placeOrder?productId=" + productId + "&quantity=" + number;
+                    response.sendRedirect(url);
+                    return;
+                }
+              
+            }
         }
         doGet(request, response);
         return;
