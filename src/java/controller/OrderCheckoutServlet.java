@@ -21,6 +21,7 @@ import model.OrderDetail;
 import model.OrderStatus;
 import model.Product;
 import model.User;
+import utils.Mail;
 
 /**
  *
@@ -93,15 +94,15 @@ public class OrderCheckoutServlet extends HttpServlet {
         String productId_raw = request.getParameter("productId");
         String quantity_raw = request.getParameter("quantity");
         String totalAmount_raw = request.getParameter("totalAmount");
-        
+
         if (request.getParameter("userName") != null && request.getParameter("phone") != null && request.getParameter("paymentMethod") != null
-                && request.getParameter("address") != null && request.getParameter("email") != null  
+                && request.getParameter("address") != null && request.getParameter("email") != null
                 && request.getParameter("totalAmount") != null) {
             try {
                 List<CartItem> itemList;
                 boolean isEnoughStock = true;
                 Double totalAmount = Double.parseDouble(totalAmount_raw);
-                if (productId_raw != null && quantity_raw!=null) {
+                if (productId_raw != null && quantity_raw != null) {
                     int productId = Integer.parseInt(productId_raw);
                     int quantity = Integer.parseInt(quantity_raw);
                     Product p = daoProduct.getProductById(productId);
@@ -116,7 +117,7 @@ public class OrderCheckoutServlet extends HttpServlet {
                     item.setQuantity(quantity);
                     itemList = List.of(item);
                 } else {
-                    
+
                     itemList = (List<CartItem>) session.getAttribute("itemList");
                     for (CartItem item : itemList) {
                         int productId = item.getProduct().getId();
@@ -165,6 +166,32 @@ public class OrderCheckoutServlet extends HttpServlet {
                 }
                 if (productId_raw == null && u != null) {
                     daoCart.deleteCartItemsByUserId(u.getId());
+                }
+                if (u == null) {                  
+                    StringBuilder content = new StringBuilder();
+                    content.append("Dear ").append(userName).append(",\n\n");
+                    content.append("Thank you for shopping with Healthy Food!\n\n");
+                    content.append("We have received your order successfully. Below are your order details:\n\n");
+                    content.append("Order ID: ").append(order.getId()).append("\n");
+                    content.append("Total Amount: $").append(order.getTotalAmount()).append("\n");
+                    content.append("Shipping Address: ").append(address).append("\n");
+                    content.append("Phone: ").append(phone).append("\n");
+                    content.append("Email: ").append(email).append("\n");
+                    content.append("Payment Method: ").append(paymentMethod).append("\n\n");
+
+                    content.append("Items Ordered:\n");
+                    for (CartItem item : itemList) {
+                        content.append("- ")
+                                .append(item.getProduct().getName())
+                                .append(" x ").append(item.getQuantity())
+                                .append(" - $").append(item.getProduct().getPrice()).append("\n");
+                    }
+
+                    content.append("\nWe will process and ship your order soon!\n\n");
+                    content.append("Best regards,\nHealthy Food Team ");
+
+                    
+                    Mail.sendMail(email, "[HealthyFood] Order Confirmation - Order #" + order.getId(), content.toString());
                 }
 
                 request.setAttribute("order", order);
