@@ -26,6 +26,7 @@
 
                         <a href="${pageContext.request.contextPath}/login">Login</a>
                         <a href="${pageContext.request.contextPath}/register">Register</a>
+                        <a href="${pageContext.request.contextPath}/bmi">BMI Calculator</a>
                         <a href="${pageContext.request.contextPath}/cart">Cart</a>
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
                         <form class ="search-form" action="search" method="get">                   
@@ -36,6 +37,7 @@
                     <c:if test="${sessionScope.user.getRole().getId()==3}">
                         <a>Welcome Customer ${sessionScope.user.getName()}</a>    
                         <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
+                        <a href="${pageContext.request.contextPath}/bmi">BMI Calculator</a>
                         <a href="${pageContext.request.contextPath}/cart">Cart</a>
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
                         <a href="${pageContext.request.contextPath}/logout">Logout</a>

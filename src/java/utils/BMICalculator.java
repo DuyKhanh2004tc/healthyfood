@@ -20,20 +20,24 @@ public class BMICalculator {
     }
 
     public static String getBMICategory(double bmi) {
-        if (bmi < 16.0) {
-            return "Severely underweight";
-        } else if (bmi < 18.5) {
-            return "Underweight";
-        } else if (bmi < 25.0) {
-            return "Normal";
-        } else if (bmi < 30.0) {
-            return "Overweight";
-        } else if (bmi < 35.0) {
-            return "Obesity Class I";
-        } else if (bmi < 40.0) {
-            return "Obesity Class II";
-        } else {
-            return "Obesity Class III";
-        }
+    if (bmi < 18.5) {
+        return "Underweight";
+    } else if (bmi < 25.0) {
+        return "Normal";
+    } else if (bmi < 30.0) {
+        return "Overweight";
+    } else {
+        return "Obese";
     }
+}
+
+public static String getBMISlugTag(double bmi) {
+    if (bmi < 18.5) {
+        return "gain-weight";
+    } else if (bmi < 25.0) {
+        return "maintain-weight";
+    } else {
+        return "weight-loss";
+    }
+}
 }

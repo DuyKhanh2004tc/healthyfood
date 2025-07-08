@@ -70,6 +70,12 @@
 
 
                 <input type="submit" value="Update Password" />
+                <div class="auth-switch">
+                    Back to<a href="nutritionistHome"> Home</a>
+            </div>
+            <div class="auth-switch">
+                    <a href="updateProfile">Profile</a>
+            </div>
             </form>
         </div>
         <script>

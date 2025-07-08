@@ -74,6 +74,9 @@
             </c:if>
             <input type="submit" value="Update" />
             <div class="auth-switch">
+                    Back to<a href="home"> Home</a>
+            </div>
+            <div class="auth-switch">
                     <a href="changePassword">Change Password</a>
             </div>
         </form>
