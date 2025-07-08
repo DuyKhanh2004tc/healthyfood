@@ -61,6 +61,13 @@ public class ChangePasswordServlet extends HttpServlet {
         //processRequest(request, response);
         HttpSession session = request.getSession();
         User u = (User) session.getAttribute("user");
+        
+        if (u == null) {
+        request.setAttribute("error", "User not logged in.");
+        request.getRequestDispatcher("view/login.jsp").forward(request, response);
+        return;
+    }
+        
         if (u.getRole().getId() == 4) {
             request.getRequestDispatcher("view/changePasswordNutritionist.jsp").forward(request, response);
         } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5) {
