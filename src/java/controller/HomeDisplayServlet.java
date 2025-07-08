@@ -74,6 +74,7 @@ public class HomeDisplayServlet extends HttpServlet {
         if( totalProduct % 12 != 0){
             pages++;
         }
+        request.setAttribute("newProduct", dao.getNewestProduct());
         request.setAttribute("totalPage", pages);      
         productList = dao.getProductPagination(index, 12);
 

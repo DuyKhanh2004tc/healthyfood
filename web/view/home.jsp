@@ -23,11 +23,60 @@
 
             <div class="content-main">
                 <div class="content-left">
+                    <b>New Product:</b>
 
-                    <div>
-                        <b>Categories:</b>
-                        <select name="category" onchange="location.href = 'category?categoryId=' + this.value;">
-                            <option value="0">All Products</option>
+                    <div class="newProduct">                  
+                    
+                        <div class="card">
+                            <a href="${pageContext.request.contextPath}/productDetail?productId=${requestScope.newProduct.id}">
+                                <img class="card-img" src="${requestScope.newProduct.imgUrl}" alt="Product Image">
+                            </a>
+                            <div class="card-body">
+                                <p>Product: ${requestScope.newProduct.name}</p>
+
+                                <p>Price: ${requestScope.newProduct.price}$</p>
+                                <p>Stock: ${requestScope.newProduct.stock}</p>
+                                <p>Rating: ${requestScope.newProduct.rate}</p>
+                                <div class="stars-average">
+                                    <c:set var="fullStars" value="${requestScope.newProduct.rate >= 1 ? (requestScope.newProduct.rate >= 5 ? 5 : (requestScope.newProduct.rate - requestScope.newProduct.rate % 1)) : 0}" />
+                                    <c:set var="halfStar" value="${(requestScope.newProduct.rate - fullStars) >= 0.5 ? true : false}" />
+
+                                    <c:forEach begin="1" end="5" var="i">
+                                        <c:choose>
+                                            <c:when test="${i <= fullStars}">
+                                                <span class="star full">★</span>
+                                            </c:when>
+                                            <c:when test="${i == (fullStars + 1) && halfStar}">
+                                                <span class="star half">★</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="star empty">★</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:forEach>
+                                </div>
+
+                            </div>
+                            <c:if test="${sessionScope.user.getRole().getId()== null ||sessionScope.user.getRole().getId()== 3 }">
+                                <div class="twoButton"
+                                <form action="cart" method="get">
+                                    <input type="hidden" name="productId" value="${requestScope.newProduct.id}" />
+                                    <button class="card-button" type="submit">🛒 Add to Cart</button>
+                                </form>
+                                <form class="btnBuy" action="placeOrder" method="get">
+                                    <input type="hidden" name="productId" value="${requestScope.newProduct.id}" />
+                                    <input type="hidden" name="quantity" value="1" />
+                                    <button class="card-button" type="submit" value="buy">💰 Buy</button>
+                                </form>
+                                </div>
+                            </c:if> 
+                        </div>                   
+                </div>
+
+                <div class="home-feature">
+                    <b>Categories:</b>
+                    <select name="category" onchange="location.href = 'category?categoryId=' + this.value;">
+                        <option value="0">All Products</option>
                         <c:forEach items="${requestScope.categoryList}" var="o">
                             <option value="${o.id}" ${sessionScope.categoryId == o.id ? 'selected' : ''}>${o.name}</option>
                         </c:forEach>    
@@ -109,6 +158,7 @@
 
                             </div>
                             <c:if test="${sessionScope.user.getRole().getId()== null ||sessionScope.user.getRole().getId()== 3 }">
+                                <div class="twoButton">
                                 <form action="cart" method="get">
                                     <input type="hidden" name="productId" value="${o.id}" />
                                     <button class="card-button" type="submit">🛒 Add to Cart</button>
@@ -118,6 +168,7 @@
                                     <input type="hidden" name="quantity" value="1" />
                                     <button class="card-button" type="submit" value="buy">💰 Buy</button>
                                 </form>
+                                </div>
                             </c:if> 
                         </div>
                     </c:forEach>

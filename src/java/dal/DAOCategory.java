@@ -32,9 +32,8 @@ public class DAOCategory {
     public List<Category> getAllCategory() {
         List<Category> categoryList = new ArrayList<>();
         String sql = "SELECT * FROM Category ";
-        try {
-            PreparedStatement st = con.prepareStatement(sql);
-            ResultSet rs = st.executeQuery();
+        try (PreparedStatement st = con.prepareStatement(sql);
+            ResultSet rs = st.executeQuery();){
             while(rs.next()){
                 Category c = new Category();
                 c.setId(rs.getInt("id"));
@@ -42,6 +41,7 @@ public class DAOCategory {
                 categoryList.add(c);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
         }
         return categoryList;
     }

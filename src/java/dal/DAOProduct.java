@@ -212,6 +212,40 @@ public class DAOProduct {
         return productList;
     }
 
+    public Product getNewestProduct() {
+        String sql = "SELECT TOP 1 p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, "
+                + "p.image_url, p.shelf_life_hours, p.rate AS average_rate, "
+                + "c.id AS category_id, c.name AS category_name "
+                + "FROM Product p "
+                + "INNER JOIN Category c ON p.category_id = c.id "
+                + "ORDER BY p.id DESC";
+
+        try (PreparedStatement st = con.prepareStatement(sql); ResultSet rs = st.executeQuery()) {
+            if (rs.next()) {
+                Product p = new Product();
+                p.setId(rs.getInt("product_id"));
+                p.setName(rs.getString("product_name"));
+                p.setDescription(rs.getString("description"));
+                p.setPrice(rs.getDouble("price"));
+                p.setStock(rs.getInt("stock"));
+                p.setImgUrl(rs.getString("image_url"));
+                p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
+                p.setRate(rs.getDouble("average_rate"));
+
+                Category c = new Category();
+                c.setId(rs.getInt("category_id"));
+                c.setName(rs.getString("category_name"));
+
+                p.setCategory(c);
+                return p;
+                
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void addToCart(int userId, int productId, int quantity) {
         try {
             String checkCartExistSQL = "SELECT id FROM Cart WHERE user_id = ? ";
@@ -274,20 +308,21 @@ public class DAOProduct {
             e.printStackTrace();
         }
     }
+
     public int getProductStock(int productId) {
-    int stock = 0;
-    String sql = "SELECT stock FROM Product WHERE id = ?";
-    try (PreparedStatement st = con.prepareStatement(sql)){
-        st.setInt(1, productId);
-        ResultSet rs = st.executeQuery();
-        if (rs.next()) {
-            stock = rs.getInt("stock");
+        int stock = 0;
+        String sql = "SELECT stock FROM Product WHERE id = ?";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setInt(1, productId);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                stock = rs.getInt("stock");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+        return stock;
     }
-    return stock;
-}
 
     public List<Product> getProductByCategory(int categoryId) {
         List<Product> productList = new ArrayList<>();
@@ -477,6 +512,43 @@ public class DAOProduct {
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setDouble(1, min);
             st.setDouble(2, max);
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    Product p = new Product();
+                    p.setId(rs.getInt("product_id"));
+                    p.setName(rs.getString("product_name"));
+                    p.setDescription(rs.getString("description"));
+                    p.setPrice(rs.getDouble("price"));
+                    p.setStock(rs.getInt("stock"));
+                    p.setImgUrl(rs.getString("image_url"));
+                    p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
+                    p.setRate(rs.getDouble("rate"));
+
+                    Category c = new Category();
+                    c.setId(rs.getInt("category_id"));
+                    c.setName(rs.getString("category_name"));
+
+                    p.setCategory(c);
+                    productList.add(p);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "SQL Error in getPriceInRange: {0}", e.getMessage());
+        }
+        return productList;
+    }
+
+    public List<Product> getPriceInRangeByCategoryId(double min, double max, int categoryId) {
+        List<Product> productList = new ArrayList<>();
+        String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, "
+                + "c.id AS category_id, c.name AS category_name "
+                + "FROM Product p "
+                + "INNER JOIN Category c ON p.category_id = c.id "
+                + "WHERE p.price >= ? AND p.price <= ? AND p.category_id = ? ORDER BY p.price";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setDouble(1, min);
+            st.setDouble(2, max);
+            st.setInt(3, categoryId);
             try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {
                     Product p = new Product();

@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dal.DAOCategory;
 import dal.DAOProduct;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,6 +12,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import model.Product;
 
@@ -60,7 +62,15 @@ public class PriceFilterServlet extends HttpServlet {
             throws ServletException, IOException {
 //        processRequest(request, response);
         DAOProduct dao = new DAOProduct();
+        DAOCategory daoCategory = new DAOCategory();
         List<Product> productList;
+        request.setAttribute("categoryList", daoCategory.getAllCategory());
+        
+        HttpSession session = request.getSession();
+        int categoryId = 0;
+        if (session.getAttribute("categoryId") != null) {
+            categoryId = (int) session.getAttribute("categoryId");
+        }
 
         if (request.getParameter("minPrice") != null || request.getParameter("maxPrice") != null) {
             String min_raw = request.getParameter("minPrice");
@@ -79,7 +89,12 @@ public class PriceFilterServlet extends HttpServlet {
                             index_raw = "1";
                         }
                         int index = Integer.parseInt(index_raw);
-                        int totalProduct = dao.getTotalProduct();
+                        int totalProduct;
+                        if (categoryId == 0) {
+                            totalProduct = dao.getTotalProduct();
+                        } else {
+                            totalProduct = dao.getTotalProductByCid(categoryId);
+                        }
                         int pages = totalProduct / 12;
                         if (totalProduct % 12 != 0) {
                             pages++;
@@ -94,14 +109,24 @@ public class PriceFilterServlet extends HttpServlet {
                         return;
 
                     } else {
-                        productList = dao.getPriceInRange(min, max);
+                        if (categoryId == 0) {
+                            productList = dao.getPriceInRange(min, max);
+                        } else {
+                            productList = dao.getPriceInRangeByCategoryId(min, max, categoryId);
+                        }
                         if (productList == null || productList.isEmpty()) {
                             String index_raw = request.getParameter("index");
                             if (index_raw == null) {
                                 index_raw = "1";
                             }
                             int index = Integer.parseInt(index_raw);
-                            int totalProduct = dao.getTotalProduct();
+                            int totalProduct;
+                            if (categoryId == 0) {
+                                totalProduct = dao.getTotalProduct();
+                            } else {
+                                totalProduct = dao.getTotalProductByCid(categoryId);
+                            }
+
                             int pages = totalProduct / 12;
                             if (totalProduct % 12 != 0) {
                                 pages++;
@@ -124,14 +149,22 @@ public class PriceFilterServlet extends HttpServlet {
 
                 } else if (hasMin) {
                     min = Double.parseDouble(min_raw);
-                    productList = dao.getPriceInRange(min, 1000);
+                    if (categoryId == 0) {
+                        productList = dao.getPriceInRange(min, 1000);
+                    } else {
+                        productList = dao.getPriceInRangeByCategoryId(min, 1000, categoryId);
+                    }
                     request.setAttribute("minPrice", min);
                     request.setAttribute("productList", productList);
                     request.getRequestDispatcher("/view/home.jsp").forward(request, response);
                     return;
                 } else if (hasMax) {
                     max = Double.parseDouble(max_raw);
-                    productList = dao.getPriceInRange(0, max);
+                    if (categoryId == 0) {
+                        productList = dao.getPriceInRange(0, max);
+                    } else {
+                        productList = dao.getPriceInRangeByCategoryId(0, max, categoryId);
+                    }
                     request.setAttribute("maxPrice", max);
                     request.setAttribute("productList", productList);
                     request.getRequestDispatcher("/view/home.jsp").forward(request, response);
@@ -144,6 +177,11 @@ public class PriceFilterServlet extends HttpServlet {
                     }
                     int index = Integer.parseInt(index_raw);
                     int totalProduct = dao.getTotalProduct();
+                    if (categoryId == 0) {
+                            totalProduct = dao.getTotalProduct();
+                        } else {
+                            totalProduct = dao.getTotalProductByCid(categoryId);
+                        }
                     int pages = totalProduct / 12;
                     if (totalProduct % 12 != 0) {
                         pages++;
