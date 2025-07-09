@@ -20,6 +20,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import model.Blog;
+import model.Tag;
 import model.User;
 
 /**
@@ -93,7 +94,7 @@ public class BlogDetailServlet extends HttpServlet {
                 break;
             }
         }
-
+        List<Tag> tag = dao.getTagByBlogId(blogId);
         request.setAttribute("blogId", blog.getId());
         request.setAttribute("title", blog.getTitle());
         request.setAttribute("description", blog.getDescription());
@@ -103,6 +104,7 @@ public class BlogDetailServlet extends HttpServlet {
         request.setAttribute("prevId", prevId != 0 ? prevId : b.get(b.size() - 1).getId());
         request.setAttribute("nextId", nextId != 0 ? nextId : b.get(0).getId());
         request.setAttribute("blog", blog);
+        request.setAttribute("tag", tag);
         request.getRequestDispatcher("view/blogDetail.jsp").forward(request, response);
     }
 
@@ -177,7 +179,7 @@ public class BlogDetailServlet extends HttpServlet {
         }
     }
 
-// Hàm lấy tên file
+
     private String getFileName(Part part) {
         String contentDisp = part.getHeader("content-disposition");
         for (String token : contentDisp.split(";")) {

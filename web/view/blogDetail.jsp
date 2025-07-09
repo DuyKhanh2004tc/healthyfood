@@ -1,5 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="model.*" %>
+<%@ page import="java.sql.Timestamp, java.util.*, java.text.*" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -292,6 +294,18 @@
                     <img src="${pageContext.request.contextPath}/images/${image}" alt="${title}">
 
                     <h3>${title}</h3>
+                     <p> 
+                    <%
+                                            ArrayList<Tag> tag = (ArrayList<Tag>)request.getAttribute("tag");
+                                            if(tag!=null&&!tag.isEmpty()){
+                                            for(Tag t : tag){
+                        %>
+                      #<%= t.getName()%> 
+                        <%
+                                             }
+                                      }
+                        %>
+                        </p>
                     <div class="meta">
                         <span class="date">${created_at}</span>
                         <span class="author">By ${createBy}</span>
