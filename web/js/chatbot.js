@@ -82,9 +82,9 @@ AI: Có. Healthy Food hỗ trợ giao hàng toàn quốc thông qua đối tác 
 //          }
 //        ]
 //      }
-                ];
+        ];
         function sendMessage() {
-//    alert("Hi");
+
         //lay du lieu trong input
         const userMessage = document.querySelector(".input-area input").value;
                 // neu co nhap du lieu thi moi dua data len .chat
@@ -148,3 +148,23 @@ AI: Có. Healthy Food hỗ trợ giao hàng toàn quốc thông qua đối tác 
                 })
         }
         }
+
+        document.querySelector(".toggle-chatbot").addEventListener("click", function () {
+            document.querySelector(".chatwindow").classList.toggle("hidden");
+            if (!document.querySelector(".chatwindow").classList.contains("hidden")) {
+        document.querySelector(".toggle-chatbot").style.display = "none";
+            }
+        });
+        
+        
+        document.querySelector(".chatwindow .close").addEventListener("click", function () {
+            document.querySelector(".chatwindow").classList.add("hidden");
+            document.querySelector(".toggle-chatbot").style.display = "block";
+        });
+        
+        
+        document.querySelector(".input-area input").addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                sendMessage();
+            }
+        });

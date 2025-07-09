@@ -13,25 +13,26 @@
         <link href="${pageContext.request.contextPath}/CSS/chatbot.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
-        <div class="chatwindow">
+        <div class="chatwindow hidden">
             <button class="close">❌</button>
             <div class="chat">
                 <div class="model">
                     <p>Welcome, do you need any support?</p>
                 </div >
-                
+
             </div>
             <div class="input-area">
                 <input type="text" placeholder="Ask me something..."><button><img src="${pageContext.request.contextPath}/icons/send_icon.png" alt="alt"/></button>
             </div>
         </div>
-        
-            <script type="importmap">{
-              "import" : {
-                  "@google/genai": "./node_modules/@google/genai"
-              }  
-            }
-            </script>
+        <button class="toggle-chatbot">💬</button>
+
+        <script type="importmap">{
+          "import" : {
+              "@google/genai": "./node_modules/@google/genai"
+          }  
+        }
+        </script>
 
         <script type="module" src="${pageContext.request.contextPath}/js/chatbot.js"></script>
     </body>
