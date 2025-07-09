@@ -110,3 +110,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     height: 20px;
     object-fit: contain;
 }
+.chatwindow .chat .typing p {
+    font-style: italic;
+    color: gray;
+}
