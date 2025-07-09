@@ -16,9 +16,9 @@
     <body>
         <div class="nutrition-header">
             <div class="logo">
-<!--                <a href="${pageContext.request.contextPath}/home">-->
-                <img src="${pageContext.request.contextPath}/images/logo_3.png" alt="Logo">
-                <!--</a>-->
+                <a href="${pageContext.request.contextPath}/nutritionistHome">
+                    <img src="${pageContext.request.contextPath}/images/logo_3.png" alt="Logo">
+                </a>
             </div>
             <div class="menu-content-left">
                 <h3>Welcome Nutritionist ${sessionScope.user.getName()}</h3>

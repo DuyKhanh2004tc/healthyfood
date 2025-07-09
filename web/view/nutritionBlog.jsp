@@ -144,16 +144,15 @@
     </head>
     <body>
         <c:if test="${sessionScope.user.getRole().getId()!=4}">
-
             <jsp:include page="header.jsp" />
         </c:if>
         <c:if test="${sessionScope.user.getRole().getId()==4}">
 
             <div class="nutrition-header">
                 <div class="logo">
-    <!--                <a href="${pageContext.request.contextPath}/home">-->
+                    <a href="${pageContext.request.contextPath}/nutritionistHome">
                     <img src="${pageContext.request.contextPath}/images/logo_3.png" alt="Logo">
-                    <!--</a>-->
+                    </a>
                 </div>
                 <div class="menu-content-left">
                     <h3>Welcome Nutritionist ${sessionScope.user.getName()}</h3>

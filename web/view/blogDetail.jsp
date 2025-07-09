@@ -6,6 +6,8 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Blog Detail</title>
+        <link href="${pageContext.request.contextPath}/CSS/nutritionistHome.css" rel="stylesheet" type="text/css"/>
+        <link href="${pageContext.request.contextPath}/CSS/home.css" rel="stylesheet" type="text/css"/>
         <style>
             /* Reset default styles for main content only */
             .main-content * {
@@ -237,7 +239,28 @@
         </style>
     </head>
     <body>
-        <jsp:include page="header.jsp" />
+        <c:if test="${sessionScope.user.getRole().getId()!=4}">
+            <jsp:include page="header.jsp" />
+        </c:if>
+        <c:if test="${sessionScope.user.getRole().getId()==4}">
+
+            <div class="nutrition-header">
+                <div class="logo">
+                    <a href="${pageContext.request.contextPath}/nutritionistHome">
+                    <img src="${pageContext.request.contextPath}/images/logo_3.png" alt="Logo">
+                    </a>
+                </div>
+                <div class="menu-content-left">
+                    <h3>Welcome Nutritionist ${sessionScope.user.getName()}</h3>
+                    <a href="${pageContext.request.contextPath}/nutritionistHome">View Product List</a>
+                    <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
+                    <a href="${pageContext.request.contextPath}/proposeProduct">Propose new product</a>                 
+                    <a href="${pageContext.request.contextPath}/nutritionBlog">Manage Blog</a>
+                    <a href="${pageContext.request.contextPath}/logout">Logout</a>
+
+                </div>
+            </div>
+        </c:if>
         <% String fileName = (String) request.getAttribute("fileName");%>
         <div class="main-content">
             <div class="container">
