@@ -333,47 +333,7 @@ public class DAOSeller {
         throw new SQLException("Failed to insert or retrieve category ID");
     }
     
-//    public List<Order> getOrderHistoryPaginated(int page, int ordersPerPage) {
-//    List<Order> orderList = new ArrayList<>();
-//    String sql = "SELECT o.id, o.receiver_name, o.order_date, o.total_amount, o.status, "
-//               + "od.id AS detail_id, od.quantity, od.price, p.name AS product_name "
-//               + "FROM Orders o "
-//               + "LEFT JOIN OrderDetail od ON o.id = od.order_id "
-//               + "LEFT JOIN Product p ON od.product_id = p.id "
-//               + "ORDER BY o.id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-//    try (PreparedStatement st = con.prepareStatement(sql)) {
-//        st.setInt(1, (page - 1) * ordersPerPage);
-//        st.setInt(2, ordersPerPage);
-//        try (ResultSet rs = st.executeQuery()) {
-//            Map<Integer, Order> orderMap = new LinkedHashMap<>();
-//            while (rs.next()) {
-//                int orderId = rs.getInt("id");
-//                Order order = orderMap.computeIfAbsent(orderId, k -> {
-//                    Order o = new Order();
-//                    o.setId(orderId);
-//                    o.setReceiverName(rs.getString("receiver_name"));
-//                    o.setOrderDate(rs.getTimestamp("order_date"));
-//                    o.setTotalAmount(rs.getBigDecimal("total_amount").doubleValue());
-//                    o.setStatus(rs.getString("status"));
-//                    o.setOrderDetails(new ArrayList<>());
-//                    return o;
-//                });
-//                if (rs.getInt("detail_id") != 0) {
-//                    OrderDetail detail = new OrderDetail();
-//                    detail.setId(rs.getInt("detail_id"));
-//                    detail.setQuantity(rs.getInt("quantity"));
-//                    detail.setPrice(rs.getBigDecimal("price").doubleValue());
-//                    detail.set(rs.getString("product_name"));
-//                    order.getOrderDetails().add(detail);
-//                }
-//            }
-//            orderList.addAll(orderMap.values());
-//        }
-//    } catch (SQLException e) {
-//        LOGGER.log(Level.SEVERE, "Error in getOrderHistoryPaginated: {0}", e.getMessage());
-//    }
-//    return orderList;
-//}
+
 
 public int getTotalOrderCount() {
     String sql = "SELECT COUNT(*) FROM Orders";

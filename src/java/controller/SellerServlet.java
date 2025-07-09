@@ -95,17 +95,7 @@ public class SellerServlet extends HttpServlet {
         
         
         
-//        else if ("orderHistory".equals(service)) {
-//    int ordersPerPage = 5; // Consistent with PRODUCTS_PER_PAGE
-//    List<Order> orders = DAOSeller.getOrderHistoryPaginated(currentPage, ordersPerPage);
-//    int totalOrders = DAOSeller.getTotalOrderCount();
-//    int totalPages = (int) Math.ceil((double) totalOrders / ordersPerPage);
-//    request.setAttribute("orders", orders);
-//    request.setAttribute("currentPage", currentPage);
-//    request.setAttribute("totalPages", totalPages);
-//    request.setAttribute("service", "orderHistory");
-//    request.getRequestDispatcher("view/OrderHistory.jsp").forward(request, response);
-//}
+
         
         
         
