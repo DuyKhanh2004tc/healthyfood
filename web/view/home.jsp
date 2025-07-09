@@ -188,7 +188,7 @@
             </div>   
 
         </div>
-
+        <jsp:include page="chatbot.jsp"></jsp:include>
         <jsp:include page="footer.jsp"></jsp:include>
     </body>
 </html>
