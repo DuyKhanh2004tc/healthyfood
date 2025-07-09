@@ -1,6 +1,11 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package controller;
 
 import dal.DAOSeller;
+import dal.DAOCategory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,17 +22,18 @@ import java.util.logging.Logger;
 import model.Product;
 import model.Category;
 
-
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 10)
 public class SellerServlet extends HttpServlet {
     private DAOSeller DAOSeller;
+    private DAOCategory DAOCategory;
     private static final Logger LOGGER = Logger.getLogger(SellerServlet.class.getName());
     private static final String UPLOAD_DIR = "images/uploads";
-    private static final int PRODUCTS_PER_PAGE = 10;
+    private static final int PRODUCTS_PER_PAGE = 5;
 
     @Override
     public void init() throws ServletException {
         DAOSeller = DAOSeller.getInstance();
+        DAOCategory = DAOCategory.INSTANCE;
         LOGGER.log(Level.INFO, "SellerServlet initialized, DAO status: {0}", DAOSeller.getStatus());
     }
 
@@ -47,12 +53,16 @@ public class SellerServlet extends HttpServlet {
         }
 
         if ("requestInsert".equals(service)) {
+            List<Category> categories = DAOCategory.getAllCategory();
+            request.setAttribute("categories", categories);
             request.getRequestDispatcher("view/InsertProduct.jsp").forward(request, response);
         } else if ("requestUpdate".equals(service)) {
             try {
                 int productId = Integer.parseInt(request.getParameter("productId"));
                 Product product = DAOSeller.getProductById(productId);
                 if (product != null) {
+                    List<Category> categories = DAOCategory.getAllCategory();
+                    request.setAttribute("categories", categories);
                     request.setAttribute("product", product);
                     request.getRequestDispatcher("view/UpdateProduct.jsp").forward(request, response);
                 } else {
@@ -205,7 +215,7 @@ public class SellerServlet extends HttpServlet {
             try {
                 shelfLifeHours = Double.parseDouble(shelfLifeStr);
                 if (shelfLifeHours < 0) {
-                    session.setAttribute("shelfLifeError", "Shelf life cannot be negative.");
+                    session.setAttribute("shelfLifeError", "Shelf life cannot be negativetell negative.");
                     hasError = true;
                 }
             } catch (NumberFormatException e) {
@@ -444,6 +454,8 @@ public class SellerServlet extends HttpServlet {
 
             if (hasError) {
                 session.setAttribute("errorMessage", "Please correct the errors below.");
+                List<Category> categories = DAOCategory.getAllCategory();
+                request.setAttribute("categories", categories);
                 request.setAttribute("product", existingProduct);
                 request.getRequestDispatcher("view/UpdateProduct.jsp").forward(request, response);
                 return;

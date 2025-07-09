@@ -1,0 +1,38 @@
+body {
+                background-color: #f8f9fa;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+            .card {
+                max-width: 600px;
+                margin: 50px auto;
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            .card-header {
+                background: linear-gradient(90deg, #28a745, #218838);
+                color: #45a049;
+            }
+            .form-group {
+                margin-bottom: 15px;
+            }
+           
+            .btn-primary {
+                background-color: #28a745;
+                border-color: #28a745;
+            }
+            .btn-primary:hover {
+                background-color: #218838;
+                border-color: #218838;
+            }
+            .error-message {
+                color: #dc3545;
+                font-size: 12px;
+                margin-top: 5px;
+                display: block;
+            }
+            .general-error {
+                color: #dc3545;
+                font-size: 14px;
+                text-align: center;
+                margin-bottom: 15px;
+            }

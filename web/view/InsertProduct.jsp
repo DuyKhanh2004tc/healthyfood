@@ -8,52 +8,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet">
         <link href="${pageContext.request.contextPath}/css/bootstrap-icons.css" rel="stylesheet">
-        <style>
-            body {
-                background-color: #f8f9fa;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            }
-            .card {
-                max-width: 600px;
-                margin: 50px auto;
-                border-radius: 10px;
-                overflow: hidden;
-            }
-            .card-header {
-                background: linear-gradient(90deg, #28a745, #218838);
-                color: white;
-            }
-            .form-group {
-                margin-bottom: 15px;
-            }
-            .btn-primary {
-                background-color: #28a745;
-                border-color: #28a745;
-            }
-            .btn-primary:hover {
-                background-color: #218838;
-                border-color: #218838;
-            }
-            .error-message {
-                color: #dc3545;
-                font-size: 12px;
-                margin-top: 5px;
-                display: block;
-            }
-            .general-error {
-                color: #dc3545;
-                font-size: 14px;
-                text-align: center;
-                margin-bottom: 15px;
-            }
-        </style>
+        <link rel="stylesheet" href="CSS/InsertProduct.css">
     </head>
     <body>
         <jsp:include page="SideBarOfSheller.jsp"></jsp:include>
         <div class="container">
             <div class="card shadow">
                 <div class="card-header">
-                    <h4><i class="bi bi-plus-circle me-2"></i>Insert Product</h4>
+                    <h4><i class="bi bi-plus-circle me-2"></i>Insert new Product</h4>
                 </div>
                 <div class="card-body">
                     <c:if test="${not empty errorMessage}">
@@ -102,7 +64,12 @@
                         </div>
                         <div class="form-group">
                             <label for="categoryName">Category</label>
-                            <input type="text" class="form-control" id="categoryName" name="categoryName" value="${param.categoryName}" maxlength="100">
+                            <select class="form-control" id="categoryName" name="categoryName">
+                                <option value="" disabled ${empty param.categoryName ? 'selected' : ''}>Select a category</option>
+                                <c:forEach var="category" items="${categories}">
+                                    <option value="${category.name}" ${param.categoryName == category.name ? 'selected' : ''}:${category.name}</option>
+                                </c:forEach>
+                            </select>
                             <c:if test="${not empty categoryError}">
                                 <span class="error-message">${categoryError}</span>
                             </c:if>

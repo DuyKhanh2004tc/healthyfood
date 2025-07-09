@@ -8,68 +8,24 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet">
         <link href="${pageContext.request.contextPath}/css/bootstrap-icons.css" rel="stylesheet">
-        <style>
-            body {
-                background-color: #f8f9fa;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            }
-            .card-header {
-                font-weight: bold;
-                background: linear-gradient(90deg, #28a745, #218838);
-            }
-            .card {
-                border-radius: 10px;
-                overflow: hidden;
-            }
-            .table th, .table td {
-                vertical-align: middle;
-                padding: 12px;
-            }
-            .table img {
-                border-radius: 5px;
-                object-fit: cover;
-            }
-            .btn-action {
-                margin: 0 5px;
-                padding: 6px 12px;
-                font-size: 14px;
-                border-radius: 5px;
-                
-            }
-            .btn-edit, .btn-delete {
-                transition: all 0.3s ease;
-                
-            }
-            .btn-edit:hover, .btn-delete:hover {
-                transform: scale(1.05);
-            }
-            .btn-insert {
-                background-color: #28a745;
-                border-color: #28a745;
-                padding: 8px 16px;
-                font-size: 16px;
-            }
-            .btn-insert:hover {
-                background-color: #218838;
-                border-color: #218838;
-            }
-            .error-message {
-                color: #dc3545;
-                font-size: 14px;
-                margin-bottom: 10px;
-            }
-            .table-hover tbody tr:hover {
-                background-color: #f1f1f1;
-            }
-            .search-form {
-                max-width: 600px;
-                margin: 20px auto;
-            }
-        </style>
+        <link rel="stylesheet" href="CSS/homeSeller.css">
         
     </head>
     <body>
-        <jsp:include page="header.jsp"></jsp:include>
+        <div class="seller-header">
+            <div class="logo">
+<!--                <a href="${pageContext.request.contextPath}/home">-->
+                <img src="${pageContext.request.contextPath}/images/logo_3.png" alt="Logo">
+                <!--</a>-->
+            </div>
+            <div class="menu-content-left">
+                <h3>Welcome Seller : ${sessionScope.user.getName()}</h3>
+                <a href="${pageContext.request.contextPath}/seller">View Product List</a>
+
+                <a href="${pageContext.request.contextPath}/logout">Logout</a>
+
+            </div>
+        </div>
 
         <jsp:include page="SideBarOfSheller.jsp"></jsp:include>
 
