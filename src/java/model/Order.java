@@ -12,13 +12,14 @@ public class Order {
     private Timestamp orderDate;
     private double totalAmount;
     private String paymentMethod;
-    private OrderStatus status; // Sử dụng đối tượng OrderStatus thay vì int
+    private OrderStatus status; 
     private User shipper;
     private String receiverName;
     private String receiverPhone;
     private String receiverEmail;
     private String shippingAddress;
     private List<OrderDetail> orderDetails;
+    private List<OrderStatus> validStatuses; 
 
     public Order() {
     }
@@ -134,5 +135,13 @@ public class Order {
 
     public void setOrderDetails(List<OrderDetail> orderDetails) {
         this.orderDetails = orderDetails;
+    }
+
+    public List<OrderStatus> getValidStatuses() {
+        return validStatuses;
+    }
+
+    public void setValidStatuses(List<OrderStatus> validStatuses) {
+        this.validStatuses = validStatuses;
     }
 }

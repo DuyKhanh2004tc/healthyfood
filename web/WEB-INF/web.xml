@@ -124,6 +124,14 @@
         <servlet-name>SellerUpdateStatusServlet</servlet-name>
         <servlet-class>controller.SellerUpdateStatusServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>HomeShipperServlet</servlet-name>
+        <servlet-class>controller.HomeShipperServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>WaitingOrdersServlet</servlet-name>
+        <servlet-class>controller.WaitingOrdersServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeDisplayServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -247,6 +255,14 @@
     <servlet-mapping>
         <servlet-name>SellerUpdateStatusServlet</servlet-name>
         <url-pattern>/SellerUpdateStatus</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>HomeShipperServlet</servlet-name>
+        <url-pattern>/HomeShipper</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>WaitingOrdersServlet</servlet-name>
+        <url-pattern>/WaitingOrders</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>

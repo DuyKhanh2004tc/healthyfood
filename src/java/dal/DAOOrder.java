@@ -82,6 +82,7 @@ public class DAOOrder {
             e.printStackTrace();
         }
     }
+
     public List<Order> getOrdersByStatusIn(List<Integer> statusIds) throws SQLException {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name " +
@@ -109,11 +110,15 @@ public class DAOOrder {
                 }
                 orders.add(order);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            status = "Error: Unable to retrieve orders - " + e.getMessage();
+            throw e;
         }
         return orders;
     }
+
     public void updateOrderStatus(int orderId, int statusId) throws SQLException {
-        // Kiểm tra trạng thái hiện tại
         String checkSql = "SELECT status_id FROM [dbo].[Orders] WHERE id = ?";
         int currentStatusId = 0;
         try (PreparedStatement checkSt = con.prepareStatement(checkSql)) {
@@ -127,18 +132,8 @@ public class DAOOrder {
             }
         }
 
-        // Quy tắc chuyển trạng thái dựa trên dữ liệu OrderStatus
-        Map<Integer, List<Integer>> validTransitions = new HashMap<>();
-        validTransitions.put(1, List.of(2, 7)); // Pending Confirmation -> Confirmed, Cancelled
-        validTransitions.put(2, List.of(3, 7)); // Confirmed -> Processing, Cancelled
-        validTransitions.put(3, List.of(4, 7)); // Processing -> Waiting for Delivery, Cancelled
-        validTransitions.put(4, List.of(5));    // Waiting for Delivery -> Delivering
-        validTransitions.put(5, List.of(6));    // Delivering -> Delivered
-        validTransitions.put(6, List.of(8));    // Delivered -> Returned
-        validTransitions.put(7, List.of());     // Cancelled (không chuyển tiếp)
-        validTransitions.put(8, List.of());     // Returned (không chuyển tiếp)
-
-        if (validTransitions.get(currentStatusId).contains(statusId)) {
+        DAOOrderStatus daoStatus = DAOOrderStatus.INSTANCE;
+        if (daoStatus.isValidTransition(currentStatusId, statusId)) {
             String sql = "UPDATE [dbo].[Orders] SET status_id = ? WHERE id = ?";
             try (PreparedStatement st = con.prepareStatement(sql)) {
                 st.setInt(1, statusId);

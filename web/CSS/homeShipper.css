@@ -1,0 +1,52 @@
+/* CSS/homeShipper.css */
+.welcome {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+.welcome img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.welcome h2 {
+    font-size: 1.5em;
+    color: #333;
+}
+
+.dashboard {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    padding: 20px;
+}
+
+.card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 200px;
+    text-align: center;
+    padding: 20px;
+    margin: 10px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card img {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 10px;
+}
+
+.card h3 {
+    font-size: 1.2em;
+    color: #333;
+}

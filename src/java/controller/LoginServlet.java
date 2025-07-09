@@ -100,7 +100,10 @@ public class LoginServlet extends HttpServlet {
                         response.sendRedirect("HomeAdmin");
                     } else if (matchedUser.getRole().getId() == 4) {
                         response.sendRedirect("nutritionistHome");
-                    } else {
+                    }
+                     else if (matchedUser.getRole().getId() == 6) {
+                        response.sendRedirect("HomeShipper");
+                    }else {
                         response.sendRedirect("home");
                     }
                     return;
