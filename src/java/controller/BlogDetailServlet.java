@@ -8,9 +8,15 @@ import dal.DAOBlog;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import model.Blog;
@@ -20,6 +26,7 @@ import model.User;
  *
  * @author HP
  */
+@MultipartConfig
 public class BlogDetailServlet extends HttpServlet {
 
     /**
@@ -60,6 +67,7 @@ public class BlogDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String blogIdStr = request.getParameter("blogId");
         int blogId;
         try {
@@ -94,6 +102,7 @@ public class BlogDetailServlet extends HttpServlet {
         request.setAttribute("createBy", blog.getUser().getName());
         request.setAttribute("prevId", prevId != 0 ? prevId : b.get(b.size() - 1).getId());
         request.setAttribute("nextId", nextId != 0 ? nextId : b.get(0).getId());
+        request.setAttribute("blog", blog);
         request.getRequestDispatcher("view/blogDetail.jsp").forward(request, response);
     }
 
@@ -108,31 +117,79 @@ public class BlogDetailServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
+
         String action = request.getParameter("action");
         User user = (User) request.getSession().getAttribute("user");
-        if("editBlog".equals(action)){
-        String blogIdstr = request.getParameter("blogId");
+        DAOBlog dao = new DAOBlog();
+        int blogId = Integer.parseInt(request.getParameter("blogId"));
         String title = request.getParameter("title");
         String description = request.getParameter("description");
-        
-        int blogId = Integer.parseInt(blogIdstr);
-        Blog blog = new Blog();
-        blog.setId(blogId);
-        blog.setCreated_at(new java.sql.Timestamp(System.currentTimeMillis()));
-        blog.setDescription(description);
-        blog.setTitle(title);
-        blog.setUser(user);
+        String image = request.getParameter("image");
+
+        final String SAVE_DIR = "images";
+
+        if ("editBlog".equals(action)) {
+            Part filePart = request.getPart("file");
+            String fileName = getFileName(filePart);
+
+            String appPath = request.getServletContext().getRealPath("");
+            File projectRoot = new File(appPath).getParentFile().getParentFile();
+            String savePath = projectRoot.getAbsolutePath() + File.separator + "build" + File.separator + "web" + File.separator + SAVE_DIR;
+
+            System.out.println("" + savePath);
+
+            if (fileName != null && !fileName.isEmpty()) {
+                File fileSaveDir = new File(savePath);
+                if (!fileSaveDir.exists()) {
+                    fileSaveDir.mkdirs();
+                }
+
+                File saveFile = new File(savePath, fileName);
+                File parentDir = saveFile.getParentFile();
+                if (!parentDir.exists()) {
+                    parentDir.mkdirs();
+                }
+
+                try (InputStream fileContent = filePart.getInputStream()) {
+                    Files.copy(fileContent, saveFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
+
+                image = fileName;
+            }       
+            Blog blog = new Blog();
+            blog.setId(blogId);
+            blog.setTitle(title);
+            blog.setDescription(description);
+            blog.setImage(image);
+            blog.setUser(user);
+            blog.setCreated_at(new java.sql.Timestamp(System.currentTimeMillis()));
+
+            dao.updateBlog(blog);
+
+            response.sendRedirect(request.getContextPath() + "/blogDetail?blogId=" + blogId);
+        }
+
+        if ("deleteBlog".equals(action)) {
+            dao.deleteBlogById(blogId);
+            response.sendRedirect(request.getContextPath() + "/nutritionBlog");
         }
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
+// Hàm lấy tên file
+    private String getFileName(Part part) {
+        String contentDisp = part.getHeader("content-disposition");
+        for (String token : contentDisp.split(";")) {
+            if (token.trim().startsWith("filename")) {
+                return token.substring(token.indexOf("=") + 2, token.length() - 1);
+            }
+        }
+        return "";
+    }
+
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
-
+    }
 }

@@ -16,7 +16,7 @@ public class Blog {
     private String image;
     private String description;
     private Timestamp created_at;
-
+    private User user;
     public Blog(int id, String title, String image, String description, Timestamp created_at, User user) {
         this.id = id;
         this.title = title;
@@ -25,7 +25,7 @@ public class Blog {
         this.created_at = created_at;
         this.user = user;
     }
-    private User user;
+    
 
     public Blog() {
     }

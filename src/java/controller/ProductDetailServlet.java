@@ -304,7 +304,6 @@ public class ProductDetailServlet extends HttpServlet {
             }
         }
         doGet(request, response);
-        return;
     }
 
     @Override

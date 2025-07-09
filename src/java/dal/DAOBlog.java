@@ -108,7 +108,7 @@ public class DAOBlog {
         return blog;
     }
 
-    public boolean updateBlogById(Blog blog) {
+    public boolean updateBlog(Blog blog) {
         String sql = "UPDATE Blog SET title = ?, image = ?, description = ?, user_id = ? WHERE id = ?";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setString(1, blog.getTitle());
@@ -124,6 +124,17 @@ public class DAOBlog {
         }
         return false;
     }
+public boolean deleteBlogById(int blogId) {
+    String sql = "DELETE FROM Blog WHERE id = ?";
+    try (PreparedStatement st = con.prepareStatement(sql)) {
+        st.setInt(1, blogId);
+        int rowsDeleted = st.executeUpdate();
+        return rowsDeleted > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
 
     public static void main(String[] args) {
         Blog blog = DAOBlog.INSTANCE.getBlogById(1);
