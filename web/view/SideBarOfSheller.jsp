@@ -53,10 +53,15 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
             </div>
             <div class="offcanvas-body">
-                <a href="seller"><i class="bi bi-box-seam me-2"></i>Product Management</a>
-                <a href="SellerUpdateSatus"><i class="bi bi-truck me-2"></i>Order Status</a>
+                <a href="seller"><i class="bi bi-boxes me-2"></i>Product Management</a>
+                <a href="ConfirmedOrders"><i class="bi bi-check2-circle me-2"></i>Confirm Order</a>
+                <a href="ProcessingOrders"><i class="bi bi-gear-wide-connected me-2"></i>Processing Order</a>
+                <a href="SellerUpdateSatus"><i class="bi bi-truck me-2"></i>Waiting for Delivery</a>
+                <a href="SellerUpdateSatus"><i class="bi bi-x-circle me-2"></i>Cancel Order</a>
                 <a href="OrderHistory.jsp"><i class="bi bi-clock-history me-2"></i>Order History</a>
             </div>
+
+
         </div>
 
 
