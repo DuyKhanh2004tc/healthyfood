@@ -132,6 +132,18 @@
         <servlet-name>WaitingOrdersServlet</servlet-name>
         <servlet-class>controller.WaitingOrdersServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ShipperUpdateStatusServlet</servlet-name>
+        <servlet-class>controller.ShipperUpdateStatusServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeliveringOrdersServlet</servlet-name>
+        <servlet-class>controller.DeliveringOrdersServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeliveredOrdersServlet</servlet-name>
+        <servlet-class>controller.DeliveredOrdersServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeDisplayServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -263,6 +275,18 @@
     <servlet-mapping>
         <servlet-name>WaitingOrdersServlet</servlet-name>
         <url-pattern>/WaitingOrders</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ShipperUpdateStatusServlet</servlet-name>
+        <url-pattern>/ShipperUpdateStatus</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeliveringOrdersServlet</servlet-name>
+        <url-pattern>/DeliveringOrders</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeliveredOrdersServlet</servlet-name>
+        <url-pattern>/DeliveredOrders</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>

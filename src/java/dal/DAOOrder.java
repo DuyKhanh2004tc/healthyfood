@@ -147,5 +147,14 @@ public class DAOOrder {
             throw new SQLException("Invalid status transition from " + currentStatusId + " to " + statusId);
         }
     }
+    public void updateOrderStatus(int orderId, int statusId, int shipperId) throws SQLException {
+        String sql = "UPDATE [dbo].[Orders] SET status_id = ?, shipper_id = ? WHERE id = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, statusId);
+            ps.setInt(2, shipperId);
+            ps.setInt(3, orderId);
+            ps.executeUpdate();
+        }
+    }
 
 }
