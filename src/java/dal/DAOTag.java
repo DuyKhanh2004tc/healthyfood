@@ -45,6 +45,30 @@ public class DAOTag {
     }
     return list;
 }
+public void deleteBlogTag(int blogId) {
+    String sql = "DELETE FROM BlogTag WHERE blog_id = ?";
+    try {
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setInt(1, blogId);
+        ps.executeUpdate();
+        ps.close();
+    } catch (SQLException e) {
+        status = "Error at deleteBlogTag: " + e.getMessage();
+    }
+}
+public void insertBlogTag(int blogId, int tagId) {
+    String sql = "INSERT INTO BlogTag (blog_id, tag_id) VALUES (?, ?)";
+    try {
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setInt(1, blogId);
+        ps.setInt(2, tagId);
+        ps.executeUpdate();
+        ps.close();
+    } catch (SQLException e) {
+        status = "Error at insertBlogTag: " + e.getMessage();
+    }
+}
+
 
     public static void main(String[] args) {
        

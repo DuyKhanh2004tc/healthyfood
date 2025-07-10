@@ -5,6 +5,7 @@
 package controller;
 
 import dal.DAOBlog;
+import dal.DAOTag;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -95,6 +96,9 @@ public class BlogDetailServlet extends HttpServlet {
             }
         }
         List<Tag> tag = dao.getTagByBlogId(blogId);
+        DAOTag daoTag = new DAOTag();
+        List<Tag> tagList = daoTag.listAllTag();
+                
         request.setAttribute("blogId", blog.getId());
         request.setAttribute("title", blog.getTitle());
         request.setAttribute("description", blog.getDescription());
@@ -105,6 +109,7 @@ public class BlogDetailServlet extends HttpServlet {
         request.setAttribute("nextId", nextId != 0 ? nextId : b.get(0).getId());
         request.setAttribute("blog", blog);
         request.setAttribute("tag", tag);
+        request.setAttribute("tagList",tagList );
         request.getRequestDispatcher("view/blogDetail.jsp").forward(request, response);
     }
 
@@ -133,6 +138,8 @@ public class BlogDetailServlet extends HttpServlet {
         final String SAVE_DIR = "images";
 
         if ("editBlog".equals(action)) {
+            String[] tagIdstr = request.getParameterValues("chooseTag");
+          
             Part filePart = request.getPart("file");
             String fileName = getFileName(filePart);
 
@@ -167,13 +174,21 @@ public class BlogDetailServlet extends HttpServlet {
             blog.setImage(image);
             blog.setUser(user);
             blog.setCreated_at(new java.sql.Timestamp(System.currentTimeMillis()));
-
+            
             dao.updateBlog(blog);
-
+            
+            DAOTag tag = new DAOTag();
+            tag.deleteBlogTag(blogId);
+            for (String tagId:tagIdstr) {
+                int tagIdInt = Integer.parseInt(tagId);
+                  tag.insertBlogTag(blogId, tagIdInt);
+            }
             response.sendRedirect(request.getContextPath() + "/blogDetail?blogId=" + blogId);
         }
 
         if ("deleteBlog".equals(action)) {
+              DAOTag tag = new DAOTag();
+            tag.deleteBlogTag(blogId);
             dao.deleteBlogById(blogId);
             response.sendRedirect(request.getContextPath() + "/nutritionBlog");
         }
