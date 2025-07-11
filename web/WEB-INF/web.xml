@@ -144,6 +144,14 @@
         <servlet-name>DeliveredOrdersServlet</servlet-name>
         <servlet-class>controller.DeliveredOrdersServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ProcessingOrdersServlet</servlet-name>
+        <servlet-class>controller.ProcessingOrdersServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ConfirmedOrdersServlet</servlet-name>
+        <servlet-class>controller.ConfirmedOrdersServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeDisplayServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -287,6 +295,14 @@
     <servlet-mapping>
         <servlet-name>DeliveredOrdersServlet</servlet-name>
         <url-pattern>/DeliveredOrders</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ProcessingOrdersServlet</servlet-name>
+        <url-pattern>/ProcessingOrders</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ConfirmedOrdersServlet</servlet-name>
+        <url-pattern>/ConfirmedOrders</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>

@@ -1,5 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="model.*" %>
+<%@ page import="java.sql.Timestamp, java.util.*, java.text.*" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -247,7 +249,7 @@
             <div class="nutrition-header">
                 <div class="logo">
                     <a href="${pageContext.request.contextPath}/nutritionistHome">
-                    <img src="${pageContext.request.contextPath}/images/logo_3.png" alt="Logo">
+                        <img src="${pageContext.request.contextPath}/images/logo_3.png" alt="Logo">
                     </a>
                 </div>
                 <div class="menu-content-left">
@@ -292,6 +294,18 @@
                     <img src="${pageContext.request.contextPath}/images/${image}" alt="${title}">
 
                     <h3>${title}</h3>
+                    <p> 
+                        <%
+                                                ArrayList<Tag> tag = (ArrayList<Tag>)request.getAttribute("tag");
+                                                if(tag!=null&&!tag.isEmpty()){
+                                                for(Tag t : tag){
+                        %>
+                        #<%= t.getName()%> 
+                        <%
+                                             }
+                                      }
+                        %>
+                    </p>
                     <div class="meta">
                         <span class="date">${created_at}</span>
                         <span class="author">By ${createBy}</span>
@@ -319,9 +333,33 @@
                     <input type="hidden" id="popupBlogId" name="blogId" value="${blogId}">
                     <input type="hidden" name="action" value="editBlog">
                     <input type="hidden" name="image" value="${image}"> 
+
                     <p>Image</p>
                     <input type="file" name="file" accept="image/*" />
                     <img src="${pageContext.request.contextPath}/images/${image}" alt="${title}">
+                    <p>Tag</p>                
+                    <p> 
+                        <%
+                                                ArrayList<Tag> tagList = (ArrayList<Tag>)request.getAttribute("tagList");
+                                                if(tagList!=null&&!tagList.isEmpty()){
+                                                for(Tag t : tagList){ 
+                                                        boolean check = false;
+                                                             if(tag != null){
+                                                                                  for(Tag ta : tag){
+                                                                                 if(ta.getId()==t.getId()){
+                                                                                            check=true;
+                                                                                              break;
+                                                                              }
+                                                                      }
+                                                          }
+                                                    %>                 
+
+                        <input type="checkbox" name="chooseTag" value="<%= t.getId()%>" <%= check ? "checked":"" %>><%= t.getName()%> <br>
+                        <%
+                                             }
+                                      }
+                        %>
+                    </p>
                     <p>Title</p>
                     <textarea id="popupTitle" name="title" placeholder="Enter title here..." required>${title}</textarea>
                     <p>Description</p>

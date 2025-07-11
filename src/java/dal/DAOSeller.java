@@ -4,9 +4,13 @@ import model.Product;
 import model.Category;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.Order;
+import model.OrderDetail;
 
 public class DAOSeller {
     private static final Logger LOGGER = Logger.getLogger(DAOSeller.class.getName());
@@ -328,6 +332,20 @@ public class DAOSeller {
         }
         throw new SQLException("Failed to insert or retrieve category ID");
     }
+    
+
+
+public int getTotalOrderCount() {
+    String sql = "SELECT COUNT(*) FROM Orders";
+    try (PreparedStatement st = con.prepareStatement(sql); ResultSet rs = st.executeQuery()) {
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+    } catch (SQLException e) {
+        LOGGER.log(Level.SEVERE, "Error in getTotalOrderCount: {0}", e.getMessage());
+    }
+    return 0;
+}
 
     
 

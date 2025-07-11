@@ -148,12 +148,22 @@ public class DAOOrder {
         }
     }
     public void updateOrderStatus(int orderId, int statusId, int shipperId) throws SQLException {
-        String sql = "UPDATE [dbo].[Orders] SET status_id = ?, shipper_id = ? WHERE id = ?";
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, statusId);
-            ps.setInt(2, shipperId);
-            ps.setInt(3, orderId);
-            ps.executeUpdate();
+        String sql;
+        if (shipperId == -1) {
+            sql = "UPDATE [dbo].[Orders] SET status_id = ? WHERE id = ?";
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setInt(1, statusId);
+                ps.setInt(2, orderId);
+                ps.executeUpdate();
+            }
+        } else {
+            sql = "UPDATE [dbo].[Orders] SET status_id = ?, shipper_id = ? WHERE id = ?";
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setInt(1, statusId);
+                ps.setInt(2, shipperId);
+                ps.setInt(3, orderId);
+                ps.executeUpdate();
+            }
         }
     }
 
