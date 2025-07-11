@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/bmi.css">
 </head>
 <body>
-
+    <jsp:include page="header.jsp"></jsp:include>
     <h2>BMI Calculator</h2>
 
     <form action="bmi" method="post">
@@ -21,8 +21,8 @@
         <label for="goal">Select your goal:</label>
         <select name="goal" id="goal" required>
             <option value="">-- Select your goal --</option>
-            <c:forEach var="tag" items="${tags}">
-                <option value="${tag.slug}" <c:if test="${tag.slug == goal}">selected</c:if>>${tag.name}</option>
+            <c:forEach var="tag" items="${goal}">
+                <option value="${tag.slug}" <c:if test="${param.goal == tag.slug}">selected</c:if>>${tag.name}</option>
             </c:forEach>
         </select>
 
@@ -34,15 +34,17 @@
             <h3>Your BMI Result</h3>
             <p>Your BMI is: <strong>${bmi}</strong></p>
             <p>Category: <strong>${category}</strong></p>
-            <p>Your goal: <strong>${goalName}</strong></p>
-            <p>Suggestion: ${suggestion}</p>
-            <a href="blog.jsp?tag=${goal}">View related articles for your goal</a>
+            <c:if test="${not empty param.goal}">
+                <p>Your Goal: <strong>${goalName}</strong></p>
+                <p>Suggestion: ${suggestion}</p>
+                <a href="blog.jsp?tag=${param.goal}">View related articles for your goal</a>
+            </c:if>
         </div>
     </c:if>
 
     <c:if test="${not empty error}">
         <p class="error">${error}</p>
     </c:if>
-
+    <jsp:include page="footer.jsp"></jsp:include>
 </body>
 </html>

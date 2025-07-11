@@ -69,6 +69,28 @@ public void insertBlogTag(int blogId, int tagId) {
     }
 }
 
+public List<Tag> listAllGoalTags() {
+    List<Tag> list = new ArrayList<>();
+    String sql = "SELECT * FROM Tag WHERE slug NOT IN ('weight-loss', 'weight-gain', 'maintain-weight')";
+    try {
+        PreparedStatement ps = con.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Tag tag = new Tag(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getString("slug"),
+                rs.getString("description")
+            );
+            list.add(tag);
+        }
+        rs.close();
+        ps.close();
+    } catch (SQLException e) {
+        status = "Error at listAllGoalTags: " + e.getMessage();
+    }
+    return list;
+}
 
     public static void main(String[] args) {
        
