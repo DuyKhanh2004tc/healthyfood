@@ -69,6 +69,27 @@ public class SortProductServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User u = (User) session.getAttribute("user");
         String order = request.getParameter("orderBy");
+        int categoryId = 0;
+        if (session.getAttribute("categoryId") != null) {
+            categoryId = (int) session.getAttribute("categoryId");
+        }
+        String index_raw = request.getParameter("index");
+        if (index_raw == null) {
+            index_raw = "1";
+        }
+        int index = Integer.parseInt(index_raw);
+        int totalProduct;
+        if (categoryId == 0) {
+            totalProduct = dao.getTotalProduct();
+        } else {
+            totalProduct = dao.getTotalProductByCid(categoryId);
+        }
+        int pages = totalProduct / 12;
+        if (totalProduct % 12 != 0) {
+            pages++;
+        }
+
+        request.setAttribute("totalPage", pages);
 
         List<Category> categoryList = dao2.getAllCategory();
         request.setAttribute("categoryList", categoryList);
@@ -80,11 +101,10 @@ public class SortProductServlet extends HttpServlet {
         if (session.getAttribute("keyword") != null) {
             String searchName = (String) session.getAttribute("keyword");
             productList = dao.sortSearchedProduct(searchName, order);
-        } else if (session.getAttribute("categoryId") != null) {
-            int cId = (int) session.getAttribute("categoryId");
-            productList = dao.getPriceSortedByCategoryId(order, cId);
+        } else if (categoryId == 0) {
+            productList = dao.getProductSortedPagination(index, 12, order);
         } else {
-            productList = dao.getPriceSorted(order);
+            productList = dao.getProductSortedPaginationByCid(categoryId, index, 12, order);
         }
         request.setAttribute("productList", productList);
         if (userRoleId == 4) {

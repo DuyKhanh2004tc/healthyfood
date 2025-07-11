@@ -238,7 +238,7 @@ public class DAOProduct {
 
                 p.setCategory(c);
                 return p;
-                
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -589,5 +589,86 @@ public class DAOProduct {
             LOGGER.log(Level.SEVERE, "SQL Error in getAllCategories: {0}", e.getMessage());
         }
         return categoryList;
+    }
+
+    public List<Product> getProductSortedPaginationByCid(int categoryId, int index, int row, String orderBy) {
+        List<Product> productList = new ArrayList<>();
+
+        String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, "
+                + "p.image_url, p.shelf_life_hours, p.rate AS average_rate, "
+                + "c.id AS category_id, c.name AS category_name "
+                + "FROM Product p "
+                + "INNER JOIN Category c ON p.category_id = c.id "
+                + "WHERE c.id = ? "
+                + "ORDER BY p.price " + orderBy + " "
+                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setInt(1, categoryId);
+            st.setInt(2, (index - 1) * row);
+            st.setInt(3, row);
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    Product p = new Product();
+                    p.setId(rs.getInt("product_id"));
+                    p.setName(rs.getString("product_name"));
+                    p.setDescription(rs.getString("description"));
+                    p.setPrice(rs.getDouble("price"));
+                    p.setStock(rs.getInt("stock"));
+                    p.setImgUrl(rs.getString("image_url"));
+                    p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
+                    p.setRate(rs.getDouble("average_rate"));
+
+                    Category c = new Category();
+                    c.setId(rs.getInt("category_id"));
+                    c.setName(rs.getString("category_name"));
+
+                    p.setCategory(c);
+                    productList.add(p);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productList;
+    }
+
+    public List<Product> getProductSortedPagination(int index, int row, String orderBy) {
+        List<Product> productList = new ArrayList<>();
+        String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, "
+                + "p.image_url, p.shelf_life_hours, p.rate AS average_rate, "
+                + "c.id AS category_id, c.name AS category_name "
+                + "FROM Product p "
+                + "INNER JOIN Category c ON p.category_id = c.id "
+                + "ORDER BY p.price " + orderBy + " "
+                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setInt(1, (index - 1) * row);
+            st.setInt(2, row);
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    Product p = new Product();
+                    p.setId(rs.getInt("product_id"));
+                    p.setName(rs.getString("product_name"));
+                    p.setDescription(rs.getString("description"));
+                    p.setPrice(rs.getDouble("price"));
+                    p.setStock(rs.getInt("stock"));
+                    p.setImgUrl(rs.getString("image_url"));
+                    p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
+                    p.setRate(rs.getDouble("average_rate"));
+
+                    Category c = new Category();
+                    c.setId(rs.getInt("category_id"));
+                    c.setName(rs.getString("category_name"));
+
+                    p.setCategory(c);
+                    productList.add(p);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productList;
     }
 }
