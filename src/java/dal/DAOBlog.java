@@ -125,15 +125,51 @@ public class DAOBlog {
         return false;
     }
 public boolean deleteBlogById(int blogId) {
+    String sqlDeleteBlogTag = "DELETE FROM BlogTag WHERE blog_id = ?";
     String sql = "DELETE FROM Blog WHERE id = ?";
-    try (PreparedStatement st = con.prepareStatement(sql)) {
-        st.setInt(1, blogId);
-        int rowsDeleted = st.executeUpdate();
-        return rowsDeleted > 0;
+    try {
+        
+        PreparedStatement ps1 = con.prepareStatement(sqlDeleteBlogTag);
+        ps1.setInt(1, blogId);
+        ps1.executeUpdate();
+        ps1.close();
+
+        
+        PreparedStatement ps2 = con.prepareStatement(sql);
+        ps2.setInt(1, blogId);
+        int rowsAffected = ps2.executeUpdate();
+        ps2.close();
+        return rowsAffected > 0;
     } catch (SQLException e) {
         e.printStackTrace();
+        return false;
     }
-    return false;
+}
+public List<Tag> getTagByBlogId(int blogId) {
+    List<Tag> list = new ArrayList<>();
+    String sql = "SELECT t.id, t.name, t.slug, t.description "
+               + "FROM BlogTag bt "
+               + "JOIN Tag t ON bt.tag_id = t.id "
+               + "WHERE bt.blog_id = ?";
+    try {
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setInt(1, blogId);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Tag tag = new Tag(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getString("slug"),
+                rs.getString("description")
+            );
+            list.add(tag);
+        }
+        rs.close();
+        ps.close();
+    } catch (SQLException e) {
+        status = "Error at getTagByBlogId: " + e.getMessage();
+    }
+    return list;
 }
 
     public static void main(String[] args) {

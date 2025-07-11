@@ -22,9 +22,11 @@ import java.util.logging.Logger;
 import model.Product;
 import model.Category;
 import model.Order;
+import model.User;
 
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 10)
 public class SellerServlet extends HttpServlet {
+
     private DAOSeller DAOSeller;
     private DAOCategory DAOCategory;
     private static final Logger LOGGER = Logger.getLogger(SellerServlet.class.getName());
@@ -40,14 +42,26 @@ public class SellerServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect("login");
+            return;
+        }
+
+        User user = (User) session.getAttribute("user");
+        if (user.getRole().getId() != 5) { // Kiểm tra role_id = 5 (Seller)
+            response.sendRedirect("login");
+            return;
+        }
         String service = request.getParameter("service");
         int currentPage = 1;
         try {
             String pageStr = request.getParameter("page");
             if (pageStr != null) {
                 currentPage = Integer.parseInt(pageStr);
-                if (currentPage < 1) currentPage = 1;
+                if (currentPage < 1) {
+                    currentPage = 1;
+                }
             }
         } catch (NumberFormatException e) {
             session.setAttribute("errorMessage", "Invalid page number.");
@@ -90,23 +104,25 @@ public class SellerServlet extends HttpServlet {
         } else if ("searchByKeywords".equals(service)) {
             String keywords = request.getParameter("keywords");
             displayProductList(request, response, keywords, currentPage);
-        } 
-        
-        
-        
-        
-
-        
-        
-        
-        else {
+        } else {
             displayProductList(request, response, null, currentPage);
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect("login");
+            return;
+        }
+
+        User user = (User) session.getAttribute("user");
+        if (user.getRole().getId() != 5) { // Kiểm tra role_id = 5 (Seller)
+            response.sendRedirect("login");
+            return;
+        }
+
         String service = request.getParameter("service");
         if (service == null) {
             LOGGER.log(Level.WARNING, "Service parameter is null. URL: {0}, Params: {1}",
