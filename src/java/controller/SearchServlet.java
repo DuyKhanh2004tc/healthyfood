@@ -68,14 +68,16 @@ public class SearchServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User u = (User) session.getAttribute("user");
         session.removeAttribute("categoryId");
+        Product newest = dao.getNewestProduct();
+        request.setAttribute("newProduct", newest);
         int userRoleId = -1;
         if (u != null && u.getRole() != null) {
             userRoleId = u.getRole().getId();
         }
         String searchName = request.getParameter("keyword");
-        session.setAttribute("keyword", searchName);       
+        session.setAttribute("keyword", searchName);
         searchList = dao.searchProduct(searchName);
-        
+
         request.setAttribute("keyword", searchName);
         if (searchList.isEmpty() || searchList == null) {
             String error = "Product Not Found";

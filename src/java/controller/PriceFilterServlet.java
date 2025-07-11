@@ -65,7 +65,9 @@ public class PriceFilterServlet extends HttpServlet {
         DAOCategory daoCategory = new DAOCategory();
         List<Product> productList;
         request.setAttribute("categoryList", daoCategory.getAllCategory());
-        
+        Product newest = dao.getNewestProduct();
+        request.setAttribute("newProduct", newest);
+
         HttpSession session = request.getSession();
         int categoryId = 0;
         if (session.getAttribute("categoryId") != null) {
@@ -178,10 +180,10 @@ public class PriceFilterServlet extends HttpServlet {
                     int index = Integer.parseInt(index_raw);
                     int totalProduct = dao.getTotalProduct();
                     if (categoryId == 0) {
-                            totalProduct = dao.getTotalProduct();
-                        } else {
-                            totalProduct = dao.getTotalProductByCid(categoryId);
-                        }
+                        totalProduct = dao.getTotalProduct();
+                    } else {
+                        totalProduct = dao.getTotalProductByCid(categoryId);
+                    }
                     int pages = totalProduct / 12;
                     if (totalProduct % 12 != 0) {
                         pages++;

@@ -69,6 +69,8 @@ public class SortProductServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User u = (User) session.getAttribute("user");
         String order = request.getParameter("orderBy");
+        Product newest = dao.getNewestProduct();
+        request.setAttribute("newProduct", newest);
         int categoryId = 0;
         if (session.getAttribute("categoryId") != null) {
             categoryId = (int) session.getAttribute("categoryId");

@@ -72,6 +72,8 @@ public class CategoryServlet extends HttpServlet {
         List<Category> categoryList = dao2.getAllCategory();
         request.setAttribute("categoryList", categoryList);
         List<Product> productList;
+        Product newest = dao.getNewestProduct();
+        request.setAttribute("newProduct", newest);
 
         try {
 
