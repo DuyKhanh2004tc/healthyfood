@@ -19,7 +19,9 @@
 
     <div class="nutrition-header">
         <div class="logo">
-            <img src="${pageContext.request.contextPath}/images/logo_3.png" alt="Logo">
+            <a href="${pageContext.request.contextPath}/nutritionistHome">
+                    <img src="${pageContext.request.contextPath}/images/logo_3.png" alt="Logo">
+            </a>
         </div>
         <div class="menu-content-left">
             <h3>Welcome Nutritionist ${sessionScope.user.name}</h3>

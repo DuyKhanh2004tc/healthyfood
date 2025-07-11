@@ -85,7 +85,7 @@ public class DAOOrder {
 
     public List<Order> getOrdersByStatusIn(List<Integer> statusIds) throws SQLException {
         List<Order> orders = new ArrayList<>();
-        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name " +
+        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone " +
                      "FROM [dbo].[Orders] o " +
                      "LEFT JOIN [dbo].[OrderStatus] os ON o.status_id = os.id " +
                      "LEFT JOIN [dbo].[Users] u ON o.user_id = u.id " +
@@ -106,7 +106,18 @@ public class DAOOrder {
                 order.setStatus(new OrderStatus(rs.getInt("status_id"), rs.getString("status_name"), rs.getString("description")));
                 order.setUser(new User(rs.getInt("user_id"), rs.getString("user_name"), null, null, null, null, null, false, null, null));
                 if (rs.getInt("shipper_id") != 0) {
-                    order.setShipper(new User(rs.getInt("shipper_id"), rs.getString("shipper_name"), null, null, null, null, null, false, null, null));
+                    order.setShipper(new User(
+                        rs.getInt("shipper_id"),           // id
+                        rs.getString("shipper_name"),      // name
+                        null,                              // email
+                        null,                              // password
+                        rs.getString("shipper_phone"),     // phone
+                        null,                              // dob
+                        null,                              // address
+                        false,                             // gender
+                        null,                              // role
+                        null                               // createdAt
+                    ));
                 }
                 orders.add(order);
             }

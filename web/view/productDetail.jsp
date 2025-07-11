@@ -7,6 +7,8 @@
     <head>
         <title>Product Detail</title>
         <meta charset="UTF-8">
+        <link href="${pageContext.request.contextPath}/CSS/nutritionistHome.css" rel="stylesheet" type="text/css"/>
+        <link href="${pageContext.request.contextPath}/CSS/home.css" rel="stylesheet" type="text/css"/>
         <style>
             body {
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -245,7 +247,28 @@
         </style>
     </head>
     <body>
-        <jsp:include page="header.jsp"></jsp:include>
+        <c:if test="${sessionScope.user.getRole().getId()!=4}">
+            <jsp:include page="header.jsp" />
+        </c:if>
+        <c:if test="${sessionScope.user.getRole().getId()==4}">
+
+            <div class="nutrition-header">
+                <div class="logo">
+                    <a href="${pageContext.request.contextPath}/nutritionistHome">
+                        <img src="${pageContext.request.contextPath}/images/logo_3.png" alt="Logo">
+                    </a>
+                </div>
+                <div class="menu-content-left">
+                    <h3>Welcome Nutritionist ${sessionScope.user.getName()}</h3>
+                    <a href="${pageContext.request.contextPath}/nutritionistHome">View Product List</a>
+                    <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
+                    <a href="${pageContext.request.contextPath}/proposeProduct">Propose new product</a>                 
+                    <a href="${pageContext.request.contextPath}/nutritionBlog">Manage Blog</a>
+                    <a href="${pageContext.request.contextPath}/logout">Logout</a>
+
+                </div>
+            </div>
+        </c:if>
 
         <%
             Integer productId = (Integer) request.getAttribute("productId");
@@ -264,7 +287,12 @@
 
         <div class="container">
             <div class="back-links">
-                <a href="${pageContext.request.contextPath}/home" class="back-link">Home</a>
+                <c:if test="${sessionScope.user.getRole().getId()!=4}">
+                    <a href="${pageContext.request.contextPath}/home" class="back-link">Home</a>
+                </c:if>
+                <c:if test="${sessionScope.user.getRole().getId()==4}">
+                    <a href="${pageContext.request.contextPath}/nutritionistHome" class="back-link">Nutritionist Home</a>
+                </c:if>
                 <span class="breadcrumb-separator">»</span>
                 <a href="${pageContext.request.contextPath}/category?categoryId=<%= categoryId %>" class="back-link"><%= categoryName %></a>
             </div>              
@@ -312,12 +340,12 @@
                                     <input type="text" name="number" id="quantity" value="1" min="1" max="<%= stock %>">
                                     <button type="button" onclick="updateQuantity(1)">+</button>
                                 </div>
-                                    <div class = "twoButton">
-                                <button class="card-button" type="submit" name="action" value="add">🛒 Add to Cart</button>
-                                <button class="card-button" type="submit" name= "action"value="buy">💰 Buy</button>
+                                <div class = "twoButton">
+                                    <button class="card-button" type="submit" name="action" value="add">🛒 Add to Cart</button>
+                                    <button class="card-button" type="submit" name= "action"value="buy">💰 Buy</button>
                                 </div>
                             </form>
-                            
+
                         </c:if> 
                     </div>
                 </div>

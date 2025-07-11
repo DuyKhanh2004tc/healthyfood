@@ -63,7 +63,20 @@ public class NutritionistHomeServlet extends HttpServlet {
         HttpSession session = request.getSession();
         session.removeAttribute("keyword");
         session.removeAttribute("categoryId");
-        List<Product> productList = dao.getAllProduct();
+         String index_raw = request.getParameter("index");
+        if(index_raw == null){
+            index_raw ="1";
+        }
+        int index = Integer.parseInt(index_raw);
+        int totalProduct = dao.getTotalProduct();
+        int pages = totalProduct / 12;
+        if( totalProduct % 12 != 0){
+            pages++;
+        }
+        
+        request.setAttribute("totalPage", pages);      
+        List<Product> productList = dao.getProductPagination(index, 12);
+        
         DAOCategory dao2 = new DAOCategory();
         List<Category> categoryList = dao2.getAllCategory();
         request.setAttribute("categoryList",categoryList);
