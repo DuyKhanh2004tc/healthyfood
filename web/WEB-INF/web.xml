@@ -65,6 +65,10 @@
         <servlet-class>controller.ForgotPasswordServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>BMIServlet</servlet-name>
+        <servlet-class>controller.BMIServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>ResetPasswordServlet</servlet-name>
         <servlet-class>controller.ResetPasswordServlet</servlet-class>
     </servlet>
@@ -207,6 +211,10 @@
     <servlet-mapping>
         <servlet-name>AddAccountServlet</servlet-name>
         <url-pattern>/AddAccount</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BMIServlet</servlet-name>
+        <url-pattern>/bmi</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CategoryServlet</servlet-name>
