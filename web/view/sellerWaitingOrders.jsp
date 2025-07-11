@@ -1,4 +1,4 @@
-<%-- view/confirmedOrders.jsp --%>
+<%-- view/sellerWaitingOrders.jsp --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -6,22 +6,22 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Confirmed Orders</title>
+        <title>Waiting for Delivery Orders</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </head>
     <body class="bg-gray-100">
-        <h1 class="text-3xl font-bold text-center mt-6">Pending Orders (Waiting for Confirmation)</h1>
+        <h1 class="text-3xl font-bold text-center mt-6">Waiting for Delivery Orders</h1>
         <div class="container mt-4">
             <c:if test="${not empty error}">
                 <p class="text-danger text-center">${error}</p>
             </c:if>
             <div class="row">
                 <c:choose>
-                    <c:when test="${not empty pendingOrders}">
-                        <c:forEach var="order" items="${pendingOrders}">
+                    <c:when test="${not empty waitingOrders}">
+                        <c:forEach var="order" items="${waitingOrders}">
                             <div class="col-md-6 mb-3">
                                 <div class="card">
                                     <div class="card-body">
@@ -35,8 +35,8 @@
                                         <form action="${pageContext.request.contextPath}/SellerUpdateStatus" method="post">
                                             <input type="hidden" name="orderId" value="${order.id}">
                                             <select class="form-select mb-2" name="statusId">
-                                                <option value="2">Confirm</option>
-                                                <option value="7">Cancel</option>
+                                                <option value="4" ${order.status.id == 4 ? 'selected' : ''}>Waiting for Delivery</option>
+                                                <option value="7" ${order.status.id == 7 ? 'selected' : ''}>Cancel</option>
                                             </select>
                                             <button type="submit" class="btn btn-primary">Update Status</button>
                                         </form>
@@ -46,7 +46,7 @@
                         </c:forEach>
                     </c:when>
                     <c:otherwise>
-                        <p class="text-center">No pending orders.</p>
+                        <p class="text-center">No waiting orders.</p>
                     </c:otherwise>
                 </c:choose>
             </div>

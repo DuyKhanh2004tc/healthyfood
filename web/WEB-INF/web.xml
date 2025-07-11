@@ -152,6 +152,18 @@
         <servlet-name>ConfirmedOrdersServlet</servlet-name>
         <servlet-class>controller.ConfirmedOrdersServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SellerWaitingOrdersServlet</servlet-name>
+        <servlet-class>controller.SellerWaitingOrdersServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SellerDeliveringOrdersServlet</servlet-name>
+        <servlet-class>controller.SellerDeliveringOrdersServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SellerCanceledOrdersServlet</servlet-name>
+        <servlet-class>controller.SellerCanceledOrdersServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeDisplayServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -303,6 +315,18 @@
     <servlet-mapping>
         <servlet-name>ConfirmedOrdersServlet</servlet-name>
         <url-pattern>/ConfirmedOrders</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SellerWaitingOrdersServlet</servlet-name>
+        <url-pattern>/SellerWaitingOrders</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SellerDeliveringOrdersServlet</servlet-name>
+        <url-pattern>/SellerDeliveringOrders</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SellerCanceledOrdersServlet</servlet-name>
+        <url-pattern>/SellerCanceledOrders</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>

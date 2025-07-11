@@ -46,7 +46,7 @@ public class SellerUpdateStatusServlet extends HttpServlet {
                     response.sendRedirect("ProcessingOrders");
                     break;
                 case 4:
-                    response.sendRedirect("WaitingOrders");
+                    response.sendRedirect("SellerWaitingOrders");
                     break;
                 case 7:
                     response.sendRedirect("CancelledOrders");

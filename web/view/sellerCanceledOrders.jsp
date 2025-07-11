@@ -1,4 +1,4 @@
-<%-- view/confirmedOrders.jsp --%>
+<%-- view/sellerCanceledOrders.jsp --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -6,22 +6,22 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Confirmed Orders</title>
+        <title>Canceled Orders</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </head>
     <body class="bg-gray-100">
-        <h1 class="text-3xl font-bold text-center mt-6">Pending Orders (Waiting for Confirmation)</h1>
+        <h1 class="text-3xl font-bold text-center mt-6">Canceled Orders</h1>
         <div class="container mt-4">
             <c:if test="${not empty error}">
                 <p class="text-danger text-center">${error}</p>
             </c:if>
             <div class="row">
                 <c:choose>
-                    <c:when test="${not empty pendingOrders}">
-                        <c:forEach var="order" items="${pendingOrders}">
+                    <c:when test="${not empty canceledOrders}">
+                        <c:forEach var="order" items="${canceledOrders}">
                             <div class="col-md-6 mb-3">
                                 <div class="card">
                                     <div class="card-body">
@@ -32,21 +32,20 @@
                                         <p><strong>Total:</strong> $<fmt:formatNumber value="${order.totalAmount}" type="number" maxFractionDigits="2"/></p>
                                         <p><strong>Payment Method:</strong> ${order.paymentMethod}</p>
                                         <p><strong>Status:</strong> ${order.status.statusName}</p>
-                                        <form action="${pageContext.request.contextPath}/SellerUpdateStatus" method="post">
-                                            <input type="hidden" name="orderId" value="${order.id}">
-                                            <select class="form-select mb-2" name="statusId">
-                                                <option value="2">Confirm</option>
-                                                <option value="7">Cancel</option>
-                                            </select>
-                                            <button type="submit" class="btn btn-primary">Update Status</button>
-                                        </form>
+                                        <c:if test="${not empty order.shipper}">
+                                            <p><strong>Shipper Name:</strong> ${order.shipper.name}</p>
+                                            <p><strong>Shipper Phone:</strong> ${order.shipper.phone}</p>
+                                        </c:if>
+                                        <c:if test="${empty order.shipper}">
+                                            <p><strong>Shipper:</strong> Not assigned</p>
+                                        </c:if>
                                     </div>
                                 </div>
                             </div>
                         </c:forEach>
                     </c:when>
                     <c:otherwise>
-                        <p class="text-center">No pending orders.</p>
+                        <p class="text-center">No canceled orders.</p>
                     </c:otherwise>
                 </c:choose>
             </div>
