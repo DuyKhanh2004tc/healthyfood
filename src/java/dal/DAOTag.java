@@ -92,6 +92,31 @@ public List<Tag> listAllGoalTags() {
     return list;
 }
 
+public Tag getTagBySlug(String slug) {
+    String sql = "SELECT * FROM Tag WHERE slug = ?";
+    try {
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setString(1, slug);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            Tag tag = new Tag(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getString("slug"),
+                rs.getString("description")
+            );
+            rs.close();
+            ps.close();
+            return tag;
+        }
+        rs.close();
+        ps.close();
+    } catch (SQLException e) {
+        status = "Error at getTagBySlug: " + e.getMessage();
+    }
+    return null;
+}
+
     public static void main(String[] args) {
        
     }

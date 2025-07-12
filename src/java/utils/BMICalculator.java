@@ -41,4 +41,15 @@ public class BMICalculator {
             return "weight-loss";
         }
     }
+    
+    public static String getBMIGoalName(double bmi) {
+    if (bmi < 18.5) {
+        return "Weight Gain";
+    } else if (bmi >= 18.5 && bmi < 24.9) {
+        return "Maintain Weight";
+    } else {
+        return "Weight Loss";
+    }
+}
+    
 }

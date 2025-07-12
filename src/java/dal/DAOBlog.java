@@ -172,6 +172,52 @@ public List<Tag> getTagByBlogId(int blogId) {
     return list;
 }
 
+public List<Blog> getBlogsByTagSlug(String slug) {
+    List<Blog> list = new ArrayList<>();
+    String sql = """
+        SELECT b.id AS blog_id, b.user_id, b.title, b.image, b.description, b.created_at,
+               u.id AS user_id, u.name AS user_name, u.email, u.password, u.phone,
+               u.dob, u.address, u.gender, u.created_at AS user_created_at
+        FROM Blog b
+        JOIN BlogTag bt ON b.id = bt.blog_id
+        JOIN Tag t ON bt.tag_id = t.id
+        JOIN Users u ON b.user_id = u.id
+        WHERE t.slug = ?
+        ORDER BY b.created_at DESC
+        """;
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, slug);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                User user = new User(
+                        rs.getInt("user_id"),
+                        rs.getString("user_name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("phone"),
+                        rs.getDate("dob"),
+                        rs.getString("address"),
+                        rs.getBoolean("gender"),
+                        null, // Role nếu cần lấy thì join thêm
+                        rs.getTimestamp("user_created_at")
+                );
+                Blog blog = new Blog(
+                        rs.getInt("blog_id"),
+                        rs.getString("title"),
+                        rs.getString("image"),
+                        rs.getString("description"),
+                        rs.getTimestamp("created_at"),
+                        user
+                );
+                list.add(blog);
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return list;
+}
+
     public static void main(String[] args) {
         Blog blog = DAOBlog.INSTANCE.getBlogById(1);
         System.out.println(blog.getImage());

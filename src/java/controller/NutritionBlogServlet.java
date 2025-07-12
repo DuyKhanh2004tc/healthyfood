@@ -57,11 +57,18 @@ public class NutritionBlogServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
       
-        DAOBlog dao = new DAOBlog();
-        List<Blog> blogList = dao.getAllBlog();
-        request.setAttribute("blogList",blogList );      
-        request.getRequestDispatcher("/view/nutritionBlog.jsp").forward(request, response);
-        
+    DAOBlog dao = new DAOBlog();
+    String tagSlug = request.getParameter("tag");
+
+    List<Blog> blogList;
+    if (tagSlug != null && !tagSlug.isEmpty()) {
+        blogList = dao.getBlogsByTagSlug(tagSlug);
+    } else {
+        blogList = dao.getAllBlog();
+    }
+
+    request.setAttribute("blogList", blogList);
+    request.getRequestDispatcher("/view/nutritionBlog.jsp").forward(request, response);
     } 
 
     /** 
@@ -74,8 +81,8 @@ public class NutritionBlogServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-       request.getRequestDispatcher("/view/nutritionBlog.jsp").forward(request, response);
-    }
+        doGet(request, response);
+}
 
     /** 
      * Returns a short description of the servlet.
