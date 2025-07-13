@@ -129,6 +129,10 @@
         <servlet-class>controller.SellerUpdateStatusServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>SellerServlet</servlet-name>
+        <servlet-class>controller.SellerServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>HomeShipperServlet</servlet-name>
         <servlet-class>controller.HomeShipperServlet</servlet-class>
     </servlet>
@@ -167,6 +171,10 @@
     <servlet>
         <servlet-name>SellerCanceledOrdersServlet</servlet-name>
         <servlet-class>controller.SellerCanceledOrdersServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SellerOrderHistory</servlet-name>
+        <servlet-class>controller.SellerOrderHistory</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>HomeDisplayServlet</servlet-name>
@@ -211,6 +219,10 @@
     <servlet-mapping>
         <servlet-name>AddAccountServlet</servlet-name>
         <url-pattern>/AddAccount</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SellerServlet</servlet-name>
+        <url-pattern>/seller</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>BMIServlet</servlet-name>
@@ -335,6 +347,10 @@
     <servlet-mapping>
         <servlet-name>SellerCanceledOrdersServlet</servlet-name>
         <url-pattern>/SellerCanceledOrders</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SellerOrderHistory</servlet-name>
+        <url-pattern>/SellerOrderHistory</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>

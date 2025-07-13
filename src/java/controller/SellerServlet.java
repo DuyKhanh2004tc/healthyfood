@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package controller;
 
 import dal.DAOSeller;
@@ -21,7 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Product;
 import model.Category;
-import model.Order;
 import model.User;
 
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 10)
@@ -53,6 +48,9 @@ public class SellerServlet extends HttpServlet {
             response.sendRedirect("login");
             return;
         }
+        // Sửa: Lấy sellerId từ User
+        int sellerId = user.getId();
+
         String service = request.getParameter("service");
         int currentPage = 1;
         try {
@@ -74,38 +72,40 @@ public class SellerServlet extends HttpServlet {
         } else if ("requestUpdate".equals(service)) {
             try {
                 int productId = Integer.parseInt(request.getParameter("productId"));
-                Product product = DAOSeller.getProductById(productId);
+                // Sửa: Truyền sellerId vào getProductById
+                Product product = DAOSeller.getProductById(productId, sellerId);
                 if (product != null) {
                     List<Category> categories = DAOCategory.getAllCategory();
                     request.setAttribute("categories", categories);
                     request.setAttribute("product", product);
                     request.getRequestDispatcher("view/UpdateProduct.jsp").forward(request, response);
                 } else {
-                    session.setAttribute("errorMessage", "Product not found.");
-                    displayProductList(request, response, null, currentPage);
+                    session.setAttribute("errorMessage", "Product not found or you do not have permission.");
+                    displayProductList(request, response, null, currentPage, sellerId);
                 }
             } catch (NumberFormatException e) {
                 session.setAttribute("errorMessage", "Invalid product ID.");
-                displayProductList(request, response, null, currentPage);
+                displayProductList(request, response, null, currentPage, sellerId);
             }
         } else if ("requestDelete".equals(service)) {
             try {
                 int productId = Integer.parseInt(request.getParameter("productId"));
-                DAOSeller.deleteProductById(productId);
+                // Sửa: Truyền sellerId vào deleteProductById
+                DAOSeller.deleteProductById(productId, sellerId);
                 session.setAttribute("message", "Product deleted successfully!");
             } catch (NumberFormatException e) {
                 session.setAttribute("errorMessage", "Invalid product ID format.");
                 LOGGER.log(Level.WARNING, "Invalid product ID format: {0}", e.getMessage());
             } catch (RuntimeException e) {
-                session.setAttribute("errorMessage", "Deletion failed: " + e.getMessage());
+                session.setAttribute("errorMessage", "Deletion failed: You do not have permission or product not found.");
                 LOGGER.log(Level.SEVERE, "Deletion failed: {0}", e.getMessage());
             }
-            displayProductList(request, response, null, currentPage);
+            displayProductList(request, response, null, currentPage, sellerId);
         } else if ("searchByKeywords".equals(service)) {
             String keywords = request.getParameter("keywords");
-            displayProductList(request, response, keywords, currentPage);
+            displayProductList(request, response, keywords, currentPage, sellerId);
         } else {
-            displayProductList(request, response, null, currentPage);
+            displayProductList(request, response, null, currentPage, sellerId);
         }
     }
 
@@ -122,6 +122,8 @@ public class SellerServlet extends HttpServlet {
             response.sendRedirect("login");
             return;
         }
+        // Sửa: Lấy sellerId từ User
+        int sellerId = user.getId();
 
         String service = request.getParameter("service");
         if (service == null) {
@@ -133,37 +135,42 @@ public class SellerServlet extends HttpServlet {
         }
 
         if ("insert".equals(service)) {
-            handleInsertProduct(request, response);
+            handleInsertProduct(request, response, sellerId);
         } else if ("update".equals(service)) {
-            handleUpdateProduct(request, response);
+            handleUpdateProduct(request, response, sellerId);
         } else {
             session.setAttribute("errorMessage", "Invalid service: " + service);
             response.sendRedirect("seller?service=list");
         }
     }
 
-    private void displayProductList(HttpServletRequest request, HttpServletResponse response, String keywords, int currentPage)
+    // Sửa: Thêm tham số sellerId vào displayProductList
+    private void displayProductList(HttpServletRequest request, HttpServletResponse response, String keywords, int currentPage, int sellerId)
             throws ServletException, IOException {
         int productsPerPage = PRODUCTS_PER_PAGE;
         List<Product> productList;
         int totalRows;
         String service = "list";
         if (keywords != null && !keywords.trim().isEmpty()) {
-            productList = DAOSeller.searchProductsByNamePaginated(keywords.trim(), currentPage, productsPerPage);
-            totalRows = DAOSeller.getSearchProductsByNameCount(keywords.trim());
+            // Sửa: Truyền sellerId vào searchProductsByNamePaginated
+            productList = DAOSeller.searchProductsByNamePaginated(sellerId, keywords.trim(), currentPage, productsPerPage);
+            // Sửa: Truyền sellerId vào getSearchProductsByNameCount
+            totalRows = DAOSeller.getSearchProductsByNameCount(sellerId, keywords.trim());
             service = "searchByKeywords";
         } else {
-            productList = DAOSeller.getProductPagination(currentPage, productsPerPage);
-            totalRows = DAOSeller.getTotalProductCount();
+            // Sửa: Truyền sellerId vào getProductPagination
+            productList = DAOSeller.getProductPagination(sellerId, currentPage, productsPerPage);
+            // Sửa: Truyền sellerId vào getTotalProductCount
+            totalRows = DAOSeller.getTotalProductCount(sellerId);
         }
 
         int totalPages = (int) Math.ceil((double) totalRows / productsPerPage);
         if (currentPage > totalPages && totalPages > 0) {
             currentPage = totalPages;
             if (keywords != null && !keywords.trim().isEmpty()) {
-                productList = DAOSeller.searchProductsByNamePaginated(keywords.trim(), currentPage, productsPerPage);
+                productList = DAOSeller.searchProductsByNamePaginated(sellerId, keywords.trim(), currentPage, productsPerPage);
             } else {
-                productList = DAOSeller.getProductPagination(currentPage, productsPerPage);
+                productList = DAOSeller.getProductPagination(sellerId, currentPage, productsPerPage);
             }
         }
 
@@ -175,7 +182,8 @@ public class SellerServlet extends HttpServlet {
         request.getRequestDispatcher("view/ProductManagement.jsp").forward(request, response);
     }
 
-    private void handleInsertProduct(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    // Sửa: Thêm tham số sellerId vào handleInsertProduct
+    private void handleInsertProduct(HttpServletRequest request, HttpServletResponse response, int sellerId) throws ServletException, IOException {
         HttpSession session = request.getSession();
         String name = request.getParameter("name");
         String description = request.getParameter("description");
@@ -241,7 +249,7 @@ public class SellerServlet extends HttpServlet {
             try {
                 shelfLifeHours = Double.parseDouble(shelfLifeStr);
                 if (shelfLifeHours < 0) {
-                    session.setAttribute("shelfLifeError", "Shelf life cannot be negativetell negative.");
+                    session.setAttribute("shelfLifeError", "Shelf life cannot be negative.");
                     hasError = true;
                 }
             } catch (NumberFormatException e) {
@@ -322,12 +330,15 @@ public class SellerServlet extends HttpServlet {
             product.setImgUrl(imageUrl);
             product.setShelfLifeHours(shelfLifeHours);
             product.setRate(0.0);
+            // Sửa: Gán sellerId cho sản phẩm
+            product.setSellerId(sellerId);
 
             Category category = new Category();
             category.setName(categoryName);
             product.setCategory(category);
 
-            if (DAOSeller.insertProduct(product)) {
+            // Sửa: Truyền sellerId vào insertProduct
+            if (DAOSeller.insertProduct(product, sellerId)) {
                 session.setAttribute("message", "Product inserted successfully.");
             } else {
                 session.setAttribute("errorMessage", "Failed to insert product into database.");
@@ -339,7 +350,8 @@ public class SellerServlet extends HttpServlet {
         response.sendRedirect("seller?service=list");
     }
 
-    private void handleUpdateProduct(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    // Sửa: Thêm tham số sellerId vào handleUpdateProduct
+    private void handleUpdateProduct(HttpServletRequest request, HttpServletResponse response, int sellerId) throws ServletException, IOException {
         HttpSession session = request.getSession();
         String name = request.getParameter("name");
         String description = request.getParameter("description");
@@ -352,9 +364,10 @@ public class SellerServlet extends HttpServlet {
 
         try {
             productId = Integer.parseInt(request.getParameter("productId"));
-            Product existingProduct = DAOSeller.getProductById(productId);
+            // Sửa: Truyền sellerId vào getProductById
+            Product existingProduct = DAOSeller.getProductById(productId, sellerId);
             if (existingProduct == null) {
-                session.setAttribute("errorMessage", "Product not found.");
+                session.setAttribute("errorMessage", "Product not found or you do not have permission.");
                 response.sendRedirect("seller?service=list");
                 return;
             }
@@ -497,15 +510,18 @@ public class SellerServlet extends HttpServlet {
                 product.setImgUrl(imageUrl != null ? imageUrl : "/images/default.jpg");
                 product.setShelfLifeHours(shelfLifeHours);
                 product.setRate(existingProduct.getRate());
+                // Sửa: Gán sellerId cho sản phẩm
+                product.setSellerId(sellerId);
 
                 Category category = new Category();
                 category.setName(categoryName);
                 product.setCategory(category);
 
-                if (DAOSeller.updateProduct(product)) {
+                // Sửa: Truyền sellerId vào updateProduct
+                if (DAOSeller.updateProduct(product, sellerId)) {
                     session.setAttribute("message", "Product updated successfully.");
                 } else {
-                    session.setAttribute("errorMessage", "Failed to update product in database.");
+                    session.setAttribute("errorMessage", "Failed to update product: You do not have permission or product not found.");
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Update failed: {0}", e.getMessage());

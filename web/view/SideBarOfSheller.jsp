@@ -59,7 +59,7 @@
                 <a href="SellerWaitingOrders"><i class="bi bi-truck me-2"></i>Waiting for Delivery</a>
                 <a href="SellerDeliveringOrders"><i class="bi bi-truck me-2"></i>Delivering and Waiting Orders</a>
                 <a href="SellerCanceledOrders"><i class="bi bi-x-circle me-2"></i>Cancel Order</a>
-                <a href="OrderHistory.jsp"><i class="bi bi-clock-history me-2"></i>Order History</a>
+                <a href="SellerOrderHistory"><i class="bi bi-clock-history me-2"></i>Order History</a>
             </div>
 
 

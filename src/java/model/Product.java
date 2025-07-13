@@ -19,6 +19,7 @@ public class Product {
     private Category category;
     private double shelfLifeHours;
     private double rate;
+    private int sellerId;
 
     public Product() {
     }
@@ -33,6 +34,7 @@ public class Product {
         this.category = category;
         this.shelfLifeHours = shelfLifeHours;
         this.rate = rate;
+        this.sellerId = sellerId;
     }
 
     public int getId() {
@@ -104,5 +106,12 @@ public class Product {
     }
      public double getRate() {
         return rate;
+    }
+     public int getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(int sellerId) {
+        this.sellerId = sellerId;
     }
 }

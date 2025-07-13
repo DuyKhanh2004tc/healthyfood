@@ -19,6 +19,8 @@
         .card {
             border-radius: 15px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            max-width: 700px;
+            margin: auto;
         }
         .card-header {
             background: linear-gradient(135deg, #28a745, #218838);
@@ -44,6 +46,7 @@
             color: #dc3545;
             font-size: 13px;
             margin-top: 5px;
+            display: block;
         }
         .general-error {
             color: #dc3545;
@@ -76,7 +79,7 @@
 <body>
     <jsp:include page="SideBarOfSheller.jsp" />
     <div class="container">
-        <div class="card mx-auto" style="max-width: 700px;">
+        <div class="card">
             <div class="card-header text-center">
                 <h4><i class="bi bi-pencil-square me-2"></i>Update Product</h4>
             </div>
@@ -101,6 +104,9 @@
                     <div class="form-group">
                         <label for="description" class="form-label">Description</label>
                         <textarea class="form-control" id="description" name="description" rows="4">${product.description}</textarea>
+                        <c:if test="${not empty descriptionError}">
+                            <span class="error-message">${descriptionError}</span>
+                        </c:if>
                     </div>
 
                     <!-- Price -->
