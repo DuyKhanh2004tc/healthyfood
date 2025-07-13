@@ -93,10 +93,6 @@
         <servlet-class>controller.ResendOTPServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>SellerServlet</servlet-name>
-        <servlet-class>controller.SellerServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>CartServlet</servlet-name>
         <servlet-class>controller.CartServlet</servlet-class>
     </servlet>
@@ -127,10 +123,6 @@
     <servlet>
         <servlet-name>SellerUpdateStatusServlet</servlet-name>
         <servlet-class>controller.SellerUpdateStatusServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>SellerServlet</servlet-name>
-        <servlet-class>controller.SellerServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>HomeShipperServlet</servlet-name>
@@ -176,6 +168,14 @@
         <servlet-name>SellerOrderHistory</servlet-name>
         <servlet-class>controller.SellerOrderHistory</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SellerServlet</servlet-name>
+        <servlet-class>controller.SellerServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>OrderDetailServlet</servlet-name>
+        <servlet-class>controller.OrderDetailServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeDisplayServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -219,10 +219,6 @@
     <servlet-mapping>
         <servlet-name>AddAccountServlet</servlet-name>
         <url-pattern>/AddAccount</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>SellerServlet</servlet-name>
-        <url-pattern>/seller</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>BMIServlet</servlet-name>
@@ -271,10 +267,6 @@
     <servlet-mapping>
         <servlet-name>ResendOTPServlet</servlet-name>
         <url-pattern>/resendOTP</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>SellerServlet</servlet-name>
-        <url-pattern>/seller</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CartServlet</servlet-name>
@@ -351,6 +343,14 @@
     <servlet-mapping>
         <servlet-name>SellerOrderHistory</servlet-name>
         <url-pattern>/SellerOrderHistory</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SellerServlet</servlet-name>
+        <url-pattern>/seller</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>OrderDetailServlet</servlet-name>
+        <url-pattern>/OrderDetailServlet</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>

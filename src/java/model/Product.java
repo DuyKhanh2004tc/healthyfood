@@ -23,6 +23,12 @@ public class Product {
 
     public Product() {
     }
+    
+    // Thêm: Constructor mới cho id và name
+    public Product(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     public Product(int id, String name, String description, double price, int stock, String imgUrl, Category category, double shelfLifeHours, double rate) {
         this.id = id;

@@ -68,7 +68,7 @@ public class SellerServlet extends HttpServlet {
         if ("requestInsert".equals(service)) {
             List<Category> categories = DAOCategory.getAllCategory();
             request.setAttribute("categories", categories);
-            request.getRequestDispatcher("view/InsertProduct.jsp").forward(request, response);
+            request.getRequestDispatcher("view/SellerInsertProduct.jsp").forward(request, response);
         } else if ("requestUpdate".equals(service)) {
             try {
                 int productId = Integer.parseInt(request.getParameter("productId"));
@@ -182,7 +182,6 @@ public class SellerServlet extends HttpServlet {
         request.getRequestDispatcher("view/ProductManagement.jsp").forward(request, response);
     }
 
-    // Sửa: Thêm tham số sellerId vào handleInsertProduct
     private void handleInsertProduct(HttpServletRequest request, HttpServletResponse response, int sellerId) throws ServletException, IOException {
         HttpSession session = request.getSession();
         String name = request.getParameter("name");
@@ -337,7 +336,6 @@ public class SellerServlet extends HttpServlet {
             category.setName(categoryName);
             product.setCategory(category);
 
-            // Sửa: Truyền sellerId vào insertProduct
             if (DAOSeller.insertProduct(product, sellerId)) {
                 session.setAttribute("message", "Product inserted successfully.");
             } else {
