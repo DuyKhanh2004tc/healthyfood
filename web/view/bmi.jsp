@@ -20,10 +20,11 @@
                 <h2>BMI Calculator</h2>
                 <form action="bmi" method="post">
                     <label for="height">Height (cm):</label>
-                    <input type="number" name="height" id="height" step="0.1" min="1" required placeholder="e.g., 170">
-
+                    <input type="number" name="height" id="height" step="0.1" min="1" required placeholder="e.g., 170"
+                       value="<c:out value='${param.height}'/>">
                     <label for="weight">Weight (kg):</label>
-                    <input type="number" name="weight" id="weight" step="0.1" min="1" required placeholder="e.g., 60">
+                    <input type="number" name="weight" id="weight" step="0.1" min="1" required placeholder="e.g., 60"
+                       value="<c:out value='${param.weight}'/>">
 
                     <label for="goal">Select your goal:</label>
                     <select name="goal" id="goal">
