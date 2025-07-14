@@ -114,6 +114,7 @@
                     <th>#</th>
                     <th>Image</th>
                     <th>Name</th>
+                    <th>Category Name</th>
                     <th>Description</th>
                     <th>Reason</th>
                     <th>Created At</th>

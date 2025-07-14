@@ -50,7 +50,7 @@
                         <a>Welcome Manager ${sessionScope.user.getName()}</a>    
                         <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
                         <a href="${pageContext.request.contextPath}/seller">Manage Product</a>
-                        <a href="${pageContext.request.contextPath}/approveProduct">Approve new products</a>                   
+                        <a href="${pageContext.request.contextPath}/approve">Approve new products</a>                   
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
                         <a href="${pageContext.request.contextPath}/logout">Logout</a>
                         <form class ="search-form" action="search" method="get">                   

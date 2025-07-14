@@ -110,7 +110,7 @@ public class AuthenticationFilter implements Filter {
                 || path.equals("/login")
                 || path.equals("/register")
                 || path.equals("/verifyRegister")
-                || path.equals("/resendOTP")                
+                || path.equals("/resendOTP")
                 || path.equals("/productDetail")
                 || path.equals("/nutritionBlog")
                 || path.equals("/blogDetail")
@@ -119,7 +119,11 @@ public class AuthenticationFilter implements Filter {
                 || path.equals("/search")
                 || path.equals("/category")
                 || path.equals("/cart")
+                || path.equals("/removeItem")
                 || path.equals("/placeOrder")
+                || path.equals("/bmi")
+                || path.equals("/forgotPassword")
+                || path.equals("/resetPassword")
                 || path.equals("/orderCheckout");
 
         if (!isGuest && (session == null || session.getAttribute("user") == null)) {
@@ -142,18 +146,23 @@ public class AuthenticationFilter implements Filter {
                 || path.equals("/AddAccount")
                 || path.equals("/DeleteUser")
                 || path.equals("/UpdateAccount")
-                || path.equals("/DisplayAccount");
+                || path.equals("/DisplayAccount")
+                || path.equals("/logout");
 
         boolean isShipperPath = path.equals("/HomeShipper")
-                || path.equals("/forgotPassword")
+                || path.equals("/changePassword")
+                || path.equals("/updateProfile")
                 || path.equals("/WaitingOrders")
                 || path.equals("/ConfirmedOrders")
                 || path.equals("/DeliveringOrders")
                 || path.equals("/DeliveredOrders")
-                || path.equals("/ShipperUpdateStatus");
+                || path.equals("/ShipperUpdateStatus")
+                || path.equals("/logout");
 
         boolean isSellerPath = path.equals("/productmanagement")
                 || path.equals("/home")
+                || path.equals("/changePassword")
+                || path.equals("/bmi")
                 || path.equals("/ConfirmedOrders")
                 || path.equals("/productDetail")
                 || path.equals("/nutritionBlog")
@@ -162,25 +171,29 @@ public class AuthenticationFilter implements Filter {
                 || path.equals("/pricefilter")
                 || path.equals("/search")
                 || path.equals("/category")
-                || path.equals("/UpdateProfile")
-                || path.equals("/resetPassword")
+                || path.equals("/updateProfile")
                 || path.equals("/SellerUpdateStatus")
                 || path.equals("/SellerWaitingOrders")
                 || path.equals("/SellerDeliveringOrders")
                 || path.equals("/SellerCanceledOrders")
-                || path.equals("/CanceledOrders");
+                || path.equals("/CanceledOrders")
+                || path.equals("/ProcessingOrders")
+                || path.equals("/logout")
+                || path.equals("/seller");
 
         boolean isManagerPath = path.equals("/DeliveredOrders")
                 || path.equals("/home")
+                || path.equals("/approve")
                 || path.equals("/productDetail")
+                || path.equals("/bmi")
                 || path.equals("/nutritionBlog")
                 || path.equals("/blogDetail")
                 || path.equals("/sortproduct")
                 || path.equals("/pricefilter")
                 || path.equals("/search")
                 || path.equals("/category")
-                || path.equals("/UpdateProfile")
-                || path.equals("/resetPassword");
+                || path.equals("/updateProfile")
+                || path.equals("/changePassword");
 
         boolean isCustomerPath = path.equals("/cart")
                 || path.equals("/home")
@@ -194,17 +207,25 @@ public class AuthenticationFilter implements Filter {
                 || path.equals("/placeOrder")
                 || path.equals("/orderCheckout")
                 || path.equals("/CustomerAccount")
-                || path.equals("/resetPassword")
-                || path.equals("/UpdateProfile")
+                || path.equals("/changePassword")
+                || path.equals("/updateProfile")
+                || path.equals("/bmi")
+                || path.equals("/logout")
+                || path.equals("/removeItem")
                 || path.equals("/changePassword");
 
         boolean isNutritionistPath = path.equals("/nutritionistHome")
-                || path.equals("/forgotPassword")
+                || path.equals("/changePassword")
+                || path.equals("/updateProfile")
+                || path.equals("/logout")
+                || path.equals("/resendOTP")
                 || path.equals("/nutritionBlog")
                 || path.equals("/sortproduct")
                 || path.equals("/search")
                 || path.equals("/category")
-                || path.equals("/blogDetail");
+                || path.equals("/blogDetail")
+                || path.equals("/proposeProduct")
+                || path.equals("/changePassword");
 
         if (!isAdminPath && roleId == 1) {
             res.sendRedirect("HomeAdmin");

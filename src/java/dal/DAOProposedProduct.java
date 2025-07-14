@@ -15,7 +15,7 @@ import model.User;
 
 public class DAOProposedProduct {
 
-    public static DAOTag INSTANCE = new DAOTag();
+    public static DAOProposedProduct INSTANCE = new DAOProposedProduct();
     private Connection con;
     private String status = "OK";
 
@@ -86,6 +86,48 @@ public class DAOProposedProduct {
         }
     }
 
+    public List<ProposedProduct> getAllProposedProduct() {
+        List<ProposedProduct> list = new ArrayList<>();
+        String sql = "SELECT p.*, u.name AS nutritionist_name FROM ProposedProduct p "
+                + "JOIN Users u ON p.nutritionist_id = u.id";
+        try (PreparedStatement st = con.prepareStatement(sql); ResultSet rs = st.executeQuery()) {
+            while (rs.next()) {
+                ProposedProduct p = new ProposedProduct();
+                p.setId(rs.getInt("id"));
+
+                User u = new User();
+                u.setId(rs.getInt("nutritionist_id"));
+                u.setName(rs.getString("nutritionist_name")); 
+                p.setNutritionist(u);
+
+                p.setName(rs.getString("name"));
+                p.setImage(rs.getString("image"));
+                p.setCategoryName(rs.getString("category_name"));
+                p.setDescription(rs.getString("description"));
+                p.setReason(rs.getString("reason"));
+                p.setCreatedAt(rs.getTimestamp("created_at"));
+                p.setStatus(rs.getString("status"));
+
+                list.add(p);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public void updateProposedProductStatusById(int proposedId, String status) {
+        String sql = "UPDATE ProposedProduct SET status = ? WHERE id = ?";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setString(1, status);
+            st.setInt(2, proposedId);
+            st.executeUpdate();
+        } catch (SQLException e) {
+            status = "Error at updateProposedProductStatusById: " + e.getMessage();
+        }
+    }
+
     public void updateProposedProduct(ProposedProduct p) {
         String sql = "UPDATE ProposedProduct SET image = ?, name = ?, category_name = ?, description = ?, reason = ?, created_at = ?, status = ? WHERE id = ? AND nutritionist_id = ?";
         try {
@@ -105,5 +147,10 @@ public class DAOProposedProduct {
         } catch (SQLException e) {
             status = "Error at updateProposedProduct: " + e.getMessage();
         }
+    }
+
+    public static void main(String[] args) {
+        List<ProposedProduct> pro = DAOProposedProduct.INSTANCE.getAllProposedProduct();
+        System.out.println(pro);
     }
 }

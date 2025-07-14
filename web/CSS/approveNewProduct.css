@@ -1,0 +1,67 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Jul 14, 2025, 11:41:17 PM
+    Author     : ASUS
+*/
+
+body {   
+    background-color: #f8f9fa;
+    padding: 20px;
+}
+
+.proposed-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.proposed-table thead {
+    background-color: #007bff;
+    color: white;
+    
+}
+
+.proposed-table th, .proposed-table td {
+    padding: 12px 15px;
+    text-align: center;
+    border: 1px solid #dee2e6;
+    vertical-align: middle;
+}
+
+.proposed-table img {
+    border-radius: 8px;
+    max-width: 80px;
+    height: auto;
+
+    
+}
+
+.aprove-form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.aprove-form button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    font-size: 14px;
+    
+}
+
+.aprove-form button[name="btn_status"][value="cancel"] {
+    background-color: #dc3545;
+}
+
+.aprove-form button:hover {
+    opacity: 0.9;
+}

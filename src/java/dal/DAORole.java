@@ -44,6 +44,8 @@ public class DAORole {
         }
         return roles;
     }
+   
+    
 
     public static void main(String[] args) {
         ArrayList<Role> n = DAORole.INSTANCE.getAllRoles();

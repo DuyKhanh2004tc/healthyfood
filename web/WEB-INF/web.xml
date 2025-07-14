@@ -21,32 +21,27 @@
         <url-pattern>/pricefilter</url-pattern>
         <url-pattern>/category</url-pattern>
         <url-pattern>/resendOTP</url-pattern>
-        
-
         <!-- Admin -->
         <url-pattern>/HomeAdmin</url-pattern>
         <url-pattern>/AddAccount</url-pattern>
         <url-pattern>/DeleteUser</url-pattern>
         <url-pattern>/UpdateAccount</url-pattern>
         <url-pattern>/DisplayAccount</url-pattern>
-
         <!-- Manager -->
         <url-pattern>/DeliveredOrders</url-pattern>
-
+        <url-pattern>/approve</url-pattern>
         <!-- Shipper -->
         <url-pattern>/HomeShipper</url-pattern>
         <url-pattern>/WaitingOrders</url-pattern>
         <url-pattern>/ConfirmedOrders</url-pattern>
         <url-pattern>/DeliveringOrders</url-pattern>
         <url-pattern>/ShipperUpdateStatus</url-pattern>
-
         <!-- Seller -->
         <url-pattern>/productmanagement</url-pattern>
         <url-pattern>/SellerUpdateStatus</url-pattern>
         <url-pattern>/SellerWaitingOrders</url-pattern>
         <url-pattern>/SellerDeliveringOrders</url-pattern>
         <url-pattern>/SellerCanceledOrders</url-pattern>
-
         <!-- Customer -->
         <url-pattern>/cart</url-pattern>
         <url-pattern>/placeOrder</url-pattern>
@@ -54,11 +49,9 @@
         <url-pattern>/CustomerAccount</url-pattern>
         <url-pattern>/UpdateProfile</url-pattern>
         <url-pattern>/changePassword</url-pattern>
-
         <!-- Nutritionist -->
         <url-pattern>/nutritionistHome</url-pattern>
         <url-pattern>/proposeProduct</url-pattern>
-        
     </filter-mapping>
     <servlet>
         <servlet-name>HomeDisplayServlet</servlet-name>
@@ -236,9 +229,13 @@
         <servlet-name>OrderDetailServlet</servlet-name>
         <servlet-class>controller.OrderDetailServlet</servlet-class>
     </servlet>
-     <servlet>
+    <servlet>
         <servlet-name>ProposeProductServlet</servlet-name>
         <servlet-class>controller.ProposeProductServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ApproveNewProductServlet</servlet-name>
+        <servlet-class>controller.ApproveNewProductServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ProposeProductServlet</servlet-name>
@@ -419,6 +416,10 @@
     <servlet-mapping>
         <servlet-name>OrderDetailServlet</servlet-name>
         <url-pattern>/OrderDetailServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ApproveNewProductServlet</servlet-name>
+        <url-pattern>/approve</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>
