@@ -10,8 +10,6 @@
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
     <body class="bg-gray-100 font-sans">
-
-
         <h1 class="text-3xl font-bold text-center mt-6">Waiting for Delivery Orders</h1>
         <div class="container mx-auto p-4">
             <c:if test="${not empty error}">
@@ -23,7 +21,8 @@
                         <c:forEach var="order" items="${waitingOrders}">
                             <div class="bg-white p-4 rounded-lg shadow-md">
                                 <p><strong>Order ID:</strong> ${order.id}</p>
-                                <p><strong>Customer:</strong> ${order.user.name}</p>
+                                <p><strong>Customer:</strong> ${order.receiverName}</p>
+                                <p><strong>Customer Phone:</strong> ${order.receiverPhone}</p>
                                 <p><strong>Address:</strong> ${order.shippingAddress}</p>
                                 <p><strong>Time:</strong> <fmt:formatDate value="${order.orderDate}" pattern="hh:mm a z"/></p>
                                 <p><strong>Total:</strong> $<fmt:formatNumber value="${order.totalAmount}" type="number" maxFractionDigits="2"/></p>

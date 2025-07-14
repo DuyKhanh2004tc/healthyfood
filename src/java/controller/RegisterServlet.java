@@ -89,14 +89,37 @@ public class RegisterServlet extends HttpServlet {
             String gender = request.getParameter("gender");
             String password = request.getParameter("password");
             String confirmPassword = request.getParameter("confirmpassword");
+            
+            if (fullName != null) {
+                fullName = fullName.trim().replaceAll("\\s+", " ");
+            }
+            if (email != null) {
+                email = email.trim().replaceAll("\\s+", "");
+            }
+            if (phoneNumber != null) {
+                phoneNumber = phoneNumber.trim().replaceAll("\\s+", "");
+            }
+            if (dateOfBirth != null) {
+                dateOfBirth = dateOfBirth.trim();
+            }
+            if (address != null) {
+                address = address.trim().replaceAll("\\s+", " ");
+            }
 
             HttpSession session = request.getSession();
 
             DAOUser dao = new DAOUser();
             ArrayList<User> user = dao.getUser();
+            
 
             if (dao.checkEmailExists(email, -1)) {
                 request.setAttribute("error", "Email already exists");
+                request.getRequestDispatcher("view/register.jsp").forward(request, response);
+                return;
+            }
+            
+            if (fullName == null || fullName.isEmpty() || fullName.length() < 2 || fullName.length() > 50 || !fullName.matches("^[\\p{L}\\s]+$")) {
+                request.setAttribute("error", "Full name must be 2-50 characters and contain only letters and spaces.");
                 request.getRequestDispatcher("view/register.jsp").forward(request, response);
                 return;
             }
@@ -127,18 +150,30 @@ public class RegisterServlet extends HttpServlet {
                 }
             }
             
+            if (password.length() <= 8 || password.length() >= 32) {
+                request.setAttribute("error", "Password must be between 8 and 32 characters long.");
+                request.getRequestDispatcher("view/register.jsp").forward(request, response);
+                return;
+            }
+            
+            if (password == null || password.contains(" ")) {
+                request.setAttribute("error", "The password must not contain any spaces.");
+                request.getRequestDispatcher("view/register.jsp").forward(request, response);
+                return;
+            }           
+            
             if (!password.equals(confirmPassword)) {
                     request.setAttribute("error", "Password and Confirm Password do not match.");
                     request.getRequestDispatcher("view/register.jsp").forward(request, response);
                     return;
                 }
             
-            if (password.length() <= 8 || password.length() >= 32) {
-                request.setAttribute("error", "Password must be between 8 and 32 characters long.");
+            if (password == null || password.contains(" ")) {
+                request.setAttribute("error", "The password must not contain any spaces.");
                 request.getRequestDispatcher("view/register.jsp").forward(request, response);
                 return;
             }
-
+            
             boolean genderSQL = "1".equals(gender);
 
             User customer = new User();

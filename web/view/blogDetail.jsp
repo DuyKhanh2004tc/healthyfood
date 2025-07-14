@@ -263,7 +263,7 @@
                 </div>
             </div>
         </c:if>
-        <% String fileName = (String) request.getAttribute("fileName");%>
+        
         <div class="main-content">
             <div class="container">
 
@@ -332,7 +332,7 @@
                 <form id="editBlog" method="post" enctype="multipart/form-data" action="${pageContext.request.contextPath}/blogDetail">
                     <input type="hidden" id="popupBlogId" name="blogId" value="${blogId}">
                     <input type="hidden" name="action" value="editBlog">
-                    <input type="hidden" name="image" value="${image}"> 
+                    <input type="hidden" name="image" id="popupImage" value="${image}"> 
 
                     <p>Image</p>
                     <input type="file" name="file" accept="image/*" />
@@ -361,9 +361,9 @@
                         %>
                     </p>
                     <p>Title</p>
-                    <textarea id="popupTitle" name="title" placeholder="Enter title here..." required>${title}</textarea>
+                    <textarea id="popupTitle" name="title" placeholder="Enter title here..." required></textarea>
                     <p>Description</p>
-                    <textarea id="popupDescription" name="description" placeholder="Enter description here..." required>${description}</textarea>
+                    <textarea id="popupDescription" name="description" placeholder="Enter description here..." required></textarea>
                     <button type="submit" class="button">Save</button>
                     <button type="button" class="button" onclick="closePopup()">Cancel</button>
                 </form>

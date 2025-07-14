@@ -81,6 +81,10 @@ public class LoginServlet extends HttpServlet {
             try {
                 String email = request.getParameter("email");
                 String password = request.getParameter("password");
+                
+                if (email != null) {
+                email = email.trim().replaceAll("\\s+", "");
+            }
 
                 User matchedUser = null;
 
