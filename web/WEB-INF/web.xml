@@ -1,5 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+    <filter>
+        <filter-name>AuthenticationFilter</filter-name>
+        <filter-class>filter.AuthenticationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthenticationFilter</filter-name>
+        <url-pattern>/home</url-pattern>
+        <url-pattern>/bmi</url-pattern>
+        <url-pattern>/productDetail</url-pattern>
+        <url-pattern>/login</url-pattern>
+        <url-pattern>/register</url-pattern>
+        <url-pattern>/verifyRegister</url-pattern>
+        <url-pattern>/forgotPassword</url-pattern>
+        <url-pattern>/resetPassword</url-pattern>
+        <url-pattern>/nutritionBlog</url-pattern>
+        <url-pattern>/blogDetail</url-pattern>
+        <url-pattern>/search</url-pattern>
+        <url-pattern>/sortproduct</url-pattern>
+        <url-pattern>/pricefilter</url-pattern>
+        <url-pattern>/category</url-pattern>
+        <url-pattern>/resendOTP</url-pattern>
+        
+
+        <!-- Admin -->
+        <url-pattern>/HomeAdmin</url-pattern>
+        <url-pattern>/AddAccount</url-pattern>
+        <url-pattern>/DeleteUser</url-pattern>
+        <url-pattern>/UpdateAccount</url-pattern>
+        <url-pattern>/DisplayAccount</url-pattern>
+
+        <!-- Manager -->
+        <url-pattern>/DeliveredOrders</url-pattern>
+
+        <!-- Shipper -->
+        <url-pattern>/HomeShipper</url-pattern>
+        <url-pattern>/WaitingOrders</url-pattern>
+        <url-pattern>/ConfirmedOrders</url-pattern>
+        <url-pattern>/DeliveringOrders</url-pattern>
+        <url-pattern>/ShipperUpdateStatus</url-pattern>
+
+        <!-- Seller -->
+        <url-pattern>/productmanagement</url-pattern>
+        <url-pattern>/SellerUpdateStatus</url-pattern>
+        <url-pattern>/SellerWaitingOrders</url-pattern>
+        <url-pattern>/SellerDeliveringOrders</url-pattern>
+        <url-pattern>/SellerCanceledOrders</url-pattern>
+
+        <!-- Customer -->
+        <url-pattern>/cart</url-pattern>
+        <url-pattern>/placeOrder</url-pattern>
+        <url-pattern>/orderCheckout</url-pattern>
+        <url-pattern>/CustomerAccount</url-pattern>
+        <url-pattern>/UpdateProfile</url-pattern>
+        <url-pattern>/changePassword</url-pattern>
+
+        <!-- Nutritionist -->
+        <url-pattern>/nutritionistHome</url-pattern>
+        <url-pattern>/proposeProduct</url-pattern>
+        
+    </filter-mapping>
     <servlet>
         <servlet-name>HomeDisplayServlet</servlet-name>
         <servlet-class>controller.HomeDisplayServlet</servlet-class>

@@ -58,7 +58,7 @@
 
                             </div>
                             <c:if test="${sessionScope.user.getRole().getId()== null ||sessionScope.user.getRole().getId()== 3 }">
-                                <div class="twoButton"
+                                <div class="twoButton">
                                 <form action="cart" method="get">
                                     <input type="hidden" name="productId" value="${requestScope.newProduct.id}" />
                                     <button class="card-button" type="submit">🛒 Add to Cart</button>
