@@ -10,10 +10,6 @@ import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unit Test cho UserSortUtil - kiểm tra sắp xếp danh sách người dùng theo các
- * tiêu chí khác nhau: name, email, id và xử lý ngoại lệ.
- */
 public class UserSortUtilTest {
 
     @Test

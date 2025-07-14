@@ -1,4 +1,3 @@
-// Gợi ý class tiện ích mới
 package util;
 
 import model.User;

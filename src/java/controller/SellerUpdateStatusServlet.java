@@ -49,7 +49,7 @@ public class SellerUpdateStatusServlet extends HttpServlet {
                     response.sendRedirect("SellerWaitingOrders");
                     break;
                 case 7:
-                    response.sendRedirect("CancelledOrders");
+                    response.sendRedirect("SellerCanceledOrders");
                     break;
                 default:
                     response.sendRedirect("ConfirmedOrders");

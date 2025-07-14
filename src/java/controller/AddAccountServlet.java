@@ -13,6 +13,7 @@ import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 import model.User;
 import model.Role;
 
@@ -27,8 +28,8 @@ public class AddAccountServlet extends HttpServlet {
             return;
         }
 
-        User users = (User) session.getAttribute("user");
-        if (!"System admin".equals(users.getRole().getRoleName())) {
+        User user = (User) session.getAttribute("user");
+        if (!"System admin".equals(user.getRole().getRoleName())) {
             response.sendRedirect("login");
             return;
         }
@@ -39,10 +40,16 @@ public class AddAccountServlet extends HttpServlet {
             request.getRequestDispatcher("view/error.jsp").forward(request, response);
             return;
         }
-        request.setAttribute("roleId", idRole);
 
         ArrayList<Role> roles = DAORole.INSTANCE.getAllRoles();
-        request.setAttribute("roles", roles);
+        boolean roleExists = roles.stream().anyMatch(role -> String.valueOf(role.getId()).equals(idRole));
+        if (!roleExists) {
+            request.setAttribute("error", "Invalid Role ID");
+            request.getRequestDispatcher("view/error.jsp").forward(request, response);
+            return;
+        }
+        request.setAttribute("roleId", idRole);
+        request.setAttribute("roles", roles); // Giữ roles để tham chiếu nếu cần
 
         RequestDispatcher requestDispatcher = request.getRequestDispatcher("view/addAccount.jsp");
         requestDispatcher.forward(request, response);
@@ -57,11 +64,12 @@ public class AddAccountServlet extends HttpServlet {
             return;
         }
 
-        User users = (User) session.getAttribute("user");
-        if (!"System admin".equals(users.getRole().getRoleName())) {
+        User user = (User) session.getAttribute("user");
+        if (!"System admin".equals(user.getRole().getRoleName())) {
             response.sendRedirect("login");
             return;
         }
+
         try {
             String name = request.getParameter("name");
             String email = request.getParameter("email");
@@ -70,72 +78,115 @@ public class AddAccountServlet extends HttpServlet {
             String dobStr = request.getParameter("dob");
             String address = request.getParameter("address");
             String genderStr = request.getParameter("gender");
-            String roleIdStr = request.getParameter("roleId");
+            String roleIdStr = request.getParameter("roleId"); // Lấy từ hidden input
 
+            // Khởi tạo các lỗi cụ thể cho từng field
+            request.setAttribute("nameError", "");
+            request.setAttribute("emailError", "");
+            request.setAttribute("passwordError", "");
+            request.setAttribute("phoneError", "");
+            request.setAttribute("dobError", "");
+            request.setAttribute("addressError", "");
+            request.setAttribute("genderError", "");
+            request.setAttribute("roleIdError", "");
+
+            // Validate input
             if (email == null || email.trim().isEmpty()) {
-                request.setAttribute("error", "Email is required");
-                request.getRequestDispatcher("view/addAccount.jsp").forward(request, response);
+                request.setAttribute("emailError", "Email is required");
+            } else if (!Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", email)) {
+                request.setAttribute("emailError", "Invalid email format");
+            }
+            if (name == null || name.trim().isEmpty()) {
+                request.setAttribute("nameError", "Name is required");
+            }
+            if (password == null || password.trim().isEmpty()) {
+                request.setAttribute("passwordError", "Password is required");
+            } else if (password.length() < 6) {
+                request.setAttribute("passwordError", "Password must be at least 6 characters");
+            }
+            if (phone != null && !phone.trim().isEmpty() && !Pattern.matches("^\\d{10}$", phone)) {
+                request.setAttribute("phoneError", "Phone must be 10 digits");
+            }
+            if (dobStr == null || dobStr.trim().isEmpty()) {
+                request.setAttribute("dobError", "Date of Birth is required");
+            }
+            if (address == null || address.trim().isEmpty()) {
+                request.setAttribute("addressError", "Address is required");
+            }
+            if (genderStr == null || genderStr.trim().isEmpty()) {
+                request.setAttribute("genderError", "Gender is required");
+            }
+
+            // Kiểm tra lỗi tổng quát trước khi parse
+            if (!request.getAttribute("emailError").equals("") || !request.getAttribute("nameError").equals("") ||
+                !request.getAttribute("passwordError").equals("") || !request.getAttribute("phoneError").equals("") ||
+                !request.getAttribute("dobError").equals("") || !request.getAttribute("addressError").equals("") ||
+                !request.getAttribute("genderError").equals("")) {
+                forwardToAddAccount(request, response, roleIdStr);
                 return;
             }
 
             DAOUser daoUser = DAOUser.INSTANCE;
-
             if (daoUser.checkEmailExists(email, 0)) {
-                request.setAttribute("error", "Email already exists");
-                request.setAttribute("roleId", roleIdStr);
-                request.getRequestDispatcher("view/addAccount.jsp").forward(request, response);
+                request.setAttribute("emailError", "Email already exists");
+                forwardToAddAccount(request, response, roleIdStr);
                 return;
             }
 
             Date dob = null;
-            if (dobStr != null && !dobStr.trim().isEmpty()) {
-                try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    java.util.Date parsedDate = sdf.parse(dobStr);
-                    dob = new Date(parsedDate.getTime());
-                } catch (ParseException e) {
-                    request.setAttribute("error", "Invalid date format for DOB. Use YYYY-MM-DD");
-                    request.getRequestDispatcher("view/addAccount.jsp").forward(request, response);
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                sdf.setLenient(false);
+                java.util.Date parsedDate = sdf.parse(dobStr);
+                dob = new Date(parsedDate.getTime());
+                if (dob.after(new Date(System.currentTimeMillis()))) {
+                    request.setAttribute("dobError", "Date of Birth cannot be in the future");
+                    forwardToAddAccount(request, response, roleIdStr);
                     return;
                 }
+            } catch (ParseException e) {
+                request.setAttribute("dobError", "Invalid date format for DOB. Use YYYY-MM-DD");
+                forwardToAddAccount(request, response, roleIdStr);
+                return;
             }
 
             boolean gender = genderStr != null && genderStr.equals("1");
-            int roleId = 0;
-            if (roleIdStr != null && !roleIdStr.trim().isEmpty()) {
-                try {
-                    roleId = Integer.parseInt(roleIdStr);
-                } catch (NumberFormatException e) {
-                    request.setAttribute("error", "Invalid Role ID");
-                    request.getRequestDispatcher("view/addAccount.jsp").forward(request, response);
-                    return;
-                }
-            }
+            int roleId = Integer.parseInt(roleIdStr); // Sử dụng roleId từ hidden input
 
-            User user = new User();
-            user.setName(name);
-            user.setEmail(email);
-            user.setPassword(password);
-            user.setPhone(phone);
-            user.setDob(dob);
-            user.setAddress(address);
-            user.setGender(gender);
+            User newUser = new User();
+            newUser.setName(name.trim());
+            newUser.setEmail(email.trim());
+            newUser.setPassword(password != null ? password.trim() : "");
+            newUser.setPhone(phone != null ? phone.trim() : null);
+            newUser.setDob(dob);
+            newUser.setAddress(address.trim());
+            newUser.setGender(gender);
             Role role = new Role();
             role.setId(roleId);
-            user.setRole(role);
+            newUser.setRole(role);
 
-            boolean added = daoUser.addAccountByRole(user);
+            boolean added = daoUser.addAccountByRole(newUser);
             if (added) {
                 session.setAttribute("success", "User added successfully with role ID " + roleId + " at " + new java.util.Date());
                 response.sendRedirect("DisplayAccount?idRole=" + roleId + "&page=1");
             } else {
                 request.setAttribute("error", "Failed to add user: " + daoUser.getStatus());
-                request.getRequestDispatcher("view/addAccount.jsp").forward(request, response);
+                forwardToAddAccount(request, response, roleIdStr);
             }
         } catch (Exception e) {
             request.setAttribute("error", "Error: " + e.getMessage());
-            request.getRequestDispatcher("view/addAccount.jsp").forward(request, response);
+            forwardToAddAccount(request, response, null);
         }
+    }
+
+    private void forwardToAddAccount(HttpServletRequest request, HttpServletResponse response, String roleIdStr)
+            throws ServletException, IOException {
+        ArrayList<Role> roles = DAORole.INSTANCE.getAllRoles();
+        request.setAttribute("roles", roles);
+        if (roleIdStr != null) {
+            request.setAttribute("roleId", roleIdStr);
+        }
+        request.getRequestDispatcher("view/addAccount.jsp").forward(request, response);
     }
 
     @Override
