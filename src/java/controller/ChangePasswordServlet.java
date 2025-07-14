@@ -111,8 +111,8 @@ public class ChangePasswordServlet extends HttpServlet {
                 request.setAttribute("error", "The new password must be different from the current password.");
                 hasError = true;
             }
-            if (newPassword == null || confirmPassword == null || !newPassword.equals(confirmPassword) || newPassword.trim().isEmpty()) {
-                request.setAttribute("error", "Password and Confirm Password do not match.");
+            if (!newPassword.equals(confirmPassword) || newPassword.trim().isEmpty()) {
+                request.setAttribute("error", "New Password and Confirm Password do not match.");
                 hasError = true;
             }
             if (newPassword.length() < 8 || newPassword.length() > 32) {
@@ -121,6 +121,12 @@ public class ChangePasswordServlet extends HttpServlet {
             }
             if (currentPassword == null || !currentPassword.equals(password)) {
                 request.setAttribute("error", "Incorrect current password.");
+                hasError = true;
+            }
+            
+            if (currentPassword == null || newPassword == null || confirmPassword == null 
+                    || currentPassword.contains(" ") ||  newPassword.contains(" ") ||  confirmPassword.contains(" ")) {
+                request.setAttribute("error", "Password must not be empty or contain spaces.");
                 hasError = true;
             }
 

@@ -104,6 +104,18 @@ public class ResetPasswordServlet extends HttpServlet {
             request.getRequestDispatcher("view/resetPassword.jsp").forward(request, response);
             return;
         }
+        
+        if (newPassword.length() < 8 || newPassword.length() > 32) {
+            request.setAttribute("error", "Password must be between 8 and 32 characters.");
+            request.getRequestDispatcher("view/resetPassword.jsp").forward(request, response);
+            return;
+        }
+        
+        if (newPassword == null || newPassword.contains(" ")) {
+                request.setAttribute("error", "The password must not contain any spaces.");
+                request.getRequestDispatcher("view/register.jsp").forward(request, response);
+                return;
+            }
 
         if (newPassword == null || confirmPassword == null
                 || !newPassword.equals(confirmPassword)) {
@@ -112,11 +124,7 @@ public class ResetPasswordServlet extends HttpServlet {
             return;
         }
 
-        if (newPassword.length() < 8 || newPassword.length() > 32) {
-            request.setAttribute("error", "Password must be between 8 and 32 characters.");
-            request.getRequestDispatcher("view/resetPassword.jsp").forward(request, response);
-            return;
-        }
+        
 
         DAOUser dao = new DAOUser();
         boolean updated = dao.updatePassword(email, newPassword);
