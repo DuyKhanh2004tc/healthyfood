@@ -4,12 +4,6 @@
     Author     : Hoa
 --%>
 
-<%-- 
-    Document   : profileNutritionist
-    Created on : Jun 30, 2025, 1:01:20 PM
-    Author     : Hoa
---%>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -36,6 +30,14 @@
                 <a href="${pageContext.request.contextPath}/nutritionBlog">Manage Blog</a>
                 <a href="${pageContext.request.contextPath}/logout">Logout</a>
             </div>
+        </div>
+            
+        <div class="profile-page">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-title">👤 Profile</div>
+            <a href="updateProfile" class="<c:if test='${pageContext.request.servletPath eq "/updateProfile"}'>active</c:if>">📄Nutritionist Profile</a>
+            <a href="changePassword" class="<c:if test='${pageContext.request.servletPath eq "/changePassword"}'>active</c:if>">🔒 Change Password</a>
         </div>
 
         <div class="center">
@@ -77,6 +79,7 @@
                     <a href="updateProfile">Profile</a>
             </div>
             </form>
+        </div>
         </div>
         <script>
             function togglePassword(inputId, iconId) {

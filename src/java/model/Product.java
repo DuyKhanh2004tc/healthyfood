@@ -19,8 +19,15 @@ public class Product {
     private Category category;
     private double shelfLifeHours;
     private double rate;
+    private int sellerId;
 
     public Product() {
+    }
+    
+    // Thêm: Constructor mới cho id và name
+    public Product(int id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public Product(int id, String name, String description, double price, int stock, String imgUrl, Category category, double shelfLifeHours, double rate) {
@@ -33,6 +40,7 @@ public class Product {
         this.category = category;
         this.shelfLifeHours = shelfLifeHours;
         this.rate = rate;
+        this.sellerId = sellerId;
     }
 
     public int getId() {
@@ -104,5 +112,12 @@ public class Product {
     }
      public double getRate() {
         return rate;
+    }
+     public int getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(int sellerId) {
+        this.sellerId = sellerId;
     }
 }
