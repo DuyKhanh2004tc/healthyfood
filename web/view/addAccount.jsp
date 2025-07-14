@@ -16,42 +16,66 @@
             <c:if test="${not empty error}">
                 <p class="error">${error}</p>
             </c:if>
-            <c:if test="${not empty success}">
-                <p class="success">${success}</p>
-            </c:if>
-            <form action="AddAccount" method="post">
+            <form action="AddAccount" method="post" novalidate>
                 <div class="form-group">
                     <label for="name">Name:</label>
-                    <input type="text" id="name" name="name">
+                    <input type="text" id="name" name="name" value="${param.name}" required>
+                    <c:if test="${not empty nameError}">
+                        <p class="error">${nameError}</p>
+                    </c:if>
                 </div>
                 <div class="form-group">
                     <label for="email">Email (required):</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="email" value="${param.email}" required>
+                    <c:if test="${not empty emailError}">
+                        <p class="error">${emailError}</p>
+                    </c:if>
                 </div>
                 <div class="form-group">
                     <label for="password">Password:</label>
-                    <input type="password" id="password" name="password">
+                    <input type="password" id="password" name="password" value="${param.password}" required minlength="6">
+                    <c:if test="${not empty passwordError}">
+                        <p class="error">${passwordError}</p>
+                    </c:if>
                 </div>
                 <div class="form-group">
                     <label for="phone">Phone:</label>
-                    <input type="text" id="phone" name="phone">
+                    <input type="tel" id="phone" name="phone" value="${param.phone}" pattern="[0-9]{10}" placeholder="10 digits">
+                    <c:if test="${not empty phoneError}">
+                        <p class="error">${phoneError}</p>
+                    </c:if>
                 </div>
                 <div class="form-group">
                     <label for="dob">Date of Birth:</label>
-                    <input type="date" id="dob" name="dob">
+                    <input type="date" id="dob" name="dob" value="${param.dob}" required>
+                    <c:if test="${not empty dobError}">
+                        <p class="error">${dobError}</p>
+                    </c:if>
                 </div>
                 <div class="form-group">
                     <label for="address">Address:</label>
-                    <input type="text" id="address" name="address">
+                    <input type="text" id="address" name="address" value="${param.address}" required>
+                    <c:if test="${not empty addressError}">
+                        <p class="error">${addressError}</p>
+                    </c:if>
                 </div>
                 <div class="form-group">
                     <label for="gender">Gender:</label>
-                    <select id="gender" name="gender">
-                        <option value="1">Male</option>
-                        <option value="0">Female</option>
+                    <select id="gender" name="gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="1" ${param.gender == '1' ? 'selected' : ''}>Male</option>
+                        <option value="0" ${param.gender == '0' ? 'selected' : ''}>Female</option>
                     </select>
+                    <c:if test="${not empty genderError}">
+                        <p class="error">${genderError}</p>
+                    </c:if>
                 </div>
-                <input type="hidden" name="roleId" value="${roleId}">
+                <div class="form-group">
+                    <label for="roleId">Role:</label>
+                    <input type="hidden" name="roleId" value="${roleId}">
+                    <p>${roles.stream().filter(r -> r.id == roleId).findFirst().get().roleName}</p> <!-- Hiển thị roleName -->
+                </div>
+                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"> <!-- Thêm CSRF token nếu có -->
                 <div class="button-group">
                     <button type="submit" class="btn btn-submit">
                         Add

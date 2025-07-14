@@ -20,6 +20,10 @@ public class DAOUser {
     con = new DBContext().connect;
 }
 
+         public static DAOUser getInstance() {
+        return INSTANCE;
+    }
+       
 
     public ArrayList<User> getUser() {
         ArrayList<User> userList = new ArrayList<>();

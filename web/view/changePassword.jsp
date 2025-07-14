@@ -10,17 +10,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+    <c:if test="${sessionScope.user.getRole().getId()==2||sessionScope.user.getRole().getId()==3||sessionScope.user.getRole().getId()==5}">
     <jsp:include page="header.jsp"></jsp:include>
+    </c:if>
 
 <div class="profile-page">
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-title">👤 Profile</div>
-        <a href="updateProfile" class="<c:if test='${pageContext.request.servletPath eq "/updateProfile"}'>active</c:if>">📄 Profile</a>
-        <a href="changePassword" class="<c:if test='${pageContext.request.servletPath eq "/changePassword"}'>active</c:if>">🔒 Change Password</a>
-        <a href="orderHistory" class="<c:if test='${pageContext.request.servletPath eq "/orderHistory"}'>active</c:if>">🛒 Order History</a>
-    </div>
-
+    
+        <c:if test="${sessionScope.user.getRole().getId()==2||sessionScope.user.getRole().getId()==3||sessionScope.user.getRole().getId()==5}">
+        <div class="sidebar"><div class="sidebar-title">👤 Profile</div>
+            <a href="updateProfile" class="<c:if test='${pageContext.request.servletPath eq "/updateProfile"}'>active</c:if>">📄 User Profile</a>
+            <a href="changePassword" class="<c:if test='${pageContext.request.servletPath eq "/changePassword"}'>active</c:if>">🔒 Change Password</a>
+            <a href="orderHistory" class="<c:if test='${pageContext.request.servletPath eq "/orderHistory"}'>active</c:if>">🛒 Order History</a>
+        </div>
+        </c:if>
+        
+        <c:if test="${sessionScope.user.getRole().getId()==6}">
+        <div class="sidebar"><div class="sidebar-title">👤 Profile</div>
+            <a href="updateProfile" class="<c:if test='${pageContext.request.servletPath eq "/updateProfile"}'>active</c:if>">📄 User Profile</a>
+            <a href="changePassword" class="<c:if test='${pageContext.request.servletPath eq "/changePassword"}'>active</c:if>">🔒 Change Password</a>
+        </div>
+        </c:if>
     <div class="center">
         <h1>Change Password</h1>
         <form action="changePassword" method="post">
@@ -51,14 +60,23 @@
             </c:if>
 
             <input type="submit" value="Update Password" />
-            <div class="auth-switch">
-                Back to <a href="home">Home</a>
-            </div>
+            <c:if test="${sessionScope.user.getRole().getId()==2||sessionScope.user.getRole().getId()==3||sessionScope.user.getRole().getId()==5}">
+                <div class="auth-switch">
+                    Back to <a href="home">Home</a>
+                </div>
+                </c:if>
+                <c:if test="${sessionScope.user.getRole().getId()==6}">
+                <div class="auth-switch">
+                    Back to <a href="HomeShipper">Home</a>
+                </div>
+                </c:if>
         </form>
     </div>
 </div>
     
+    <c:if test="${sessionScope.user.getRole().getId()==2||sessionScope.user.getRole().getId()==3||sessionScope.user.getRole().getId()==5}">               
     <jsp:include page="footer.jsp"></jsp:include>
+    </c:if>
 
 <script>
     function togglePassword(inputId, iconId) {

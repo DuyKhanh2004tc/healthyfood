@@ -13,6 +13,7 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </head>
     <body class="bg-gray-100">
+        <jsp:include page="SideBarOfSheller.jsp"></jsp:include>
         <h1 class="text-3xl font-bold text-center mt-6">Pending Orders (Waiting for Confirmation)</h1>
         <div class="container mt-4">
             <c:if test="${not empty error}">
@@ -26,7 +27,7 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <p><strong>Order ID:</strong> ${order.id}</p>
-                                        <p><strong>Customer:</strong> ${order.user.name}</p>
+                                        <p><strong>Customer:</strong> ${order.receiverName}</p>
                                         <p><strong>Address:</strong> ${order.shippingAddress}</p>
                                         <p><strong>Time:</strong> <fmt:formatDate value="${order.orderDate}" pattern="hh:mm a z"/></p>
                                         <p><strong>Total:</strong> $<fmt:formatNumber value="${order.totalAmount}" type="number" maxFractionDigits="2"/></p>

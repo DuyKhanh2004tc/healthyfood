@@ -46,5 +46,39 @@ public class DAOCategory {
         return categoryList;
     }
 
+    // Add a new category
+    public void addCategory(Category category) {
+        String sql = "INSERT INTO [dbo].[Category] (name) VALUES (?)";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setString(1, category.getName());
+            st.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
+    // Update a category
+    public void updateCategory(Category category) {
+        String sql = "UPDATE [dbo].[Category] SET name = ? WHERE id = ?";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setString(1, category.getName());
+            st.setInt(2, category.getId());
+            st.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Delete a category
+    public void deleteCategory(int id) {
+        String sql = "DELETE FROM [dbo].[Category] WHERE id = ?";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setInt(1, id);
+            st.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
+    
+

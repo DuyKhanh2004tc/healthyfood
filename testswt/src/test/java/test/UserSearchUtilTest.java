@@ -110,4 +110,15 @@ public class UserSearchUtilTest {
         ArrayList<User> result = UserSearchUtil.filterUsers(users, "nam");
         assertEquals(1, result.size());
     }
+
+//    @Test
+//    public void testFilterUsers_KeywordWithSpaces() {
+//        ArrayList<User> users = new ArrayList<>();
+//        users.add(new User(1, "Alice", "alice@gmail.com", null, null, null, null, false, null, null));
+//
+//        ArrayList<User> result = UserSearchUtil.filterUsers(users, "  ALICE  ");
+//        assertEquals(1, result.size());
+//        assertEquals("Alice", result.get(0).getName());
+//    }
+
 }

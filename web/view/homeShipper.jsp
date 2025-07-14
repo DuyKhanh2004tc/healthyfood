@@ -17,7 +17,7 @@
 
 
         <div class="welcome">
-            <img src="images/shipper.jpg" alt="Shipper Avatar" onclick="location.href='HomeShipperServlet'">
+            <img src="images/shipper.jpg" alt="Shipper Avatar" onclick="location.href='updateProfile'">
             <h2>Welcome <c:out value="${sessionScope.user.name}" /></h2>
         </div>
         <div class="dashboard">

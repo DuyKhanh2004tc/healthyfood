@@ -70,7 +70,7 @@ public class ChangePasswordServlet extends HttpServlet {
         
         if (u.getRole().getId() == 4) {
             request.getRequestDispatcher("view/changePasswordNutritionist.jsp").forward(request, response);
-        } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5) {
+        } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5|| u.getRole().getId() == 6) {
             request.getRequestDispatcher("view/changePassword.jsp").forward(request, response);
         }
     }
@@ -133,7 +133,7 @@ public class ChangePasswordServlet extends HttpServlet {
             if (hasError) {
                 if (u.getRole().getId() == 4) {
                     request.getRequestDispatcher("/view/changePasswordNutritionist.jsp").forward(request, response);
-                } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5) {
+                } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5|| u.getRole().getId() == 6) {
                     request.getRequestDispatcher("/view/changePassword.jsp").forward(request, response);
                 }
                 return;
@@ -152,7 +152,7 @@ public class ChangePasswordServlet extends HttpServlet {
 
             if (u.getRole().getId() == 4) {
                 request.getRequestDispatcher("/view/changePasswordNutritionist.jsp").forward(request, response);
-            } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5) {
+            } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5|| u.getRole().getId() == 6) {
                 request.getRequestDispatcher("/view/changePassword.jsp").forward(request, response);
             }
 
@@ -160,7 +160,7 @@ public class ChangePasswordServlet extends HttpServlet {
             request.setAttribute("error", "Error: " + e.getMessage());
             if (u.getRole().getId() == 4) {
                 request.getRequestDispatcher("/view/changePasswordNutritionist.jsp").forward(request, response);
-            } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5) {
+            } else if (u.getRole().getId() == 2 || u.getRole().getId() == 3 || u.getRole().getId() == 5|| u.getRole().getId() == 6) {
                 request.getRequestDispatcher("/view/changePassword.jsp").forward(request, response);
             }
         }

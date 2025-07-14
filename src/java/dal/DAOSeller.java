@@ -4,9 +4,13 @@ import model.Product;
 import model.Category;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.Order;
+import model.OrderDetail;
 
 public class DAOSeller {
     private static final Logger LOGGER = Logger.getLogger(DAOSeller.class.getName());
@@ -36,7 +40,7 @@ public class DAOSeller {
         return INSTANCE;
     }
     
-    public String getStatus() {
+        public String getStatus() {
         try {
             if (con == null || con.isClosed()) {
                 return "Database connection is null or closed";
@@ -48,51 +52,45 @@ public class DAOSeller {
         }
     }
     
-    public List<Product> getAll(int sellerId) {
+    public List<Product> getAll() {
         List<Product> productList = new ArrayList<>();
         String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, "
-                + "p.image_url, p.shelf_life_hours, p.rate AS average_rate, p.seller_id, "
+                + "p.image_url, p.shelf_life_hours, p.rate AS average_rate, "
                 + "c.id AS category_id, c.name AS category_name "
                 + "FROM Product p "
-                + "INNER JOIN Category c ON p.category_id = c.id "
-                + "WHERE p.seller_id = ?";
+                + "INNER JOIN Category c ON p.category_id = c.id";
 
-        try (PreparedStatement st = con.prepareStatement(sql)) {
-            st.setInt(1, sellerId); // Thêm tham số sellerId
-            try (ResultSet rs = st.executeQuery()) {
-                while (rs.next()) {
-                    Product p = new Product();
-                    p.setId(rs.getInt("product_id"));
-                    p.setName(rs.getString("product_name"));
-                    p.setDescription(rs.getString("description"));
-                    p.setPrice(rs.getDouble("price"));
-                    p.setStock(rs.getInt("stock"));
-                    p.setImgUrl(rs.getString("image_url"));
-                    p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
-                    p.setRate(rs.getDouble("average_rate"));
-                    p.setSellerId(rs.getInt("seller_id")); // Sửa: Lấy seller_id từ ResultSet
+        try (PreparedStatement st = con.prepareStatement(sql); ResultSet rs = st.executeQuery()) {
+            while (rs.next()) {
+                Product p = new Product();
+                p.setId(rs.getInt("product_id"));
+                p.setName(rs.getString("product_name"));
+                p.setDescription(rs.getString("description"));
+                p.setPrice(rs.getDouble("price"));
+                p.setStock(rs.getInt("stock"));
+                p.setImgUrl(rs.getString("image_url"));
+                p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
+                p.setRate(rs.getDouble("average_rate"));
 
-                    Category c = new Category();
-                    c.setId(rs.getInt("category_id"));
-                    c.setName(rs.getString("category_name"));
-                    p.setCategory(c);
-                    productList.add(p);
-                }
+                Category c = new Category();
+                c.setId(rs.getInt("category_id"));
+                c.setName(rs.getString("category_name"));
+
+                p.setCategory(c);
+                productList.add(p);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error in getAll: {0}", e.getMessage());
             e.printStackTrace();
         }
         return productList;
     }
 
-    public Product getProductById(int productId, int sellerId) {
-        String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, p.seller_id, "
+    public Product getProductById(int productId) {
+        String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, p.image_url, p.shelf_life_hours, p.rate, "
                 + "c.id AS category_id, c.name AS category_name "
-                + "FROM Product p JOIN Category c ON p.category_id = c.id WHERE p.id = ? AND p.seller_id = ?";
+                + "FROM Product p JOIN Category c ON p.category_id = c.id WHERE p.id = ?";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setInt(1, productId);
-            st.setInt(2, sellerId); // Thêm tham số sellerId
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
                     Product product = new Product();
@@ -104,7 +102,6 @@ public class DAOSeller {
                     product.setImgUrl(rs.getString("image_url"));
                     product.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
                     product.setRate(rs.getDouble("rate"));
-                    product.setSellerId(rs.getInt("seller_id")); // Sửa: Lấy seller_id từ ResultSet
 
                     Category c = new Category();
                     c.setId(rs.getInt("category_id"));
@@ -119,27 +116,26 @@ public class DAOSeller {
         return null;
     }
 
-    public void deleteProductById(int productId, int sellerId) {
-        String sql = "DELETE FROM Product WHERE id = ? AND seller_id = ?";
+    public void deleteProductById(int productId) {
+        String sql = "DELETE FROM Product WHERE id = ?";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setInt(1, productId);
-            st.setInt(2, sellerId); // Thêm tham số sellerId
             int rowsAffected = st.executeUpdate();
-            LOGGER.log(Level.INFO, "Deleted product with ID: {0}, Seller ID: {1}, Rows affected: {2}", 
-                      new Object[]{productId, sellerId, rowsAffected});
+            LOGGER.log(Level.INFO, "Deleted product with ID: {0}, Rows affected: {1}", new Object[]{productId, rowsAffected});
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error in deleteProductById: {0}", e.getMessage());
             throw new RuntimeException("Failed to delete product", e);
         }
     }
 
-    public boolean insertProduct(Product product, int sellerId) {
+    public boolean insertProduct(Product product) {
         try {
             con.setAutoCommit(false);
             int categoryId = getOrInsertCategory(product.getCategory().getName());
 
-            String sql = "INSERT INTO Product (name, description, price, stock, image_url, shelf_life_hours, rate, category_id, seller_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            try (PreparedStatement st = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            String sql = "UPDATE Product SET name = ?, description = ?, price = ?, stock = ?, image_url = ?, "
+                    + "shelf_life_hours = ?, rate = ?, category_id = ? WHERE id = ?";
+            try (PreparedStatement st = con.prepareStatement(sql)) {
                 st.setString(1, product.getName());
                 st.setString(2, product.getDescription());
                 st.setDouble(3, product.getPrice());
@@ -148,18 +144,9 @@ public class DAOSeller {
                 st.setDouble(6, product.getShelfLifeHours());
                 st.setDouble(7, product.getRate());
                 st.setInt(8, categoryId);
-                st.setInt(9, sellerId); // Thêm seller_id
                 int rowsAffected = st.executeUpdate();
-                if (rowsAffected > 0) {
-                    try (ResultSet generatedKeys = st.getGeneratedKeys()) {
-                        if (generatedKeys.next()) {
-                            product.setId(generatedKeys.getInt(1));
-                        }
-                    }
-                }
                 con.commit();
-                LOGGER.log(Level.INFO, "Inserted product: {0}, Seller ID: {1}, Rows affected: {2}", 
-                          new Object[]{product.getName(), sellerId, rowsAffected});
+                LOGGER.log(Level.INFO, "Inserted product: {0}, Rows affected: {1}", new Object[]{product.getName(), rowsAffected});
                 return rowsAffected > 0;
             }
         } catch (SQLException e) {
@@ -179,13 +166,13 @@ public class DAOSeller {
         }
     }
 
-    public boolean updateProduct(Product product, int sellerId) {
+    public boolean updateProduct(Product product) {
         try {
             con.setAutoCommit(false);
             int categoryId = getOrInsertCategory(product.getCategory().getName());
 
-            String sql = "UPDATE Product SET name = ?, description = ?, price = ?, stock = ?, image_url = ?, " +
-                         "shelf_life_hours = ?, rate = ?, category_id = ? WHERE id = ? AND seller_id = ?";
+            String sql = "UPDATE Product SET name = ?, description = ?, price = ?, stock = ?, image_url = ?, "
+                    + "shelf_life_hours = ?, rate = ?, category_id = ? WHERE id = ?";
             try (PreparedStatement st = con.prepareStatement(sql)) {
                 st.setString(1, product.getName());
                 st.setString(2, product.getDescription());
@@ -196,11 +183,9 @@ public class DAOSeller {
                 st.setDouble(7, product.getRate());
                 st.setInt(8, categoryId);
                 st.setInt(9, product.getId());
-                st.setInt(10, sellerId); // Thêm tham số sellerId
                 int rowsAffected = st.executeUpdate();
                 con.commit();
-                LOGGER.log(Level.INFO, "Updated product ID {0}, Seller ID: {1}: {2} rows affected", 
-                          new Object[]{product.getId(), sellerId, rowsAffected});
+                LOGGER.log(Level.INFO, "Updated product ID {0}: {1} rows affected", new Object[]{product.getId(), rowsAffected});
                 return rowsAffected > 0;
             }
         } catch (SQLException e) {
@@ -220,20 +205,18 @@ public class DAOSeller {
         }
     }
 
-    public List<Product> getProductPagination(int sellerId, int page, int productsPerPage) {
+    public List<Product> getProductPagination(int page, int productsPerPage) {
         List<Product> productList = new ArrayList<>();
         String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, "
-                + "p.image_url, p.shelf_life_hours, p.rate AS average_rate, p.seller_id, "
+                + "p.image_url, p.shelf_life_hours, p.rate AS average_rate, "
                 + "c.id AS category_id, c.name AS category_name "
                 + "FROM Product p "
                 + "INNER JOIN Category c ON p.category_id = c.id "
-                + "WHERE p.seller_id = ? "
                 + "ORDER BY p.id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
         try (PreparedStatement st = con.prepareStatement(sql)) {
-            st.setInt(1, sellerId); // Thêm tham số sellerId
-            st.setInt(2, (page - 1) * productsPerPage);
-            st.setInt(3, productsPerPage);
+            st.setInt(1, (page - 1) * productsPerPage);
+            st.setInt(2, productsPerPage);
             try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {
                     Product p = new Product();
@@ -245,7 +228,6 @@ public class DAOSeller {
                     p.setImgUrl(rs.getString("image_url"));
                     p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
                     p.setRate(rs.getDouble("average_rate"));
-                    p.setSellerId(rs.getInt("seller_id")); // Sửa: Lấy seller_id từ ResultSet
 
                     Category c = new Category();
                     c.setId(rs.getInt("category_id"));
@@ -260,14 +242,11 @@ public class DAOSeller {
         return productList;
     }
 
-    public int getTotalProductCount(int sellerId) {
-        String sql = "SELECT COUNT(*) FROM Product WHERE seller_id = ?";
-        try (PreparedStatement st = con.prepareStatement(sql)) {
-            st.setInt(1, sellerId); // Thêm tham số sellerId
-            try (ResultSet rs = st.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
+    public int getTotalProductCount() {
+        String sql = "SELECT COUNT(*) FROM Product";
+        try (PreparedStatement st = con.prepareStatement(sql); ResultSet rs = st.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error in getTotalProductCount: {0}", e.getMessage());
@@ -275,22 +254,20 @@ public class DAOSeller {
         return 0;
     }
 
-    public List<Product> searchProductsByNamePaginated(int sellerId, String keywords, int page, int productsPerPage) {
+    public List<Product> searchProductsByNamePaginated(String keywords, int page, int productsPerPage) {
         List<Product> productList = new ArrayList<>();
-        // Sửa: Thêm điều kiện WHERE seller_id = ? vào truy vấn
         String sql = "SELECT p.id AS product_id, p.name AS product_name, p.description, p.price, p.stock, "
-                + "p.image_url, p.shelf_life_hours, p.rate AS average_rate, p.seller_id, "
+                + "p.image_url, p.shelf_life_hours, p.rate AS average_rate, "
                 + "c.id AS category_id, c.name AS category_name "
                 + "FROM Product p "
                 + "INNER JOIN Category c ON p.category_id = c.id "
-                + "WHERE p.seller_id = ? AND p.name LIKE ? "
+                + "WHERE p.name LIKE ? "
                 + "ORDER BY p.id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
         try (PreparedStatement st = con.prepareStatement(sql)) {
-            st.setInt(1, sellerId); 
-            st.setString(2, "%" + (keywords != null ? keywords.trim() : "") + "%");
-            st.setInt(3, (page - 1) * productsPerPage);
-            st.setInt(4, productsPerPage);
+            st.setString(1, "%" + (keywords != null ? keywords.trim() : "") + "%");
+            st.setInt(2, (page - 1) * productsPerPage);
+            st.setInt(3, productsPerPage);
             try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {
                     Product p = new Product();
@@ -302,15 +279,14 @@ public class DAOSeller {
                     p.setImgUrl(rs.getString("image_url"));
                     p.setShelfLifeHours(rs.getDouble("shelf_life_hours"));
                     p.setRate(rs.getDouble("average_rate"));
-                    p.setSellerId(rs.getInt("seller_id")); 
+
                     Category c = new Category();
                     c.setId(rs.getInt("category_id"));
                     c.setName(rs.getString("category_name"));
                     p.setCategory(c);
                     productList.add(p);
                 }
-                LOGGER.log(Level.INFO, "Retrieved {0} products for search query: {1}, Seller ID: {2}", 
-                          new Object[]{productList.size(), keywords, sellerId});
+                LOGGER.log(Level.INFO, "Retrieved {0} products for search query: {1}", new Object[]{productList.size(), keywords});
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error in searchProductsByNamePaginated: {0}", e.getMessage());
@@ -318,11 +294,10 @@ public class DAOSeller {
         return productList;
     }
 
-    public int getSearchProductsByNameCount(int sellerId, String keywords) {
-        String sql = "SELECT COUNT(*) FROM Product WHERE seller_id = ? AND name LIKE ?";
+    public int getSearchProductsByNameCount(String keywords) {
+        String sql = "SELECT COUNT(*) FROM Product WHERE name LIKE ?";
         try (PreparedStatement st = con.prepareStatement(sql)) {
-            st.setInt(1, sellerId); // Thêm tham số sellerId
-            st.setString(2, "%" + (keywords != null ? keywords.trim() : "") + "%");
+            st.setString(1, "%" + (keywords != null ? keywords.trim() : "") + "%");
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
@@ -357,4 +332,21 @@ public class DAOSeller {
         }
         throw new SQLException("Failed to insert or retrieve category ID");
     }
+    
+
+
+public int getTotalOrderCount() {
+    String sql = "SELECT COUNT(*) FROM Orders";
+    try (PreparedStatement st = con.prepareStatement(sql); ResultSet rs = st.executeQuery()) {
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+    } catch (SQLException e) {
+        LOGGER.log(Level.SEVERE, "Error in getTotalOrderCount: {0}", e.getMessage());
+    }
+    return 0;
+}
+
+    
+
 }

@@ -23,6 +23,10 @@ public class Order {
 
     public Order() {
     }
+    
+     public Order(int id) {
+        this.id = id;
+    }
 
     public Order(int id, User user, Timestamp orderDate, double totalAmount, String paymentMethod, 
                  OrderStatus status, User shipper, String receiverName, String receiverPhone, 

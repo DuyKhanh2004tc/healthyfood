@@ -68,11 +68,4 @@ public class OrderDetail {
         this.price = price;
     }
 
-    
-
-    
-
-    
-    
-    
 }

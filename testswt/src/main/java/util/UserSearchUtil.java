@@ -18,7 +18,7 @@ public class UserSearchUtil {
             return uList;
         }
 
-        final String searchKey = keyword.trim().toLowerCase();  // <- FIX HERE
+        final String searchKey = keyword.trim().toLowerCase();  
         ArrayList<User> filteredList = new ArrayList<>();
 
         for (User user : uList) {
