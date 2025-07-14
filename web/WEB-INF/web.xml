@@ -176,6 +176,14 @@
         <servlet-name>OrderDetailServlet</servlet-name>
         <servlet-class>controller.OrderDetailServlet</servlet-class>
     </servlet>
+     <servlet>
+        <servlet-name>ProposeProductServlet</servlet-name>
+        <servlet-class>controller.ProposeProductServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProposeProductServlet</servlet-name>
+        <url-pattern>/proposeProduct</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>HomeDisplayServlet</servlet-name>
         <url-pattern>/home</url-pattern>
