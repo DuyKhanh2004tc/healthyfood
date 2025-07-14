@@ -126,7 +126,7 @@
                     <tr>
                         <td>${loop.index + 1}</td>
                         <td>
-                            <img src="${i.image}" width="80" alt="${i.name}">
+                            <img  src="${pageContext.request.contextPath}/images/${i.image}"  width="80" alt="${i.name}">
                         </td>
                         <td>${i.name}</td>
                         <td>${i.categoryName}</td>
