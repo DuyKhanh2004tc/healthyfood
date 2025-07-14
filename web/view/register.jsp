@@ -4,7 +4,6 @@
     <head>
         <meta charset="UTF-8" />
         <title>Register Form</title>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/login.css" />
         <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/register.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     </head>
@@ -16,23 +15,38 @@
                 <div class="txt_field">
                     <input type="text" name="fullname" placeholder="Fullname" value="${param.fullname}" required />
                 </div>
+                <c:if test="${not empty errorName}">
+                    <div class="error-message">${errorName}</div>
+                </c:if>
 
                 <div class="txt_field">
                     <input type="email" name="email" placeholder="Email" value="${param.email}" required />
                 </div>
-
+                <c:if test="${not empty errorEmail}">
+                    <div class="error-message">${errorEmail}</div>
+                </c:if>
+                
                 <div class="txt_field">
                     <input type="text" name="phonenumber" placeholder="Phone number" value="${param.phonenumber}" required />
                 </div>
+                <c:if test="${not empty errorPhone}">
+                    <div class="error-message">${errorPhone}</div>
+                </c:if>
 
                 <div class="txt_field">
                     <label for="dateofbirth">Date of Birth:</label>
                     <input type="date" name="dateofbirth" id="dateofbirth" value="${param.dateofbirth}" required />
                 </div>
+                <c:if test="${not empty errorDOB}">
+                    <div class="error-message">${errorDOB}</div>
+                </c:if>
 
                 <div class="txt_field">
                     <input type="text" name="address" placeholder="Address" value="${param.address}" required />
                 </div>
+                <c:if test="${not empty errorAddress}">
+                    <div class="error-message">${errorAddress}</div>
+                </c:if>
 
                 <div class="txt_field gender-group">
                     <label>Gender:</label>
@@ -41,11 +55,17 @@
                         <label><input type="radio" name="gender" value="1" ${param.gender == '1' ? 'checked' : ''} /> Male</label>
                     </div>
                 </div>
+                <c:if test="${not empty errorGender}">
+                    <div class="error-message">${errorGender}</div>
+                </c:if>
 
                 <div class="txt_field password-wrapper">
                     <input type="password" id="password" name="password" placeholder="Password" required />
                     <i class="fa fa-eye-slash" id="togglePassword" onclick="togglePassword('password', 'togglePassword')"></i>
                 </div>
+                <c:if test="${not empty errorPassword}">
+                    <div class="error-message">${errorPassword}</div>
+                </c:if>
 
                 <div class="txt_field password-wrapper">
                     <input type="password" id="confirmPassword" name="confirmpassword" placeholder="Confirm Password" required />

@@ -1,18 +1,37 @@
-/* Đồng bộ font, màu và kiểu input */
-.txt_field label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+body {
+  margin: 0;
+  padding: 0;
   font-family: Arial, sans-serif;
-  color: #333;
-  font-size: 16px;
+  background-image: url('../images/background_login.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.txt_field label[for="dateofbirth"] {
-  color: #333; /* Giống Gender */
-  font-weight: bold;
+.center {
+  background: #fff;
+  padding: 30px 30px;
+  border-radius: 10px;
+  width: 480px; 
+  max-width: 100%;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
+.center h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 30px;
+}
+
+.txt_field {
+  margin-bottom: 10px; 
+}
+
+.txt_field input,
 .txt_field input[type="text"],
 .txt_field input[type="email"],
 .txt_field input[type="password"],
@@ -21,7 +40,7 @@
   padding: 10px;
   border: none;
   border-bottom: 2px solid #aaa;
-  font-size: 16px;
+  font-size: 14px;
   background: none;
   outline: none;
   color: #333;
@@ -32,14 +51,24 @@
   border-bottom: 2px solid #007bff;
 }
 
-/* Gender hiển thị ngang, rõ ràng, đẹp */
+.txt_field label,
+.txt_field label[for="dateofbirth"] {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+  color: #333;
+  font-size: 16px;
+}
+
 .gender-group {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px; 
   font-family: Arial, sans-serif;
   font-size: 16px;
   color: #666;
+  flex-wrap: wrap; 
 }
 
 .gender-group > label:first-child {
@@ -51,6 +80,7 @@
 .gender-group .radio-options {
   display: flex;
   gap: 20px;
+  flex-wrap: wrap; 
 }
 
 .radio-options label {
@@ -58,4 +88,68 @@
   align-items: center;
   gap: 5px;
   font-weight: normal;
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input[type="password"],
+.password-wrapper input[type="text"] {
+  width: 100%;
+  padding-right: 40px; 
+  box-sizing: border-box;
+}
+
+.password-wrapper i {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #444;
+  font-size: 12px;
+}
+
+input[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
+  background: #007bff;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+input[type="submit"]:hover {
+  background: #0056b3;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.auth-switch a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;   
+}
+
+.error-message {
+  color: red;
+  font-size: 12.5px; 
+  text-align: left; 
+  margin-bottom: 10px; 
+  margin-top: 5px;
+  word-wrap: break-word;
+  max-width: 100%; 
 }
