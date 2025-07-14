@@ -8,16 +8,25 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/profile.css">
 </head>
 <body>
+    <c:if test="${sessionScope.user.getRole().getId()==2||sessionScope.user.getRole().getId()==3||sessionScope.user.getRole().getId()==5}">
     <jsp:include page="header.jsp"></jsp:include>
+    </c:if>
 
     <div class="profile-page">
-
+        <c:if test="${sessionScope.user.getRole().getId()==2||sessionScope.user.getRole().getId()==3||sessionScope.user.getRole().getId()==5}">
         <div class="sidebar"><div class="sidebar-title">👤 Profile</div>
             <a href="updateProfile" class="<c:if test='${pageContext.request.servletPath eq "/updateProfile"}'>active</c:if>">📄 User Profile</a>
             <a href="changePassword" class="<c:if test='${pageContext.request.servletPath eq "/changePassword"}'>active</c:if>">🔒 Change Password</a>
             <a href="orderHistory" class="<c:if test='${pageContext.request.servletPath eq "/orderHistory"}'>active</c:if>">🛒 Order History</a>
         </div>
-
+        </c:if>
+        
+        <c:if test="${sessionScope.user.getRole().getId()==6}">
+        <div class="sidebar"><div class="sidebar-title">👤 Profile</div>
+            <a href="updateProfile" class="<c:if test='${pageContext.request.servletPath eq "/updateProfile"}'>active</c:if>">📄 User Profile</a>
+            <a href="changePassword" class="<c:if test='${pageContext.request.servletPath eq "/changePassword"}'>active</c:if>">🔒 Change Password</a>
+        </div>
+        </c:if>
         <div class="center">
             <h1>User Profile</h1>
             <form action="updateProfile" method="post">
@@ -81,15 +90,22 @@
                     <div class="error-message">${error}</div>
                 </c:if>
 
-                <input type="submit" value="Update" />
-
+                <input type="submit" value="Update Profile" />
+                <c:if test="${sessionScope.user.getRole().getId()==2||sessionScope.user.getRole().getId()==3||sessionScope.user.getRole().getId()==5}">
                 <div class="auth-switch">
                     Back to <a href="home">Home</a>
                 </div>
+                </c:if>
+                <c:if test="${sessionScope.user.getRole().getId()==6}">
+                <div class="auth-switch">
+                    Back to <a href="HomeShipper">Home</a>
+                </div>
+                </c:if>
             </form>
         </div>
     </div>
-
+    <c:if test="${sessionScope.user.getRole().getId()==2||sessionScope.user.getRole().getId()==3||sessionScope.user.getRole().getId()==5}">               
     <jsp:include page="footer.jsp"></jsp:include>
+    </c:if>
 </body>
 </html>
