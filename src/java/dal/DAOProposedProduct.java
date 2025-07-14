@@ -116,6 +116,37 @@ public class DAOProposedProduct {
         }
         return list;
     }
+    public List<ProposedProduct> getAllProposedProductOrderByDESC() {
+        List<ProposedProduct> list = new ArrayList<>();
+        String sql = "SELECT p.*, u.name AS nutritionist_name FROM ProposedProduct p "
+                + "JOIN Users u ON p.nutritionist_id = u.id "
+                + "ORDER BY created_at DESC";
+        try (PreparedStatement st = con.prepareStatement(sql); ResultSet rs = st.executeQuery()) {
+            while (rs.next()) {
+                ProposedProduct p = new ProposedProduct();
+                p.setId(rs.getInt("id"));
+
+                User u = new User();
+                u.setId(rs.getInt("nutritionist_id"));
+                u.setName(rs.getString("nutritionist_name")); 
+                p.setNutritionist(u);
+
+                p.setName(rs.getString("name"));
+                p.setImage(rs.getString("image"));
+                p.setCategoryName(rs.getString("category_name"));
+                p.setDescription(rs.getString("description"));
+                p.setReason(rs.getString("reason"));
+                p.setCreatedAt(rs.getTimestamp("created_at"));
+                p.setStatus(rs.getString("status"));
+
+                list.add(p);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
     public void updateProposedProductStatusById(int proposedId, String status) {
         String sql = "UPDATE ProposedProduct SET status = ? WHERE id = ?";

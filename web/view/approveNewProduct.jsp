@@ -48,15 +48,28 @@
                         <td>
                             <form class="aprove-form" method="post" action="${pageContext.request.contextPath}/approve">
                                 <input type="hidden" name="proposedId" value="${i.id}">
-                                
-                                    <button type="submit" name="btn_status" value="accept">Accept</button>
-                                    <button type="submit" name="btn_status" value="cancel">Cancel</button>
-                                
-                            </form>
+                                <button type="submit" name="btn_status" value="accept">Accept</button>
+                                <button type="submit" name="btn_status" value="cancel">Cancel</button>
+                            </form>                              
                         </td>
                     </tr>
                 </c:forEach>
             </tbody>
         </table>
+        <div class="sort-btn">
+            <form class="sort-form" method="get" action="${pageContext.request.contextPath}/approve">  
+                <p>Sort By Date:</p>
+                <button type="submit" name="btn_sort" value="Ascending">Ascending</button>
+                <button type="submit" name="btn_sort" value="Descending">Descending</button>
+            </form>
+        </div>
+
+        <div class="pagination">
+            <c:forEach var="i" begin="1" end="${totalPages}">
+                <a href="${pageContext.request.contextPath}/approve?page=${i}&btn_sort=${param.btn_sort}" class="page-link">
+                    ${i}
+                </a>
+            </c:forEach>
+        </div>
     </body>
 </html>

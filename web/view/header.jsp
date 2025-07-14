@@ -49,10 +49,6 @@
                     <c:if test="${sessionScope.user.getRole().getId()==2}">
                         <a>Welcome Manager ${sessionScope.user.getName()}</a>    
                         <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
-
-                        <a href="${pageContext.request.contextPath}/approve">Approve new products</a>                   
-
-                        <a href="${pageContext.request.contextPath}/ManagerCategoriesServlet">Manage Product</a>
                         <a href="${pageContext.request.contextPath}/SellerOrderHistory">Order History</a>
                         <a href="${pageContext.request.contextPath}/approve">Approve new products</a>                   
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
