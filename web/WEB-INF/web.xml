@@ -97,10 +97,6 @@
         <servlet-class>controller.CartServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ProductManagementServlet</servlet-name>
-        <servlet-class>controller.ProductManagementServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>RemoveCartItemServlet</servlet-name>
         <servlet-class>controller.RemoveCartItemServlet</servlet-class>
     </servlet>
@@ -165,16 +161,16 @@
         <servlet-class>controller.SellerCanceledOrdersServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>SellerOrderHistory</servlet-name>
-        <servlet-class>controller.SellerOrderHistory</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>SellerServlet</servlet-name>
         <servlet-class>controller.SellerServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>OrderDetailServlet</servlet-name>
-        <servlet-class>controller.OrderDetailServlet</servlet-class>
+        <servlet-name>SellerOrderDetailServlet</servlet-name>
+        <servlet-class>controller.SellerOrderDetailServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SellerOrderHistory</servlet-name>
+        <servlet-class>controller.SellerOrderHistory</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>HomeDisplayServlet</servlet-name>
@@ -273,10 +269,6 @@
         <url-pattern>/cart</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ProductManagementServlet</servlet-name>
-        <url-pattern>/productmanagement</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>RemoveCartItemServlet</servlet-name>
         <url-pattern>/removeItem</url-pattern>
     </servlet-mapping>
@@ -341,16 +333,16 @@
         <url-pattern>/SellerCanceledOrders</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>SellerOrderHistory</servlet-name>
-        <url-pattern>/SellerOrderHistory</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>SellerServlet</servlet-name>
         <url-pattern>/seller</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>OrderDetailServlet</servlet-name>
-        <url-pattern>/OrderDetailServlet</url-pattern>
+        <servlet-name>SellerOrderDetailServlet</servlet-name>
+        <url-pattern>/SellerOrderDetailServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SellerOrderHistory</servlet-name>
+        <url-pattern>/SellerOrderHistory</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>

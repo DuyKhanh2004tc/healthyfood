@@ -77,6 +77,7 @@
     </style>
 </head>
 <body>
+    <jsp:include page="headerSeller.jsp"></jsp:include>
     <jsp:include page="SideBarOfSheller.jsp" />
     <div class="container">
         <div class="card">

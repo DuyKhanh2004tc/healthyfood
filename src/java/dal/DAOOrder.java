@@ -1,25 +1,21 @@
+
 package dal;
 
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.sql.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import model.Order;
 import model.OrderDetail;
 import model.OrderStatus;
-import model.Product;
 import model.User;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
+import model.Product;
 
-/**
- *
- * @author ASUS
- */
 public class DAOOrder {
-
     public static DAOOrder INSTANCE = new DAOOrder();
     private static Connection con;
     private String status = "OK";
@@ -27,6 +23,7 @@ public class DAOOrder {
     public DAOOrder() {
         if (INSTANCE == null) {
             con = new DBContext().connect;
+            System.out.println("Database connection established: " + (con != null));
         } else {
             INSTANCE = this;
         }
@@ -64,9 +61,9 @@ public class DAOOrder {
                     }
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
+            System.out.println("Error inserting order: " + e.getMessage());
         }
         return orderId;
     }
@@ -74,19 +71,20 @@ public class DAOOrder {
     public void insertOrderDetail(OrderDetail od) {
         String sql = "INSERT INTO OrderDetail (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
         try (PreparedStatement st = con.prepareStatement(sql)) {
-            st.setInt(1,od.getOrder().getId());
-            st.setInt(2,od.getProduct().getId());
-            st.setInt(3,od.getQuantity());
-            st.setDouble(4,od.getPrice());
+            st.setInt(1, od.getOrder().getId());
+            st.setInt(2, od.getProduct().getId());
+            st.setInt(3, od.getQuantity());
+            st.setDouble(4, od.getPrice());
             st.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            System.out.println("Error inserting order detail: " + e.getMessage());
         }
     }
 
     public List<Order> getOrdersByStatusIn(List<Integer> statusIds) throws SQLException {
         List<Order> orders = new ArrayList<>();
-        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone " +
+        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name " +
                      "FROM [dbo].[Orders] o " +
                      "LEFT JOIN [dbo].[OrderStatus] os ON o.status_id = os.id " +
                      "LEFT JOIN [dbo].[Users] u ON o.user_id = u.id " +
@@ -94,6 +92,9 @@ public class DAOOrder {
                      "WHERE o.status_id IN (" + String.join(",", statusIds.stream().map(String::valueOf).toArray(String[]::new)) + ")";
         try (PreparedStatement st = con.prepareStatement(sql);
              ResultSet rs = st.executeQuery()) {
+            if (!rs.isBeforeFirst()) {
+                System.out.println("No orders found for statusIds: " + statusIds + " at " + new java.util.Date());
+            }
             while (rs.next()) {
                 Order order = new Order();
                 order.setId(rs.getInt("id"));
@@ -105,26 +106,26 @@ public class DAOOrder {
                 order.setReceiverEmail(rs.getString("receiver_email"));
                 order.setShippingAddress(rs.getString("shipping_address"));
                 order.setStatus(new OrderStatus(rs.getInt("status_id"), rs.getString("status_name"), rs.getString("description")));
-                order.setUser(new User(rs.getInt("user_id"), rs.getString("user_name"), null, null, null, null, null, false, null, null));
-                if (rs.getInt("shipper_id") != 0) {
-                    order.setShipper(new User(
-                        rs.getInt("shipper_id"),           // id
-                        rs.getString("shipper_name"),      // name
-                        null,                              // email
-                        null,                              // password
-                        rs.getString("shipper_phone"),     // phone
-                        null,                              // dob
-                        null,                              // address
-                        false,                             // gender
-                        null,                              // role
-                        null                               // createdAt
-                    ));
+                int userId = rs.getInt("user_id");
+                User user = rs.wasNull() ? null : DAOUser.getInstance().getUserById(userId);
+                if (user != null) {
+                    order.setUser(user);
+                } else {
+                    System.out.println("Warning: No user found for user_id: " + userId);
+                }
+                int shipperId = rs.getInt("shipper_id");
+                User shipper = rs.wasNull() ? null : DAOUser.getInstance().getUserById(shipperId);
+                if (shipper != null) {
+                    order.setShipper(shipper);
+                } else {
+                    System.out.println("Warning: No shipper found for shipper_id: " + (rs.wasNull() ? "NULL" : shipperId));
                 }
                 orders.add(order);
+                System.out.println("Retrieved order ID: " + order.getId() + ", Status: " + order.getStatus().getStatusName() + ", Shipper ID: " + (shipper != null ? shipper.getId() : "null"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            status = "Error: Unable to retrieve orders - " + e.getMessage();
+            System.out.println("SQL Error in getOrdersByStatusIn: " + e.getMessage());
             throw e;
         }
         return orders;
@@ -159,6 +160,7 @@ public class DAOOrder {
             throw new SQLException("Invalid status transition from " + currentStatusId + " to " + statusId);
         }
     }
+
     public void updateOrderStatus(int orderId, int statusId, int shipperId) throws SQLException {
         String sql;
         if (shipperId == -1) {
@@ -178,120 +180,159 @@ public class DAOOrder {
             }
         }
     }
-    public List<Order> getOrdersBySeller(int sellerId) {
+
+    public List<Order> getOrdersByShipper(int shipperId, int page, int pageSize) throws SQLException {
         List<Order> orders = new ArrayList<>();
-        String sql = "SELECT DISTINCT o.id, o.order_date, o.total_amount, o.payment_method, o.status_id, " +
-                     "o.receiver_name, o.receiver_phone, o.receiver_email, o.shipping_address, " +
-                     "os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone " +
-                     "FROM [dbo].[Orders] o " +
-                     "INNER JOIN [dbo].[OrderDetail] od ON o.id = od.order_id " +
-                     "INNER JOIN [dbo].[Product] p ON od.product_id = p.id " +
-                     "LEFT JOIN [dbo].[OrderStatus] os ON o.status_id = os.id " +
-                     "LEFT JOIN [dbo].[Users] u ON o.user_id = u.id " +
-                     "LEFT JOIN [dbo].[Users] s ON o.shipper_id = s.id " +
-                     "WHERE p.seller_id = ? AND o.status_id IN (6, 7, 8)";
+        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone " +
+                     "FROM Orders o " +
+                     "JOIN OrderStatus os ON o.status_id = os.id " +
+                     "LEFT JOIN Users u ON o.user_id = u.id " +
+                     "LEFT JOIN Users s ON o.shipper_id = s.id " +
+                     "WHERE o.shipper_id = ? AND o.status_id IN (6, 7, 8) " +
+                     "ORDER BY o.order_date DESC " +
+                     "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
         try (PreparedStatement st = con.prepareStatement(sql)) {
-            st.setInt(1, sellerId);
+            st.setInt(1, shipperId);
+            st.setInt(2, (page - 1) * pageSize);
+            st.setInt(3, pageSize);
             try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {
                     Order order = new Order();
                     order.setId(rs.getInt("id"));
+                    order.setUser(new User(rs.getInt("user_id"), rs.getString("user_name"), null, null, null, null, null, false, null, null));
                     order.setOrderDate(rs.getTimestamp("order_date"));
                     order.setTotalAmount(rs.getDouble("total_amount"));
                     order.setPaymentMethod(rs.getString("payment_method"));
+                    order.setStatus(new OrderStatus(rs.getInt("status_id"), rs.getString("status_name"), rs.getString("description")));
+                    if (rs.getInt("shipper_id") != 0) {
+                        order.setShipper(new User(rs.getInt("shipper_id"), rs.getString("shipper_name"), null, null, rs.getString("shipper_phone"), null, null, false, null, null));
+                    }
                     order.setReceiverName(rs.getString("receiver_name"));
                     order.setReceiverPhone(rs.getString("receiver_phone"));
                     order.setReceiverEmail(rs.getString("receiver_email"));
                     order.setShippingAddress(rs.getString("shipping_address"));
-                    order.setStatus(new OrderStatus(rs.getInt("status_id"), rs.getString("status_name"), rs.getString("description")));
-                    order.setUser(new User(rs.getInt("user_id"), rs.getString("user_name"), null, null, null, null, null, false, null, null));
-                    if (rs.getInt("shipper_id") != 0) {
-                        order.setShipper(new User(
-                            rs.getInt("shipper_id"),           // id
-                            rs.getString("shipper_name"),      // name
-                            null,                              // email
-                            null,                              // password
-                            rs.getString("shipper_phone"),     // phone
-                            null,                              // dob
-                            null,                              // address
-                            false,                             // gender
-                            null,                              // role
-                            null                               // createdAt
-                        ));
-                    }
+                    order.setOrderDetails(getOrderDetails(rs.getInt("id")));
                     orders.add(order);
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            status = "Error: Unable to retrieve orders for seller - " + e.getMessage();
+        }
+        return orders;
+    }
+
+    public int getTotalOrdersByShipper(int shipperId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Orders WHERE shipper_id = ? AND status_id IN (6, 7, 8)";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setInt(1, shipperId);
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        return 0;
+    }
+
+    private List<OrderDetail> getOrderDetails(int orderId) throws SQLException {
+        List<OrderDetail> details = new ArrayList<>();
+        String sql = "SELECT p.id, p.name, od.quantity, od.price " +
+                     "FROM OrderDetail od JOIN Product p ON od.product_id = p.id " +
+                     "WHERE od.order_id = ?";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setInt(1, orderId);
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product();
+                    product.setId(rs.getInt("id"));
+                    product.setName(rs.getString("name"));
+                    OrderDetail detail = new OrderDetail();
+                    detail.setProduct(product);
+                    detail.setQuantity(rs.getInt("quantity"));
+                    detail.setPrice(rs.getDouble("price"));
+                    details.add(detail);
+                }
+            }
+        }
+        return details;
+    }
+    
+    public List<Order> getAllOrders(int page, int pageSize) throws SQLException {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone " +
+                     "FROM Orders o " +
+                     "JOIN OrderStatus os ON o.status_id = os.id " +
+                     "LEFT JOIN Users u ON o.user_id = u.id " +
+                     "LEFT JOIN Users s ON o.shipper_id = s.id " +
+                     "ORDER BY o.order_date DESC " +
+                     "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setInt(1, (page - 1) * pageSize);
+            st.setInt(2, pageSize);
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    Order order = new Order();
+                    order.setId(rs.getInt("id"));
+                    order.setUser(new User(rs.getInt("user_id"), rs.getString("user_name"), null, null, null, null, null, false, null, null));
+                    order.setOrderDate(rs.getTimestamp("order_date"));
+                    order.setTotalAmount(rs.getDouble("total_amount"));
+                    order.setPaymentMethod(rs.getString("payment_method"));
+                    order.setStatus(new OrderStatus(rs.getInt("status_id"), rs.getString("status_name"), rs.getString("description")));
+                    if (rs.getInt("shipper_id") != 0) {
+                        order.setShipper(new User(rs.getInt("shipper_id"), rs.getString("shipper_name"), null, null, rs.getString("shipper_phone"), null, null, false, null, null));
+                    }
+                    order.setReceiverName(rs.getString("receiver_name"));
+                    order.setReceiverPhone(rs.getString("receiver_phone"));
+                    order.setReceiverEmail(rs.getString("receiver_email"));
+                    order.setShippingAddress(rs.getString("shipping_address"));
+                    order.setOrderDetails(getOrderDetails(rs.getInt("id")));
+                    orders.add(order);
+                }
+            }
         }
         return orders;
     }
     
-public Order getOrderDetailsBySeller(int orderId, int sellerId) {
-        Order order = null;
-        List<OrderDetail> orderDetails = new ArrayList<>();
-        String sql = "SELECT o.id, o.order_date, o.total_amount, o.payment_method, o.status_id, " +
-                     "o.receiver_name, o.receiver_phone, o.receiver_email, o.shipping_address, " +
-                     "os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone, " +
-                     "od.product_id, od.quantity, od.price, p.name AS product_name " +
-                     "FROM [dbo].[Orders] o " +
-                     "LEFT JOIN [dbo].[OrderStatus] os ON o.status_id = os.id " +
-                     "LEFT JOIN [dbo].[Users] u ON o.user_id = u.id " +
-                     "LEFT JOIN [dbo].[Users] s ON o.shipper_id = s.id " +
-                     "INNER JOIN [dbo].[OrderDetail] od ON o.id = od.order_id " +
-                     "INNER JOIN [dbo].[Product] p ON od.product_id = p.id " +
-                     "WHERE o.id = ? AND p.seller_id = ?";
+        public int getTotalOrders() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Orders";
         try (PreparedStatement st = con.prepareStatement(sql)) {
-            st.setInt(1, orderId);
-            st.setInt(2, sellerId);
             try (ResultSet rs = st.executeQuery()) {
-                while (rs.next()) {
-                    if (order == null) {
-                        order = new Order();
-                        order.setId(rs.getInt("id"));
-                        order.setOrderDate(rs.getTimestamp("order_date"));
-                        order.setTotalAmount(rs.getDouble("total_amount"));
-                        order.setPaymentMethod(rs.getString("payment_method"));
-                        order.setReceiverName(rs.getString("receiver_name"));
-                        order.setReceiverPhone(rs.getString("receiver_phone"));
-                        order.setReceiverEmail(rs.getString("receiver_email"));
-                        order.setShippingAddress(rs.getString("shipping_address"));
-                        order.setStatus(new OrderStatus(rs.getInt("status_id"), rs.getString("status_name"), rs.getString("description")));
-                        order.setUser(new User(rs.getInt("user_id"), rs.getString("user_name"), null, null, null, null, null, false, null, null));
-                        if (rs.getInt("shipper_id") != 0) {
-                            order.setShipper(new User(
-                                rs.getInt("shipper_id"),           // id
-                                rs.getString("shipper_name"),      // name
-                                null,                              // email
-                                null,                              // password
-                                rs.getString("shipper_phone"),     // phone
-                                null,                              // dob
-                                null,                              // address
-                                false,                             // gender
-                                null,                              // role
-                                null                               // createdAt
-                            ));
-                        }
-                    }
-                    OrderDetail detail = new OrderDetail();
-                    detail.setOrder(order);
-                    detail.setProduct(new Product(rs.getInt("product_id"), rs.getString("product_name")));
-                    detail.setQuantity(rs.getInt("quantity"));
-                    detail.setPrice(rs.getDouble("price"));
-                    orderDetails.add(detail);
-                }
-                if (order != null) {
-                    order.setOrderDetails(orderDetails);
+                if (rs.next()) {
+                    return rs.getInt(1);
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            status = "Error: Unable to retrieve order details for orderId " + orderId + " and sellerId " + sellerId + " - " + e.getMessage();
+        }
+        return 0;
+    }
+        
+        public Order getOrderById(int orderId) throws SQLException {
+        Order order = null;
+        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone " +
+                     "FROM Orders o " +
+                     "JOIN OrderStatus os ON o.status_id = os.id " +
+                     "LEFT JOIN Users u ON o.user_id = u.id " +
+                     "LEFT JOIN Users s ON o.shipper_id = s.id " +
+                     "WHERE o.id = ?";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setInt(1, orderId);
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    order = new Order();
+                    order.setId(rs.getInt("id"));
+                    order.setUser(new User(rs.getInt("user_id"), rs.getString("user_name"), null, null, null, null, null, false, null, null));
+                    order.setOrderDate(rs.getTimestamp("order_date"));
+                    order.setTotalAmount(rs.getDouble("total_amount"));
+                    order.setPaymentMethod(rs.getString("payment_method"));
+                    order.setStatus(new OrderStatus(rs.getInt("status_id"), rs.getString("status_name"), rs.getString("description")));
+                    if (rs.getInt("shipper_id") != 0) {
+                        order.setShipper(new User(rs.getInt("shipper_id"), rs.getString("shipper_name"), null, null, rs.getString("shipper_phone"), null, null, false, null, null));
+                    }
+                    order.setReceiverName(rs.getString("receiver_name"));
+                    order.setReceiverPhone(rs.getString("receiver_phone"));
+                    order.setReceiverEmail(rs.getString("receiver_email"));
+                    order.setShippingAddress(rs.getString("shipping_address"));
+                    order.setOrderDetails(getOrderDetails(rs.getInt("id")));
+                }
+            }
         }
         return order;
     }
-    
-    
 }
