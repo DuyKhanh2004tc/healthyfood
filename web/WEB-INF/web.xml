@@ -233,6 +233,14 @@
         <servlet-name>ApproveNewProductServlet</servlet-name>
         <servlet-class>controller.ApproveNewProductServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>allRecipeServlet</servlet-name>
+        <servlet-class>controller.allRecipeServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RecipeDetailServlet</servlet-name>
+        <servlet-class>controller.RecipeDetailServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ProposeProductServlet</servlet-name>
         <url-pattern>/proposeProduct</url-pattern>
@@ -412,6 +420,14 @@
     <servlet-mapping>
         <servlet-name>ApproveNewProductServlet</servlet-name>
         <url-pattern>/approve</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>allRecipeServlet</servlet-name>
+        <url-pattern>/allRecipe</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RecipeDetailServlet</servlet-name>
+        <url-pattern>/recipeDetail</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>
