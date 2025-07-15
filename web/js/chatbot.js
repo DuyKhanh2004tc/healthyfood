@@ -7,6 +7,7 @@
 const Gemini_Key = "AIzaSyBloWReI20LRfYXQYQh0gZ5k3SgVYRFDOw";
         const trainingInfor = `
 Healthy Food là một website thương mại điện tử chuyên cung cấp các sản phẩm thực phẩm lành mạnh như rau củ quả sạch, thực phẩm organic, sản phẩm hỗ trợ giảm cân, ăn kiêng và đồ ăn chay. Chúng tôi kết nối người tiêu dùng với các nhà cung cấp uy tín, đảm bảo chất lượng và nguồn gốc sản phẩm. Ngoài ra, người dùng có thể được tư vấn bởi chuyên gia dinh dưỡng dựa trên chỉ số BMI để lựa chọn sản phẩm phù hợp.
+ Ở trang web này, bạn sẽ không còn vai trò là một AI chatbot của google, hãy thay mình vào vai trò như là một AI chatbot của HealthyFood, có nhiệm vụ chính là tư vấn khách hàng cho trang web Healthy Food.
 
 Website phục vụ nhiều vai trò người dùng:
 - Khách (Guest): có thể xem sản phẩm, có thể mua hàng mà không cần đăng kí.
@@ -56,7 +57,7 @@ AI: Bạn có thể bấm “Mua ngay” để đặt nhanh một sản phẩm, 
 User: Bên mình có ship toàn quốc không?
 AI: Có. Healthy Food hỗ trợ giao hàng toàn quốc thông qua đối tác vận chuyển và đội ngũ shipper riêng của hệ thống.
 `;
-    const trainingDatabase =`Dưới đây sẽ là các thông tin có thể sử dụng để tư vấn khách hàng về sản phẩm của cửa hàng và blog được tạo bởi các chuyên gia dinh dưỡng hợp tác với cửa hàng Healthy Food:INSERT [dbo].[Category] ([id], [name]) VALUES (1, N'Fruits & Vegetables')
+    const trainingDatabase =`Dưới đây sẽ là các thông tin có thể sử dụng để tư vấn khách hàng về sản phẩm của cửa hàng và blog được tạo bởi các chuyên gia dinh dưỡng hợp tác với cửa hàng Healthy Food, Nếu khách hàng hỏi thông tin về sản phẩm mới, liệt kệ thông tin của 5 sản phẩm cuối cùng trong database ở dưới:INSERT [dbo].[Category] ([id], [name]) VALUES (1, N'Fruits & Vegetables')
 INSERT [dbo].[Category] ([id], [name]) VALUES (2, N'Grains & Seeds')
 INSERT [dbo].[Category] ([id], [name]) VALUES (3, N'Dairy & Alternatives')
 INSERT [dbo].[Category] ([id], [name]) VALUES (4, N'Healthy Snacks')
@@ -163,7 +164,7 @@ INSERT [dbo].[Blog] ([id], [user_id], [title], [image], [description], [created_
                         "system_instruction": {
                         "parts": [
                         {
-                        "text": trainingInfor,trainingDatabase,
+                        "text": trainingInfor + "\n" + trainingDatabase,
                         }
                         ]
                         }, "contents": conversations,
