@@ -6,6 +6,7 @@
 package controller;
 
 import dal.DAOBlog;
+import dal.DAOTag;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -57,20 +58,21 @@ public class NutritionBlogServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
       
-    DAOBlog dao = new DAOBlog();
+    DAOBlog daoBlog = new DAOBlog();
+    DAOTag daoTag = new DAOTag(); 
     String tagSlug = request.getParameter("tag");
 
     List<Blog> blogList;
     if (tagSlug != null && !tagSlug.isEmpty()) {
-        blogList = dao.getBlogsByTagSlug(tagSlug);
+        blogList = daoBlog.getBlogsByTagSlug(tagSlug);
     } else {
-        blogList = dao.getAllBlog();
+        blogList = daoBlog.getAllBlog();
     }
 
     request.setAttribute("blogList", blogList);
+    request.setAttribute("tagList", daoTag.listAllTag()); 
     request.getRequestDispatcher("/view/nutritionBlog.jsp").forward(request, response);
-    } 
-
+}
     /** 
      * Handles the HTTP <code>POST</code> method.
      * @param request servlet request
