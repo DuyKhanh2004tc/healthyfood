@@ -10,12 +10,10 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Shipper Home</title>
-        <link rel="stylesheet" href="CSS/homeShipper.css"> <!-- File CSS riêng -->
+        <link rel="stylesheet" href="CSS/homeShipper.css"> 
     </head>
     <body>
-        <!-- Thêm header nếu cần, tương tự headerAdmin.jsp -->
-
-
+        <jsp:include page="headerShipper.jsp"></jsp:include>
         <div class="welcome">
             <img src="images/shipper.jpg" alt="Shipper Avatar" onclick="location.href='updateProfile'">
             <h2>Welcome <c:out value="${sessionScope.user.name}" /></h2>

@@ -10,7 +10,7 @@
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
     <body class="bg-gray-100 font-sans">
-
+        <jsp:include page="headerShipper.jsp"></jsp:include>
         <h1 class="text-3xl font-bold text-center mt-6">Delivered Orders</h1>
         <div class="container mx-auto p-4">
             <c:if test="${not empty error}">
