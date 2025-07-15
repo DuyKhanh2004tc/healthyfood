@@ -44,7 +44,24 @@ public class DAORole {
         }
         return roles;
     }
-   
+   public Role getRoleById(int id) {
+        String query = "SELECT id, role_name FROM Role WHERE id = ?";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Role role = new Role();
+                    role.setId(rs.getInt("id"));
+                    role.setRoleName(rs.getString("role_name"));
+                    return role;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = "Error: Unable to retrieve role by ID - " + e.getMessage();
+        }
+        return null; 
+    }
     
 
     public static void main(String[] args) {

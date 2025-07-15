@@ -19,7 +19,7 @@
         <jsp:include page="headerAdmin.jsp"></jsp:include>
         <div class="container">
             <div class="loading"><i class="fas fa-spinner"></i> Loading...</div>
-            <div class="role-title">Users for Role: ${roleId}</div>
+            <div class="role-title">Users for Role: ${roleName}</div>
             <div class="header">
                 <form action="DisplayAccount" method="post" class="search-form" onsubmit="showLoading()">                   
                     <input type="hidden" name="idRole" value="${roleId}">
