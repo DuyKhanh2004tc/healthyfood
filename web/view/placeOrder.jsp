@@ -17,7 +17,6 @@
     <body>
         <jsp:include page="header.jsp"></jsp:include>
 
-
             <div>
                 <table class="cart-table">
                     <tr class="table-header">
@@ -201,6 +200,15 @@
                         <td><p class="error-message" id="errorEmail"></p></td>
                     </tr>
                     <tr>
+                        <td>Message for delivery:
+                        </td>
+
+                    </tr>
+                    <tr></td>
+                        <td><textarea id="deliveryMes" name="deliveryMessage" value="" rows="10" cols="50"></textarea></td>
+                        <td><p class="error-message" id="errorMessage"></td>
+                    </tr>
+                    <tr>
                         <td>Select payment method:</td>
                         <td>
                             <input type="radio" id="pmOnline" name="paymentMethod" value="online">Online Payment
@@ -231,6 +239,7 @@
                 const phone = document.getElementById("phone").value.trim();
                 const address = document.getElementById("address").value.trim();
                 const email = document.getElementById("email").value.trim();
+                const deliveryMessage = document.getElementById("deliveryMes").value.trim();
                 const paymentOnline = document.getElementById("pmOnline").checked;
                 const paymentOffline = document.getElementById("pmOffline").checked;
 
@@ -275,6 +284,10 @@
 
                 if (!paymentOnline && !paymentOffline) {
                     document.getElementById("errorPayment").innerText = "Please select a payment method.";
+                    valid = false;
+                }
+                if (deliveryMessage.length >= 150) {
+                    document.getElementById("errorMessage").innerText = "Messages must not exceed 150 words.";
                     valid = false;
                 }
 

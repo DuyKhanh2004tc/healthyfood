@@ -94,6 +94,7 @@ public class OrderCheckoutServlet extends HttpServlet {
         String productId_raw = request.getParameter("productId");
         String quantity_raw = request.getParameter("quantity");
         String totalAmount_raw = request.getParameter("totalAmount");
+        String deliveryMessage = request.getParameter("deliveryMessage");
 
         if (request.getParameter("userName") != null && request.getParameter("phone") != null && request.getParameter("paymentMethod") != null
                 && request.getParameter("address") != null && request.getParameter("email") != null
@@ -147,6 +148,11 @@ public class OrderCheckoutServlet extends HttpServlet {
                 order.setReceiverName(userName);
                 order.setReceiverPhone(phone);
                 order.setShippingAddress(address);
+                if(deliveryMessage!= null){
+                    order.setDeliveryMessage(deliveryMessage);
+                } else {
+                    order.setDeliveryMessage(null);
+                }
                 OrderStatus orderStatus = new OrderStatus();
                 orderStatus.setId(1);
                 order.setStatus(orderStatus);
@@ -166,8 +172,10 @@ public class OrderCheckoutServlet extends HttpServlet {
                 }
                 if (productId_raw == null && u != null) {
                     daoCart.deleteCartItemsByUserId(u.getId());
+                } else if (productId_raw == null && u == null) {
+                    session.removeAttribute("itemList");
                 }
-                if (u == null) {                  
+                if (u == null) {
                     StringBuilder content = new StringBuilder();
                     content.append("Dear ").append(userName).append(",\n\n");
                     content.append("Thank you for shopping with Healthy Food!\n\n");
@@ -190,13 +198,12 @@ public class OrderCheckoutServlet extends HttpServlet {
                     content.append("\nWe will process and ship your order soon!\n\n");
                     content.append("Best regards,\nHealthy Food Team ");
 
-                    
                     Mail.sendMail(email, "[HealthyFood] Order Confirmation - Order #" + order.getId(), content.toString());
                 }
 
                 request.setAttribute("order", order);
                 request.setAttribute("itemList", itemList);
-                session.removeAttribute("itemList");
+                
                 request.getRequestDispatcher("/view/orderCheckout.jsp").forward(request, response);
                 return;
             } catch (Exception e) {
