@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import model.Product;
+import utils.Pagination;
 
 /**
  *
@@ -74,134 +75,80 @@ public class PriceFilterServlet extends HttpServlet {
             categoryId = (int) session.getAttribute("categoryId");
         }
 
-        if (request.getParameter("minPrice") != null || request.getParameter("maxPrice") != null) {
             String min_raw = request.getParameter("minPrice");
             String max_raw = request.getParameter("maxPrice");
             double min, max;
+            String index_raw = request.getParameter("index");
+            int page = 1;
+            int pageSize = 12;
+            if (index_raw != null) {
+                try {
+                    page = Integer.parseInt(index_raw);
+                } catch (NumberFormatException e) {
+                    page = 1;
+                }
+            }
 
             try {
                 boolean hasMin = min_raw != null && !min_raw.isEmpty();
                 boolean hasMax = max_raw != null && !max_raw.isEmpty();
+                min = hasMin ? Double.parseDouble(min_raw) : 0;
+                max = hasMax ? Double.parseDouble(max_raw) : 1000;
                 if (hasMin && hasMax) {
-                    min = Double.parseDouble(min_raw);
-                    max = Double.parseDouble(max_raw);
                     if (min > max) {
-                        String index_raw = request.getParameter("index");
-                        if (index_raw == null) {
-                            index_raw = "1";
-                        }
-                        int index = Integer.parseInt(index_raw);
-                        int totalProduct;
-                        if (categoryId == 0) {
-                            totalProduct = dao.getTotalProduct();
-                        } else {
-                            totalProduct = dao.getTotalProductByCid(categoryId);
-                        }
-                        int pages = totalProduct / 12;
-                        if (totalProduct % 12 != 0) {
-                            pages++;
-                        }
-                        request.setAttribute("totalPage", pages);
                         request.setAttribute("eMessage", "Min price must be less than or equal Max price");
                         request.setAttribute("minPrice", min);
                         request.setAttribute("maxPrice", max);
-                        productList = dao.getProductPagination(index, 12);
-                        request.setAttribute("productList", productList);
-                        request.getRequestDispatcher("/view/home.jsp").forward(request, response);
-                        return;
-
+                        productList = (categoryId == 0)
+                                ? dao.getAllProduct()
+                                : dao.getProductByCategory(categoryId);
                     } else {
-                        if (categoryId == 0) {
-                            productList = dao.getPriceInRange(min, max);
-                        } else {
-                            productList = dao.getPriceInRangeByCategoryId(min, max, categoryId);
-                        }
-                        if (productList == null || productList.isEmpty()) {
-                            String index_raw = request.getParameter("index");
-                            if (index_raw == null) {
-                                index_raw = "1";
-                            }
-                            int index = Integer.parseInt(index_raw);
-                            int totalProduct;
-                            if (categoryId == 0) {
-                                totalProduct = dao.getTotalProduct();
-                            } else {
-                                totalProduct = dao.getTotalProductByCid(categoryId);
-                            }
+                        productList = (categoryId == 0)
+                                ? dao.getPriceInRange(min, max)
+                                : dao.getPriceInRangeByCategoryId(min, max, categoryId);
 
-                            int pages = totalProduct / 12;
-                            if (totalProduct % 12 != 0) {
-                                pages++;
-                            }
-                            request.setAttribute("totalPage", pages);
-                            request.setAttribute("notFoundMessage", "Not found product in entered price range! ");
-                            productList = dao.getProductPagination(index, 12);
-                            request.setAttribute("minPrice", min);
-                            request.setAttribute("maxPrice", max);
-                            request.setAttribute("productList", productList);
-                            request.getRequestDispatcher("/view/home.jsp").forward(request, response);
-                            return;
-                        }
                         request.setAttribute("minPrice", min);
                         request.setAttribute("maxPrice", max);
-                        request.setAttribute("productList", productList);
-                        request.getRequestDispatcher("/view/home.jsp").forward(request, response);
-                        return;
+
+                        if (productList == null || productList.isEmpty()) {
+                            request.setAttribute("notFoundMessage", "Not found product in entered price range!");
+                            productList = (categoryId == 0)
+                                    ? dao.getAllProduct()
+                                    : dao.getProductByCategory(categoryId);
+                        }
                     }
 
                 } else if (hasMin) {
-                    min = Double.parseDouble(min_raw);
-                    if (categoryId == 0) {
-                        productList = dao.getPriceInRange(min, 1000);
-                    } else {
-                        productList = dao.getPriceInRangeByCategoryId(min, 1000, categoryId);
-                    }
+                    productList = (categoryId == 0)
+                            ? dao.getPriceInRange(min, 1000)
+                            : dao.getPriceInRangeByCategoryId(min, 1000, categoryId);
                     request.setAttribute("minPrice", min);
-                    request.setAttribute("productList", productList);
-                    request.getRequestDispatcher("/view/home.jsp").forward(request, response);
-                    return;
                 } else if (hasMax) {
-                    max = Double.parseDouble(max_raw);
-                    if (categoryId == 0) {
-                        productList = dao.getPriceInRange(0, max);
-                    } else {
-                        productList = dao.getPriceInRangeByCategoryId(0, max, categoryId);
-                    }
+                    productList = (categoryId == 0)
+                            ? dao.getPriceInRange(0, max)
+                            : dao.getPriceInRangeByCategoryId(0, max, categoryId);
                     request.setAttribute("maxPrice", max);
-                    request.setAttribute("productList", productList);
-                    request.getRequestDispatcher("/view/home.jsp").forward(request, response);
-                    return;
 
                 } else {
-                    String index_raw = request.getParameter("index");
-                    if (index_raw == null) {
-                        index_raw = "1";
-                    }
-                    int index = Integer.parseInt(index_raw);
-                    int totalProduct = dao.getTotalProduct();
-                    if (categoryId == 0) {
-                        totalProduct = dao.getTotalProduct();
-                    } else {
-                        totalProduct = dao.getTotalProductByCid(categoryId);
-                    }
-                    int pages = totalProduct / 12;
-                    if (totalProduct % 12 != 0) {
-                        pages++;
-                    }
-                    request.setAttribute("totalPage", pages);
-
-                    productList = dao.getProductPagination(index, 12);
-                    request.setAttribute("productList", productList);
-                    request.getRequestDispatcher("/view/home.jsp").forward(request, response);
-                    return;
+                    productList = (categoryId == 0)
+                            ? dao.getAllProduct()
+                            : dao.getProductByCategory(categoryId);
                 }
+
+                int totalPages = (int) Math.ceil((double) productList.size() / pageSize);
+                List<Product> pagedList = Pagination.paginate(productList, page, pageSize);
+                request.setAttribute("productList", pagedList);
+                request.setAttribute("totalPage", totalPages);
+                request.setAttribute("currentPage", page);
+
+                request.getRequestDispatcher("/view/home.jsp").forward(request, response);
 
             } catch (NumberFormatException e) {
 //                    productList = dao.getAllProduct();
 //                    request.setAttribute("productList", productList);
 //                    request.getRequestDispatcher("/view/home.jsp").forward(request, response);
             }
-        }
+        
     }
 
     /**
