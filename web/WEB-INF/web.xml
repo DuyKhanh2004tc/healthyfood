@@ -241,6 +241,10 @@
         <servlet-name>RecipeDetailServlet</servlet-name>
         <servlet-class>controller.RecipeDetailServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SearchBlogServlet</servlet-name>
+        <servlet-class>controller.SearchBlogServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ProposeProductServlet</servlet-name>
         <url-pattern>/proposeProduct</url-pattern>
@@ -428,6 +432,10 @@
     <servlet-mapping>
         <servlet-name>RecipeDetailServlet</servlet-name>
         <url-pattern>/recipeDetail</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SearchBlogServlet</servlet-name>
+        <url-pattern>/searchBlog</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>

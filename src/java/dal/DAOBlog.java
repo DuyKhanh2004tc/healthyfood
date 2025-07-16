@@ -218,6 +218,36 @@ public List<Blog> getBlogsByTagSlug(String slug) {
     return list;
 }
 
+public List<Blog> searchBlogsByTitle(String keyword) {
+    List<Blog> list = new ArrayList<>();
+    String sql = """
+        SELECT id, title, image, created_at, description
+        FROM Blog
+        WHERE title LIKE ?
+        ORDER BY created_at DESC
+    """;
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        String likeKeyword = "%" + keyword + "%"; 
+        ps.setString(1, likeKeyword);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Blog b = new Blog(
+                    rs.getInt("id"),
+                    rs.getString("title"),
+                    rs.getString("image"),
+                    rs.getString("description"),
+                    rs.getTimestamp("created_at"),
+                    null // load User nếu cần
+                );
+                list.add(b);
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return list;
+}
+
     public static void main(String[] args) {
         Blog blog = DAOBlog.INSTANCE.getBlogById(1);
         System.out.println(blog.getImage());

@@ -32,6 +32,10 @@
             </div>
         </c:if>
         <div class="nb-main-content">
+            <form class ="search-form" action="searchBlog" method="get">                   
+                            <input type="image" src="${pageContext.request.contextPath}/icons/search_icon.png" alt="Search" width="20" height="20">
+                            <input type="text" name="keyword" value="${param.keyword}" placeholder="Search blogs by title or content">
+                        </form>
             <div class="nb-content-wrapper">
                 <div class="nb-filter-box">
                     <h3>Filter by Tags</h3>
