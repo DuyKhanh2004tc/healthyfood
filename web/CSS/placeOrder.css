@@ -62,7 +62,7 @@ ody {
 }
 
 .form-placeOrder input[type="text"],
-.form-placeOrder input[type="email"] {
+.form-placeOrder input[type="email"],.form-placeOrder textarea {
     width: 90%;
     padding: 10px;
     border: 1px solid #ccc;

@@ -17,6 +17,7 @@ import java.util.List;
 import model.Category;
 import model.Product;
 import model.User;
+import utils.Pagination;
 
 /**
  *
@@ -63,13 +64,13 @@ public class CategoryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         DAOProduct dao = new DAOProduct();
-        DAOCategory dao2 = new DAOCategory();
+        DAOCategory daoCategory = new DAOCategory();
         HttpSession session = request.getSession();
 
         User u = (User) session.getAttribute("user");
         session.removeAttribute("keyword");
         String categoryId_raw = request.getParameter("categoryId");
-        List<Category> categoryList = dao2.getAllCategory();
+        List<Category> categoryList = daoCategory.getAllCategory();
         request.setAttribute("categoryList", categoryList);
         List<Product> productList;
         Product newest = dao.getNewestProduct();
@@ -82,53 +83,43 @@ public class CategoryServlet extends HttpServlet {
             if (u != null && u.getRole() != null) {
                 userRoleId = u.getRole().getId();
             }
+
             String index_raw = request.getParameter("index");
-            if (index_raw == null) {
-                index_raw = "1";
-            }
-            int index = Integer.parseInt(index_raw);
-            if (categoryId == 0) {
-                int totalProduct = dao.getTotalProduct();
-                int pages = totalProduct / 12;
-                if (totalProduct % 12 != 0) {
-                    pages++;
+            int page = 1;
+            int pageSize = 12;
+            if (index_raw != null) {
+                try {
+                    page = Integer.parseInt(index_raw);
+                } catch (NumberFormatException e) {
+                    page = 1;
                 }
-                request.setAttribute("totalPage", pages);
-            } else {
-                int totalProduct = dao.getTotalProductByCid(categoryId);
-                int pages = totalProduct / 12;
-                if (totalProduct % 12 != 0) {
-                    pages++;
-                }
-                request.setAttribute("totalPage", pages);
             }
 
             if (categoryId == 0) {
                 session.removeAttribute("categoryId");
-                productList = dao.getProductPagination(index, 12);
-                request.setAttribute("productList", productList);
-                if (userRoleId == 4) {
-                    request.getRequestDispatcher("/view/nutritionistHome.jsp").forward(request, response);
-                    return;
-                } else {
-                    request.getRequestDispatcher("/view/home.jsp").forward(request, response);
-                    return;
-                }
+                productList = dao.getAllProduct();
             } else {
-                productList = dao.getProductPaginationByCid(categoryId, index, 12);
-                request.setAttribute("productList", productList);
                 session.setAttribute("categoryId", categoryId);
-                if (userRoleId == 4) {
-                    request.getRequestDispatcher("/view/nutritionistHome.jsp").forward(request, response);
-                    return;
-                } else {
-                    request.getRequestDispatcher("/view/home.jsp").forward(request, response);
-                    return;
-                }
+                productList = dao.getProductByCategory(categoryId);
+            }
+
+            
+            int totalProducts = productList.size();
+            int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
+            List<Product> pagedList = Pagination.paginate(productList, page, pageSize);
+
+            request.setAttribute("totalPage", totalPages);
+            request.setAttribute("currentPage", page);
+            request.setAttribute("productList", pagedList);
+
+            if (userRoleId == 4) {
+                request.getRequestDispatcher("/view/nutritionistHome.jsp").forward(request, response);
+            } else {
+                request.getRequestDispatcher("/view/home.jsp").forward(request, response);
             }
 
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
     }

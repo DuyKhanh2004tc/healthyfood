@@ -18,6 +18,7 @@ public class Order {
     private String receiverPhone;
     private String receiverEmail;
     private String shippingAddress;
+    private String deliveryMessage;
     private List<OrderDetail> orderDetails;
     private List<OrderStatus> validStatuses; 
 
@@ -28,9 +29,7 @@ public class Order {
         this.id = id;
     }
 
-    public Order(int id, User user, Timestamp orderDate, double totalAmount, String paymentMethod, 
-                 OrderStatus status, User shipper, String receiverName, String receiverPhone, 
-                 String receiverEmail, String shippingAddress, List<OrderDetail> orderDetails) {
+    public Order(int id, User user, Timestamp orderDate, double totalAmount, String paymentMethod, OrderStatus status, User shipper, String receiverName, String receiverPhone, String receiverEmail, String shippingAddress, String deliveryMessage, List<OrderDetail> orderDetails, List<OrderStatus> validStatuses) {
         this.id = id;
         this.user = user;
         this.orderDate = orderDate;
@@ -42,8 +41,20 @@ public class Order {
         this.receiverPhone = receiverPhone;
         this.receiverEmail = receiverEmail;
         this.shippingAddress = shippingAddress;
+        this.deliveryMessage = deliveryMessage;
         this.orderDetails = orderDetails;
+        this.validStatuses = validStatuses;
     }
+
+    public String getDeliveryMessage() {
+        return deliveryMessage;
+    }
+
+    public void setDeliveryMessage(String deliveryMessage) {
+        this.deliveryMessage = deliveryMessage;
+    }
+
+    
 
     public int getId() {
         return id;

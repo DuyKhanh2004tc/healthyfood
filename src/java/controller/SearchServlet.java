@@ -17,6 +17,7 @@ import java.util.List;
 import model.Category;
 import model.Product;
 import model.User;
+import utils.Pagination;
 
 /**
  *
@@ -63,13 +64,16 @@ public class SearchServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         DAOProduct dao = new DAOProduct();
-
+        DAOCategory daoCategory = new DAOCategory();
         List<Product> searchList;
         HttpSession session = request.getSession();
         User u = (User) session.getAttribute("user");
         session.removeAttribute("categoryId");
         Product newest = dao.getNewestProduct();
+        request.setAttribute("categoryList", daoCategory.getAllCategory());
+        
         request.setAttribute("newProduct", newest);
+        session.removeAttribute("categoryId");
         int userRoleId = -1;
         if (u != null && u.getRole() != null) {
             userRoleId = u.getRole().getId();
@@ -90,7 +94,23 @@ public class SearchServlet extends HttpServlet {
                 return;
             }
         }
-        request.setAttribute("productList", searchList);
+        int page = 1;
+        int pageSize = 12;
+        String indexRaw = request.getParameter("index");
+        if (indexRaw != null) {
+            try {
+                page = Integer.parseInt(indexRaw);
+            } catch (NumberFormatException e) {
+                page = 1;
+            }
+        }
+
+        int totalPages = (int) Math.ceil((double) searchList.size() / pageSize);
+        List<Product> pagedList = Pagination.paginate(searchList, page, pageSize);
+
+        request.setAttribute("productList", pagedList);
+        request.setAttribute("totalPage", totalPages);
+        request.setAttribute("currentPage", page);
         if (userRoleId == 4) {
             request.getRequestDispatcher("/view/nutritionistHome.jsp").forward(request, response);
         } else {

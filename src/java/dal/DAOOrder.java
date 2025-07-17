@@ -1,4 +1,3 @@
-
 package dal;
 
 import model.Order;
@@ -16,6 +15,7 @@ import java.util.List;
 import model.Product;
 
 public class DAOOrder {
+
     public static DAOOrder INSTANCE = new DAOOrder();
     private static Connection con;
     private String status = "OK";
@@ -32,8 +32,8 @@ public class DAOOrder {
     public int insertOrder(Order order) {
         int orderId = -1;
         String sql = "INSERT INTO Orders (user_id, total_amount, payment_method, status_id, shipper_id, "
-                + "receiver_name, receiver_phone, receiver_email, shipping_address) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "receiver_name, receiver_phone, receiver_email, shipping_address, delivery_message) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement st = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             if (order.getUser() != null) {
                 st.setInt(1, order.getUser().getId());
@@ -52,7 +52,7 @@ public class DAOOrder {
             st.setString(7, order.getReceiverPhone());
             st.setString(8, order.getReceiverEmail());
             st.setString(9, order.getShippingAddress());
-
+            st.setString(10, order.getDeliveryMessage());
             int insertedRows = st.executeUpdate();
             if (insertedRows > 0) {
                 try (ResultSet rs = st.getGeneratedKeys()) {
@@ -84,14 +84,13 @@ public class DAOOrder {
 
     public List<Order> getOrdersByStatusIn(List<Integer> statusIds) throws SQLException {
         List<Order> orders = new ArrayList<>();
-        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name " +
-                     "FROM [dbo].[Orders] o " +
-                     "LEFT JOIN [dbo].[OrderStatus] os ON o.status_id = os.id " +
-                     "LEFT JOIN [dbo].[Users] u ON o.user_id = u.id " +
-                     "LEFT JOIN [dbo].[Users] s ON o.shipper_id = s.id " +
-                     "WHERE o.status_id IN (" + String.join(",", statusIds.stream().map(String::valueOf).toArray(String[]::new)) + ")";
-        try (PreparedStatement st = con.prepareStatement(sql);
-             ResultSet rs = st.executeQuery()) {
+        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name "
+                + "FROM [dbo].[Orders] o "
+                + "LEFT JOIN [dbo].[OrderStatus] os ON o.status_id = os.id "
+                + "LEFT JOIN [dbo].[Users] u ON o.user_id = u.id "
+                + "LEFT JOIN [dbo].[Users] s ON o.shipper_id = s.id "
+                + "WHERE o.status_id IN (" + String.join(",", statusIds.stream().map(String::valueOf).toArray(String[]::new)) + ")";
+        try (PreparedStatement st = con.prepareStatement(sql); ResultSet rs = st.executeQuery()) {
             if (!rs.isBeforeFirst()) {
                 System.out.println("No orders found for statusIds: " + statusIds + " at " + new java.util.Date());
             }
@@ -105,6 +104,7 @@ public class DAOOrder {
                 order.setReceiverPhone(rs.getString("receiver_phone"));
                 order.setReceiverEmail(rs.getString("receiver_email"));
                 order.setShippingAddress(rs.getString("shipping_address"));
+                order.setDeliveryMessage(rs.getString("delivery_message"));
                 order.setStatus(new OrderStatus(rs.getInt("status_id"), rs.getString("status_name"), rs.getString("description")));
                 int userId = rs.getInt("user_id");
                 User user = rs.wasNull() ? null : DAOUser.getInstance().getUserById(userId);
@@ -183,14 +183,14 @@ public class DAOOrder {
 
     public List<Order> getOrdersByShipper(int shipperId, int page, int pageSize) throws SQLException {
         List<Order> orders = new ArrayList<>();
-        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone " +
-                     "FROM Orders o " +
-                     "JOIN OrderStatus os ON o.status_id = os.id " +
-                     "LEFT JOIN Users u ON o.user_id = u.id " +
-                     "LEFT JOIN Users s ON o.shipper_id = s.id " +
-                     "WHERE o.shipper_id = ? AND o.status_id IN (6, 7, 8) " +
-                     "ORDER BY o.order_date DESC " +
-                     "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone "
+                + "FROM Orders o "
+                + "JOIN OrderStatus os ON o.status_id = os.id "
+                + "LEFT JOIN Users u ON o.user_id = u.id "
+                + "LEFT JOIN Users s ON o.shipper_id = s.id "
+                + "WHERE o.shipper_id = ? AND o.status_id IN (6, 7, 8) "
+                + "ORDER BY o.order_date DESC "
+                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setInt(1, shipperId);
             st.setInt(2, (page - 1) * pageSize);
@@ -211,6 +211,7 @@ public class DAOOrder {
                     order.setReceiverPhone(rs.getString("receiver_phone"));
                     order.setReceiverEmail(rs.getString("receiver_email"));
                     order.setShippingAddress(rs.getString("shipping_address"));
+                    order.setDeliveryMessage(rs.getString("delivery_message"));
                     order.setOrderDetails(getOrderDetails(rs.getInt("id")));
                     orders.add(order);
                 }
@@ -234,9 +235,9 @@ public class DAOOrder {
 
     private List<OrderDetail> getOrderDetails(int orderId) throws SQLException {
         List<OrderDetail> details = new ArrayList<>();
-        String sql = "SELECT p.id, p.name, od.quantity, od.price " +
-                     "FROM OrderDetail od JOIN Product p ON od.product_id = p.id " +
-                     "WHERE od.order_id = ?";
+        String sql = "SELECT p.id, p.name, od.quantity, od.price "
+                + "FROM OrderDetail od JOIN Product p ON od.product_id = p.id "
+                + "WHERE od.order_id = ?";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setInt(1, orderId);
             try (ResultSet rs = st.executeQuery()) {
@@ -254,16 +255,16 @@ public class DAOOrder {
         }
         return details;
     }
-    
+
     public List<Order> getAllOrders(int page, int pageSize) throws SQLException {
         List<Order> orders = new ArrayList<>();
-        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone " +
-                     "FROM Orders o " +
-                     "JOIN OrderStatus os ON o.status_id = os.id " +
-                     "LEFT JOIN Users u ON o.user_id = u.id " +
-                     "LEFT JOIN Users s ON o.shipper_id = s.id " +
-                     "ORDER BY o.order_date DESC " +
-                     "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone "
+                + "FROM Orders o "
+                + "JOIN OrderStatus os ON o.status_id = os.id "
+                + "LEFT JOIN Users u ON o.user_id = u.id "
+                + "LEFT JOIN Users s ON o.shipper_id = s.id "
+                + "ORDER BY o.order_date DESC "
+                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setInt(1, (page - 1) * pageSize);
             st.setInt(2, pageSize);
@@ -283,6 +284,7 @@ public class DAOOrder {
                     order.setReceiverPhone(rs.getString("receiver_phone"));
                     order.setReceiverEmail(rs.getString("receiver_email"));
                     order.setShippingAddress(rs.getString("shipping_address"));
+                    order.setDeliveryMessage(rs.getString("delivery_message"));
                     order.setOrderDetails(getOrderDetails(rs.getInt("id")));
                     orders.add(order);
                 }
@@ -290,8 +292,8 @@ public class DAOOrder {
         }
         return orders;
     }
-    
-        public int getTotalOrders() throws SQLException {
+
+    public int getTotalOrders() throws SQLException {
         String sql = "SELECT COUNT(*) FROM Orders";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             try (ResultSet rs = st.executeQuery()) {
@@ -302,15 +304,15 @@ public class DAOOrder {
         }
         return 0;
     }
-        
-        public Order getOrderById(int orderId) throws SQLException {
+
+    public Order getOrderById(int orderId) throws SQLException {
         Order order = null;
-        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone " +
-                     "FROM Orders o " +
-                     "JOIN OrderStatus os ON o.status_id = os.id " +
-                     "LEFT JOIN Users u ON o.user_id = u.id " +
-                     "LEFT JOIN Users s ON o.shipper_id = s.id " +
-                     "WHERE o.id = ?";
+        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone "
+                + "FROM Orders o "
+                + "JOIN OrderStatus os ON o.status_id = os.id "
+                + "LEFT JOIN Users u ON o.user_id = u.id "
+                + "LEFT JOIN Users s ON o.shipper_id = s.id "
+                + "WHERE o.id = ?";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setInt(1, orderId);
             try (ResultSet rs = st.executeQuery()) {
@@ -329,6 +331,7 @@ public class DAOOrder {
                     order.setReceiverPhone(rs.getString("receiver_phone"));
                     order.setReceiverEmail(rs.getString("receiver_email"));
                     order.setShippingAddress(rs.getString("shipping_address"));
+                    order.setDeliveryMessage(rs.getString("delivery_message"));
                     order.setOrderDetails(getOrderDetails(rs.getInt("id")));
                 }
             }
