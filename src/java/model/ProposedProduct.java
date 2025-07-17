@@ -18,13 +18,14 @@ public class ProposedProduct {
     private String categoryName;
     private String description;
     private String reason;
+    private int shelfLife;
     private Timestamp createdAt;
     private String status;
 
     public ProposedProduct() {
     }
 
-    public ProposedProduct(int id, User nutritionist, String name,String image, String categoryName, String description, String reason, Timestamp createdAt, String status) {
+    public ProposedProduct(int id, User nutritionist, String name, String image, String categoryName, String description, String reason, int shelfLife, Timestamp createdAt, String status) {
         this.id = id;
         this.nutritionist = nutritionist;
         this.name = name;
@@ -32,10 +33,12 @@ public class ProposedProduct {
         this.categoryName = categoryName;
         this.description = description;
         this.reason = reason;
+        this.shelfLife = shelfLife;
         this.createdAt = createdAt;
         this.status = status;
     }
 
+  
     public int getId() {
         return id;
     }
@@ -106,6 +109,14 @@ public class ProposedProduct {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getShelfLife() {
+        return shelfLife;
+    }
+
+    public void setShelfLife(int shelfLife) {
+        this.shelfLife = shelfLife;
     }
 
  

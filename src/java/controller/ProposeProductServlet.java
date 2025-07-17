@@ -97,6 +97,7 @@ public class ProposeProductServlet extends HttpServlet {
         String categoryName = request.getParameter("categoryName");
         String description = request.getParameter("description");
         String reason = request.getParameter("reason");
+        String shelfLifestr = request.getParameter("shelfLife");
         String image = request.getParameter("image");
         DAOProposedProduct dao = new DAOProposedProduct();
 
@@ -134,6 +135,11 @@ public class ProposeProductServlet extends HttpServlet {
             p.setImage(image);
             p.setNutritionist(user);
             p.setReason(reason);
+            try {
+                int shelfLife = Integer.parseInt(shelfLifestr.trim());
+                p.setShelfLife(shelfLife);
+            } catch (Exception e) {
+            }
             p.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
             p.setStatus("pending");
             dao.updateProposedProduct(p);
@@ -176,6 +182,11 @@ public class ProposeProductServlet extends HttpServlet {
             p.setImage(image);
             p.setNutritionist(user);
             p.setReason(reason);
+            try {
+                int shelfLife = Integer.parseInt(shelfLifestr.trim());
+                p.setShelfLife(shelfLife);
+            } catch (Exception e) {
+            }
             p.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
             p.setStatus("pending");
             dao.insertProposedProduct(p);

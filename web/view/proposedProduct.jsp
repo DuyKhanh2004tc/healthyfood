@@ -117,6 +117,7 @@
                     <th>Category Name</th>
                     <th>Description</th>
                     <th>Reason</th>
+                    <th>Shelf Life</th>
                     <th>Created At</th>
                     <th>Status</th>
                     <th>Actions</th>
@@ -133,13 +134,14 @@
                         <td>${i.categoryName}</td>
                         <td>${i.description}</td>
                         <td>${i.reason}</td>
+                        <td>${i.shelfLife}</td>
                         <td>${i.createdAt}</td>
                         <td>${i.status}</td>
                         <td>
                             <form method="post" action="${pageContext.request.contextPath}/proposeProduct">
                                 <input type="hidden" name="proposedId" value="${i.id}">
                                 <c:if test="${i.status == 'pending'}">
-                                    <button type="button" onclick="openPopup('${i.id}', '${i.image}', '${i.name}', '${i.categoryName}', '${i.description}', '${i.reason}')">Edit</button>
+                                    <button type="button" onclick="openPopup('${i.id}', '${i.image}', '${i.name}', '${i.categoryName}', '${i.description}', '${i.reason}','${i.shelfLife}')">Edit</button>
                                     <button type="submit" name="action" value="delete">Delete</button>
                                 </c:if>
                             </form>
@@ -168,7 +170,8 @@
                 <textarea id="popupDescription" name="description" placeholder="Enter description here..." required></textarea>
                 <p>Reason</p>
                 <textarea id="popupReason" name="reason" placeholder="Enter reason here..." required></textarea>
-
+                 <p>Shelf Life</p>
+                <textarea  id="popupShelfLife" name="shelfLife" placeholder="Enter reason here..." required></textarea>
                 <button type="submit" class="button">Save</button>
                 <button type="button" class="button" onclick="closePopup()">Cancel</button>
             </form>
@@ -188,14 +191,15 @@
                 <textarea  name="description" placeholder="Enter description here..." required></textarea>
                 <p>Reason</p>
                 <textarea  name="reason" placeholder="Enter reason here..." required></textarea>
-
+                <p>Shelf Life</p>
+                <textarea  name="shelfLife" placeholder="Enter reason here..." required></textarea>
                 <button type="submit" class="button">Save</button>
                 <button type="button" class="button" onclick="closePopup()">Cancel</button>
             </form>
         </div>
 
         <script>
-            function openPopup(proposedId, image, name, categoryName, description, reason) {
+            function openPopup(proposedId, image, name, categoryName, description, reason,shelfLife) {
                 document.getElementById('popup').style.display = 'block';
                 document.getElementById('overlay').style.display = 'block';
                 document.getElementById('popupProposedId').value = proposedId;
@@ -204,6 +208,7 @@
                 document.getElementById('popupCategoryName').value = categoryName;
                 document.getElementById('popupDescription').value = description;
                 document.getElementById('popupReason').value = reason;
+                document.getElementById('popupShelfLife').value = shelfLife;
             }
             function openAddPopup() {
                 document.getElementById('popupadd').style.display = 'block';

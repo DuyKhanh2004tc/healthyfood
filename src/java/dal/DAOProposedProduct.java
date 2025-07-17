@@ -44,6 +44,7 @@ public class DAOProposedProduct {
                 p.setReason(rs.getString("reason"));
                 p.setCreatedAt(rs.getTimestamp("created_at"));
                 p.setStatus(rs.getString("status"));
+                p.setShelfLife(rs.getInt("shelf_life"));
                 list.add(p);
             }
             rs.close();
@@ -67,8 +68,8 @@ public class DAOProposedProduct {
     }
 
     public void insertProposedProduct(ProposedProduct p) {
-        String sql = "INSERT INTO ProposedProduct (nutritionist_id, image, name, category_name, description, reason, created_at) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO ProposedProduct (nutritionist_id, image, name, category_name, description, reason,shelf_life, created_at) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?,?)";
         try {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, p.getNutritionist().getId());
@@ -77,7 +78,8 @@ public class DAOProposedProduct {
             ps.setString(4, p.getCategoryName());
             ps.setString(5, p.getDescription());
             ps.setString(6, p.getReason());
-            ps.setTimestamp(7, p.getCreatedAt());
+            ps.setInt(7, p.getShelfLife());
+            ps.setTimestamp(8, p.getCreatedAt());
 
             ps.executeUpdate();
             ps.close();
@@ -105,6 +107,7 @@ public class DAOProposedProduct {
                 p.setCategoryName(rs.getString("category_name"));
                 p.setDescription(rs.getString("description"));
                 p.setReason(rs.getString("reason"));
+                p.setShelfLife(rs.getInt("shelf_life"));
                 p.setCreatedAt(rs.getTimestamp("created_at"));
                 p.setStatus(rs.getString("status"));
 
@@ -136,6 +139,7 @@ public class DAOProposedProduct {
                 p.setCategoryName(rs.getString("category_name"));
                 p.setDescription(rs.getString("description"));
                 p.setReason(rs.getString("reason"));
+                p.setShelfLife(rs.getInt("shelf_life"));
                 p.setCreatedAt(rs.getTimestamp("created_at"));
                 p.setStatus(rs.getString("status"));
 
@@ -160,7 +164,7 @@ public class DAOProposedProduct {
     }
 
     public void updateProposedProduct(ProposedProduct p) {
-        String sql = "UPDATE ProposedProduct SET image = ?, name = ?, category_name = ?, description = ?, reason = ?, created_at = ?, status = ? WHERE id = ? AND nutritionist_id = ?";
+        String sql = "UPDATE ProposedProduct SET image = ?, name = ?, category_name = ?, description = ?, reason = ?, shelf_life = ?, created_at = ?, status = ? WHERE id = ? AND nutritionist_id = ?";
         try {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, p.getImage());
@@ -168,10 +172,11 @@ public class DAOProposedProduct {
             ps.setString(3, p.getCategoryName());
             ps.setString(4, p.getDescription());
             ps.setString(5, p.getReason());
-            ps.setTimestamp(6, p.getCreatedAt());
-            ps.setString(7, p.getStatus());
-            ps.setInt(8, p.getId());
-            ps.setInt(9, p.getNutritionist().getId());
+            ps.setInt(6, p.getShelfLife());
+            ps.setTimestamp(7, p.getCreatedAt());
+            ps.setString(8, p.getStatus());
+            ps.setInt(9, p.getId());
+            ps.setInt(10, p.getNutritionist().getId());
 
             ps.executeUpdate();
             ps.close();
