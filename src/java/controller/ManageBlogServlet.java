@@ -5,22 +5,18 @@
 
 package controller;
 
-import dal.DAOBlog;
-import dal.DAOTag;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
-import model.Blog;
 
 /**
  *
- * @author HP
+ * @author Hoa
  */
-public class NutritionBlogServlet extends HttpServlet {
+public class ManageBlogServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -37,10 +33,10 @@ public class NutritionBlogServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet NutritionBlogServlet</title>");  
+            out.println("<title>Servlet ManageBlogServlet</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet NutritionBlogServlet at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet ManageBlogServlet at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -57,22 +53,9 @@ public class NutritionBlogServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-      
-    DAOBlog daoBlog = new DAOBlog();
-    DAOTag daoTag = new DAOTag(); 
-    String tagSlug = request.getParameter("tag");
+        processRequest(request, response);
+    } 
 
-    List<Blog> blogList;
-    if (tagSlug != null && !tagSlug.isEmpty()) {
-        blogList = daoBlog.getBlogsByTagSlug(tagSlug);
-    } else {
-        blogList = daoBlog.getAllBlogsByNewest();
-    }
-
-    request.setAttribute("blogList", blogList);
-    request.setAttribute("tagList", daoTag.listAllTag()); 
-    request.getRequestDispatcher("/view/nutritionBlog.jsp").forward(request, response);
-}
     /** 
      * Handles the HTTP <code>POST</code> method.
      * @param request servlet request
@@ -83,8 +66,8 @@ public class NutritionBlogServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        doGet(request, response);
-}
+        processRequest(request, response);
+    }
 
     /** 
      * Returns a short description of the servlet.

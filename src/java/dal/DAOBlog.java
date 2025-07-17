@@ -64,6 +64,52 @@ public class DAOBlog {
         return blogList;
 
     }
+    
+    public List<Blog> getAllBlogsByNewest() {
+    List<Blog> blogList = new ArrayList<>();
+    String sql = "SELECT b.id, b.title, b.image, b.description, b.created_at, "
+            + "u.id AS user_id, u.name, u.email, u.password, u.phone, u.dob, u.address, u.gender, u.created_at AS user_created_at, "
+            + "r.id AS role_id, r.role_name "
+            + "FROM Blog b "
+            + "JOIN Users u ON u.id = b.user_id "
+            + "JOIN Role r ON r.id = u.role_id "
+            + "ORDER BY b.id DESC";
+
+    try {
+        PreparedStatement st = con.prepareStatement(sql);
+        ResultSet rs = st.executeQuery();
+        while (rs.next()) {
+            Blog b = new Blog();
+            b.setId(rs.getInt("id"));
+            b.setTitle(rs.getString("title"));
+            b.setImage(rs.getString("image"));
+            b.setDescription(rs.getString("description"));
+            b.setCreated_at(rs.getTimestamp("created_at"));
+
+            User u = new User();
+            u.setId(rs.getInt("user_id"));
+            u.setName(rs.getString("name"));
+            u.setEmail(rs.getString("email"));
+            u.setPassword(rs.getString("password"));
+            u.setPhone(rs.getString("phone"));
+            u.setDob(rs.getDate("dob"));
+            u.setAddress(rs.getString("address"));
+            u.setGender(rs.getBoolean("gender"));
+            u.setCreatedAt(rs.getTimestamp("user_created_at"));
+
+            Role r = new Role();
+            r.setId(rs.getInt("role_id"));
+            r.setRoleName(rs.getString("role_name"));
+
+            u.setRole(r);
+            b.setUser(u);
+            blogList.add(b);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return blogList;
+}
 
     public Blog getBlogById(int blogId) {
         Blog blog = null;

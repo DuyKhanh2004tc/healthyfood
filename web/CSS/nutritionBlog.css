@@ -179,3 +179,22 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     font-family: 'Inter', sans-serif;
 }
+
+.nb-filter-box form button {
+    width: 100%;
+    padding: 0.5rem;
+    background: #14842f;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: background 0.2s ease;
+    font-family: 'Inter', sans-serif;
+    margin-top: 0.5rem;
+}
+
+.nb-filter-box form button:hover {
+    background: #145a4b;
+}
