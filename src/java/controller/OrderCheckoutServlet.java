@@ -88,7 +88,11 @@ public class OrderCheckoutServlet extends HttpServlet {
         User u = (User) session.getAttribute("user");
         String userName = request.getParameter("userName");
         String phone = request.getParameter("phone");
-        String address = request.getParameter("address");
+        String street = request.getParameter("street");
+        String ward = request.getParameter("ward");
+        String district = request.getParameter("district");
+        String province = request.getParameter("province");
+        String address = street + ", " + ward + ", " + district + ", " + province;
         String email = request.getParameter("email");
         String paymentMethod = request.getParameter("paymentMethod");
         String productId_raw = request.getParameter("productId");
@@ -97,7 +101,7 @@ public class OrderCheckoutServlet extends HttpServlet {
         String deliveryMessage = request.getParameter("deliveryMessage");
 
         if (request.getParameter("userName") != null && request.getParameter("phone") != null && request.getParameter("paymentMethod") != null
-                && request.getParameter("address") != null && request.getParameter("email") != null
+                && request.getParameter("email") != null
                 && request.getParameter("totalAmount") != null) {
             try {
                 List<CartItem> itemList;
@@ -148,7 +152,7 @@ public class OrderCheckoutServlet extends HttpServlet {
                 order.setReceiverName(userName);
                 order.setReceiverPhone(phone);
                 order.setShippingAddress(address);
-                if(deliveryMessage!= null){
+                if (deliveryMessage != null) {
                     order.setDeliveryMessage(deliveryMessage);
                 } else {
                     order.setDeliveryMessage(null);
@@ -203,7 +207,7 @@ public class OrderCheckoutServlet extends HttpServlet {
 
                 request.setAttribute("order", order);
                 request.setAttribute("itemList", itemList);
-                
+
                 request.getRequestDispatcher("/view/orderCheckout.jsp").forward(request, response);
                 return;
             } catch (Exception e) {
