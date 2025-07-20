@@ -12,11 +12,11 @@
         
     </head>
     <body>
-        <div class="seller-header">
+<!--        <div class="seller-header">
             <div class="logo">
-<!--                <a href="${pageContext.request.contextPath}/home">-->
+                <a href="${pageContext.request.contextPath}/home">
                 <img src="${pageContext.request.contextPath}/images/logo_3.png" alt="Logo">
-                <!--</a>-->
+                </a>
             </div>
             <div class="menu-content-left">
                 <h3>Welcome Seller : ${sessionScope.user.getName()}</h3>
@@ -25,7 +25,7 @@
                 <a href="${pageContext.request.contextPath}/logout">Logout</a>
 
             </div>
-        </div>
+        </div>-->
 
         <jsp:include page="SideBarOfSheller.jsp"></jsp:include>
 
