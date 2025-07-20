@@ -65,11 +65,24 @@
         </div>
 
         <div class="pagination">
+            <c:if test="${currentPage > 1}">
+                <c:url var="prevUrl" value="/approveNewProduct">
+                    <c:param name="index" value="${currentPage - 1}" />                           
+                </c:url>
+                <a class="page-link prev-next" href="${prevUrl}">Previous</a>
+            </c:if>
             <c:forEach var="i" begin="1" end="${totalPages}">
                 <a href="${pageContext.request.contextPath}/approve?page=${i}&btn_sort=${param.btn_sort}" class="page-link">
                     ${i}
                 </a>
             </c:forEach>
+            <c:if test="${currentPage < totalPage}">
+                <c:url var="nextUrl" value="/approveNewProduct">
+                    <c:param name="index" value="${currentPage + 1}" />                  
+                </c:url>
+                <a class="page-link prev-next" href="${nextUrl}">Next</a>
+            </c:if>
         </div>
+
     </body>
 </html>

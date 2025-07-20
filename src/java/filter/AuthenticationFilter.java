@@ -217,6 +217,7 @@ public class AuthenticationFilter implements Filter {
         boolean isNutritionistPath = path.equals("/nutritionistHome")
                 || path.equals("/changePassword")
                 || path.equals("/updateProfile")
+                || path.equals("/productDetail")
                 || path.equals("/logout")
                 || path.equals("/resendOTP")
                 || path.equals("/nutritionBlog")

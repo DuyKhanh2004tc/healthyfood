@@ -62,10 +62,7 @@ const productInfo = await fetch("/chatbotdata").then(res => res.text());
 
 const trainingDatabase = `
 Sử dụng thông tin sau để tư vấn:
-
 ${productInfo}
-
-Khách hàng hỏi: ${userMessage}
 `;
         document.querySelector(".input-area button").addEventListener("click", sendMessage);
         const conversations = [
