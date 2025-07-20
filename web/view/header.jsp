@@ -49,8 +49,8 @@
                     <c:if test="${sessionScope.user.getRole().getId()==2}">
                         <a>Welcome Manager ${sessionScope.user.getName()}</a>    
                         <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
-                        <a href="${pageContext.request.contextPath}/ManagerCategoriesServlet">Manage Product</a>
-                        <a href="${pageContext.request.contextPath}/SellerOrderHistory">Order History</a>
+                        <a href="${pageContext.request.contextPath}/ManagerCategoriesServlet">Manage Category</a>
+                        <a href="${pageContext.request.contextPath}/seller">Manage Product</a>
                         <a href="${pageContext.request.contextPath}/approveProduct">Approve new products</a>                   
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
                         <a href="${pageContext.request.contextPath}/logout">Logout</a>
@@ -62,7 +62,7 @@
                     <c:if test="${sessionScope.user.getRole().getId()==5}">
                         <a>Welcome Seller ${sessionScope.user.getName()}</a>    
                         <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
-                        <a href="${pageContext.request.contextPath}/seller">Manage Product</a>                 
+                                         <a href="${pageContext.request.contextPath}/ConfirmedOrders">Order Status</a>
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
                         <a href="${pageContext.request.contextPath}/logout">Logout</a>
                         <form class ="search-form" action="search" method="get">                   

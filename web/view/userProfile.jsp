@@ -17,7 +17,7 @@
         <div class="sidebar"><div class="sidebar-title">👤 Profile</div>
             <a href="updateProfile" class="<c:if test='${pageContext.request.servletPath eq "/updateProfile"}'>active</c:if>">📄 User Profile</a>
             <a href="changePassword" class="<c:if test='${pageContext.request.servletPath eq "/changePassword"}'>active</c:if>">🔒 Change Password</a>
-            <a href="orderHistory" class="<c:if test='${pageContext.request.servletPath eq "/orderHistory"}'>active</c:if>">🛒 Order History</a>
+            <a href="SellerOrderHistory" class="<c:if test='${pageContext.request.servletPath eq "/SellerOrderHistory"}'>active</c:if>">🛒 Order History</a>
         </div>
         </c:if>
         

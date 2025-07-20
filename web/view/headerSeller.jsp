@@ -1,10 +1,7 @@
-<%-- 
-    Document   : headerSeller
-    Created on : Jul 14, 2025, 3:19:22 AM
-    Author     : ASUS
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<link rel="stylesheet" href="CSS/homeSeller.css">
 <!DOCTYPE html>
 <html>
     <head>
@@ -23,11 +20,24 @@
                 </a>
             </div>
             <div class="menu-content-left">
-                <h3>Welcome Seller : ${sessionScope.user.getName()}</h3>
-                <a href="${pageContext.request.contextPath}/seller">View Product List</a>
-
-                <a href="${pageContext.request.contextPath}/logout">Logout</a>
-
+                <c:if test="${sessionScope.user.getRole().getId()==2}">
+                        <a>Welcome Manager ${sessionScope.user.getName()}</a>    
+                        <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
+                        <a href="${pageContext.request.contextPath}/ManagerCategoriesServlet">Manage Category</a>
+                        <a href="${pageContext.request.contextPath}/seller">Manage Product</a>
+                        <a href="${pageContext.request.contextPath}/approveProduct">Approve new products</a>                   
+                        <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
+                        <a href="${pageContext.request.contextPath}/logout">Logout</a>
+                        
+                    </c:if>
+                    <c:if test="${sessionScope.user.getRole().getId()==5}">
+                        <a>Welcome Seller ${sessionScope.user.getName()}</a>    
+                        <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
+                                         <a href="${pageContext.request.contextPath}/ConfirmedOrders">Order Status</a>
+                        <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
+                        <a href="${pageContext.request.contextPath}/logout">Logout</a>
+                        
+                    </c:if>       
             </div>
         </div>
     </body>

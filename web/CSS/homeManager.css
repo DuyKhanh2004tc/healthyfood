@@ -1,0 +1,95 @@
+
+
+
+
+body.seller-page{
+                background-color: #f8f9fa;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+            
+  
+            .card-header {
+                font-weight: bold;
+                background: linear-gradient(90deg, #28a745, #218838);
+            }
+            .card {
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            .table th, .table td {
+                vertical-align: middle;
+                padding: 12px;
+            }
+            .table img {
+                border-radius: 5px;
+                object-fit: cover;
+            }
+            .btn-action {
+                margin: 0 5px;
+                padding: 6px 12px;
+                font-size: 14px;
+                border-radius: 5px;
+                
+            }
+            .btn-edit, .btn-delete {
+                transition: all 0.3s ease;
+                
+            }
+            .btn-edit:hover, .btn-delete:hover {
+                transform: scale(1.05);
+            }
+            .btn-insert {
+                background-color: #28a745;
+                border-color: #28a745;
+                padding: 8px 16px;
+                font-size: 16px;
+            }
+            .btn-insert:hover {
+                background-color: #218838;
+                border-color: #218838;
+            }
+            .error-message {
+                color: #dc3545;
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+            .table-hover tbody tr:hover {
+                background-color: #f1f1f1;
+            }
+            .search-form-seller {
+                max-width: 600px;
+                margin: 20px auto;
+            }
+            
+            
+            
+            
+            
+           
+            .sidebar {
+                
+                background-color: #f8f9fa;
+                width: 20%;
+    height: 100vh;
+    color: white;
+    padding: 20px;
+            }
+            .offcanvas-header {
+                background-color: #4CAF50;
+                color: white;
+            }
+            .offcanvas-body {
+                background-color: #4CAF50;
+                padding: 0;
+            }
+            .offcanvas-body a {
+                color: #ffffff;
+                padding: 12px 20px;
+                display: block;
+                text-decoration: none;
+            }
+            .offcanvas-body a:hover {
+                background-color: #495057;
+                color: #ffc107;
+            }
+        

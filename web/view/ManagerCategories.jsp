@@ -16,10 +16,13 @@
         .container {
             padding: 30px;
             max-width: 1200px;
+           
         }
         .card {
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 1200px;
+            text-align: center;
         }
         .card-header {
             background: linear-gradient(135deg, #28a745, #218838);
@@ -52,6 +55,7 @@
         .alert {
             border-radius: 5px;
         }
+        
     </style>
 </head>
 <body>
@@ -111,6 +115,11 @@
                                 </c:forEach>
                             </tbody>
                         </table>
+                        <!-- Submit Buttons -->
+                        <div class="text-center">
+                            
+                            <a href="home" class="btn btn-secondary">Cancel</a>
+                        </div>
                     </c:otherwise>
                 </c:choose>
             </div>

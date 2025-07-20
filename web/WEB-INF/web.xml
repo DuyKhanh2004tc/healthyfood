@@ -172,9 +172,13 @@
         <servlet-name>SellerOrderHistory</servlet-name>
         <servlet-class>controller.SellerOrderHistory</servlet-class>
     </servlet>
-     <servlet>
+    <servlet>
         <servlet-name>ProposeProductServlet</servlet-name>
         <servlet-class>controller.ProposeProductServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ManagerCategoriesServlet</servlet-name>
+        <servlet-class>controller.ManagerCategoriesServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ProposeProductServlet</servlet-name>
@@ -351,6 +355,10 @@
     <servlet-mapping>
         <servlet-name>SellerOrderHistory</servlet-name>
         <url-pattern>/SellerOrderHistory</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ManagerCategoriesServlet</servlet-name>
+        <url-pattern>/ManagerCategoriesServlet</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>

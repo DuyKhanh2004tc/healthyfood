@@ -13,6 +13,7 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </head>
     <body class="bg-gray-100">
+        <%@include file="headerSeller.jsp" %>
         <jsp:include page="SideBarOfSheller.jsp"></jsp:include>
             <h1 class="text-3xl font-bold text-center mt-6">Waiting for Delivery Orders</h1>
             <div class="container mt-4">

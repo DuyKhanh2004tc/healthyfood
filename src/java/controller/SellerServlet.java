@@ -1,6 +1,6 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Click nbfs://SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package controller;
 
@@ -54,9 +54,16 @@ public class SellerServlet extends HttpServlet {
         }
 
         if ("requestInsert".equals(service)) {
+            
             List<Category> categories = DAOCategory.getAllCategory();
+            if (categories == null || categories.isEmpty()) {
+                // Thêm thông báo lỗi nếu không có category
+                session.setAttribute("errorMessage", "No categories available. Please contact the administrator.");
+                response.sendRedirect("seller?service=list");
+                return;
+            }
             request.setAttribute("categories", categories);
-            request.getRequestDispatcher("view/InsertProduct.jsp").forward(request, response);
+            request.getRequestDispatcher("view/SellerInsertProduct.jsp").forward(request, response);
         } else if ("requestUpdate".equals(service)) {
             try {
                 int productId = Integer.parseInt(request.getParameter("productId"));
@@ -90,16 +97,7 @@ public class SellerServlet extends HttpServlet {
         } else if ("searchByKeywords".equals(service)) {
             String keywords = request.getParameter("keywords");
             displayProductList(request, response, keywords, currentPage);
-        } 
-        
-        
-        
-        
-
-        
-        
-        
-        else {
+        } else {
             displayProductList(request, response, null, currentPage);
         }
     }
@@ -160,169 +158,195 @@ public class SellerServlet extends HttpServlet {
     }
 
     private void handleInsertProduct(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        String name = request.getParameter("name");
-        String description = request.getParameter("description");
-        String priceStr = request.getParameter("price");
-        String stockStr = request.getParameter("stock");
-        String shelfLifeStr = request.getParameter("shelfLifeHours");
-        String categoryName = request.getParameter("categoryName");
-        boolean hasError = false;
+    HttpSession session = request.getSession();
+    String name = request.getParameter("name");
+    String description = request.getParameter("description");
+    String priceStr = request.getParameter("price");
+    String stockStr = request.getParameter("stock");
+    String shelfLifeStr = request.getParameter("shelfLifeHours");
+    String categoryIdStr = request.getParameter("categoryId");
+    Integer categoryId = null;
+    Category category = null;
+    boolean hasError = false;
 
-        // Validate input fields
-        if (name == null || name.trim().isEmpty()) {
-            session.setAttribute("nameError", "Product name is required.");
-            hasError = true;
-        } else if (name.length() > 255) {
-            session.setAttribute("nameError", "Product name cannot exceed 255 characters.");
-            hasError = true;
-        }
+    // Regular expression to allow only alphanumeric, spaces, and basic punctuation (.,!?-')
+    String validPattern = "^[a-zA-Z0-9\\s.,!?'\\-]*$";
 
-        if (description == null || description.trim().isEmpty()) {
-            session.setAttribute("descriptionError", "Description is required.");
-            hasError = true;
-        }
+    // Validate product name
+    if (name == null || name.trim().isEmpty()) {
+        session.setAttribute("nameError", "Product name is required.");
+        hasError = true;
+    } else if (name.length() > 255) {
+        session.setAttribute("nameError", "Product name cannot exceed 255 characters.");
+        hasError = true;
+    } else if (!name.matches(validPattern)) {
+        session.setAttribute("nameError", "Product name contains invalid special characters.");
+        hasError = true;
+    }
 
-        Double price = null;
-        if (priceStr == null || priceStr.trim().isEmpty()) {
-            session.setAttribute("priceError", "Price is required.");
-            hasError = true;
-        } else {
-            try {
-                price = Double.parseDouble(priceStr);
-                if (price <= 0) {
-                    session.setAttribute("priceError", "Price must be positive.");
-                    hasError = true;
-                }
-            } catch (NumberFormatException e) {
-                session.setAttribute("priceError", "Invalid price format.");
-                hasError = true;
-            }
-        }
+    // Validate description
+    if (description == null || description.trim().isEmpty()) {
+        session.setAttribute("descriptionError", "Description is required.");
+        hasError = true;
+    } else if (!description.matches(validPattern)) {
+        session.setAttribute("descriptionError", "Description contains invalid special characters.");
+        hasError = true;
+    }
 
-        Integer stock = null;
-        if (stockStr == null || stockStr.trim().isEmpty()) {
-            session.setAttribute("stockError", "Stock is required.");
-            hasError = true;
-        } else {
-            try {
-                stock = Integer.parseInt(stockStr);
-                if (stock < 0) {
-                    session.setAttribute("stockError", "Stock cannot be negative.");
-                    hasError = true;
-                }
-            } catch (NumberFormatException e) {
-                session.setAttribute("stockError", "Invalid stock format.");
-                hasError = true;
-            }
-        }
-
-        Double shelfLifeHours = null;
-        if (shelfLifeStr == null || shelfLifeStr.trim().isEmpty()) {
-            session.setAttribute("shelfLifeError", "Shelf life is required.");
-            hasError = true;
-        } else {
-            try {
-                shelfLifeHours = Double.parseDouble(shelfLifeStr);
-                if (shelfLifeHours < 0) {
-                    session.setAttribute("shelfLifeError", "Shelf life cannot be negativetell negative.");
-                    hasError = true;
-                }
-            } catch (NumberFormatException e) {
-                session.setAttribute("shelfLifeError", "Invalid shelf life format.");
-                hasError = true;
-            }
-        }
-
-        if (categoryName == null || categoryName.trim().isEmpty()) {
-            session.setAttribute("categoryError", "Category name is required.");
-            hasError = true;
-        } else if (categoryName.length() > 100) {
-            session.setAttribute("categoryError", "Category name cannot exceed 100 characters.");
-            hasError = true;
-        }
-
-        String imageUrl = null;
+    Double price = null;
+    if (priceStr == null || priceStr.trim().isEmpty()) {
+        session.setAttribute("priceError", "Price is required.");
+        hasError = true;
+    } else {
         try {
-            Part filePart = request.getPart("imageFile");
-            if (filePart != null && filePart.getSize() > 0) {
-                if (filePart.getSize() > 1024 * 1024 * 5) {
-                    session.setAttribute("imageError", "Image file size exceeds 5MB limit.");
+            price = Double.parseDouble(priceStr);
+            if (price <= 0) {
+                session.setAttribute("priceError", "Price must be positive.");
+                hasError = true;
+            }
+        } catch (NumberFormatException e) {
+            session.setAttribute("priceError", "Invalid price format.");
+            hasError = true;
+        }
+    }
+
+    Integer stock = null;
+    if (stockStr == null || stockStr.trim().isEmpty()) {
+        session.setAttribute("stockError", "Stock is required.");
+        hasError = true;
+    } else {
+        try {
+            stock = Integer.parseInt(stockStr);
+            if (stock < 0) {
+                session.setAttribute("stockError", "Stock cannot be negative.");
+                hasError = true;
+            }
+        } catch (NumberFormatException e) {
+            session.setAttribute("stockError", "Invalid stock format.");
+            hasError = true;
+        }
+    }
+
+    Double shelfLifeHours = null;
+    if (shelfLifeStr == null || shelfLifeStr.trim().isEmpty()) {
+        session.setAttribute("shelfLifeError", "Shelf life is required.");
+        hasError = true;
+    } else {
+        try {
+            shelfLifeHours = Double.parseDouble(shelfLifeStr);
+            if (shelfLifeHours < 0) {
+                session.setAttribute("shelfLifeError", "Shelf life cannot be negative.");
+                hasError = true;
+            }
+        } catch (NumberFormatException e) {
+            session.setAttribute("shelfLifeError", "Invalid shelf life format.");
+            hasError = true;
+        }
+    }
+
+    if (categoryIdStr == null || categoryIdStr.trim().isEmpty()) {
+        session.setAttribute("categoryError", "Please select a category.");
+        hasError = true;
+    } else {
+        try {
+            categoryId = Integer.parseInt(categoryIdStr);
+            category = DAOCategory.getCategoryById(categoryId);
+            if (category == null) {
+                session.setAttribute("categoryError", "Selected category does not exist.");
+                hasError = true;
+            }
+        } catch (NumberFormatException e) {
+            session.setAttribute("categoryError", "Invalid category ID format.");
+            hasError = true;
+        }
+    }
+
+    String imageUrl = null;
+    try {
+        Part filePart = request.getPart("imageFile");
+        if (filePart != null && filePart.getSize() > 0) {
+            if (filePart.getSize() > 1024 * 1024 * 5) {
+                session.setAttribute("imageError", "Image file size exceeds 5MB limit.");
+                hasError = true;
+            } else {
+                String contentType = filePart.getContentType();
+                if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
+                    session.setAttribute("imageError", "Only JPEG or PNG images are allowed.");
                     hasError = true;
                 } else {
-                    String contentType = filePart.getContentType();
-                    if (!contentType.equals("image/jpeg") && !contentType.equals("image/png")) {
-                        session.setAttribute("imageError", "Only JPEG or PNG images are allowed.");
+                    String fileName = System.currentTimeMillis() + "_" + filePart.getSubmittedFileName();
+                    String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
+                    File uploadDir = new File(uploadPath);
+                    if (!uploadDir.exists() && !uploadDir.mkdirs()) {
+                        session.setAttribute("imageError", "Failed to create upload directory.");
+                        hasError = true;
+                    } else if (!uploadDir.canWrite()) {
+                        session.setAttribute("imageError", "No write permission for upload directory.");
                         hasError = true;
                     } else {
-                        String fileName = System.currentTimeMillis() + "_" + filePart.getSubmittedFileName();
-                        String uploadPath = getServletContext().getRealPath("") + File.separator + UPLOAD_DIR;
-                        File uploadDir = new File(uploadPath);
-                        if (!uploadDir.exists() && !uploadDir.mkdirs()) {
-                            session.setAttribute("imageError", "Failed to create upload directory.");
+                        String filePath = uploadPath + File.separator + fileName;
+                        filePart.write(filePath);
+                        imageUrl = request.getContextPath() + "/" + UPLOAD_DIR + "/" + fileName;
+                        File uploadedFile = new File(filePath);
+                        if (!uploadedFile.exists()) {
+                            session.setAttribute("imageError", "Failed to save image file to server.");
                             hasError = true;
-                        } else if (!uploadDir.canWrite()) {
-                            session.setAttribute("imageError", "No write permission for upload directory.");
-                            hasError = true;
-                        } else {
-                            String filePath = uploadPath + File.separator + fileName;
-                            filePart.write(filePath);
-                            imageUrl = request.getContextPath() + "/" + UPLOAD_DIR + "/" + fileName;
-                            // Verify file was written
-                            File uploadedFile = new File(filePath);
-                            if (!uploadedFile.exists()) {
-                                session.setAttribute("imageError", "Failed to save image file to server.");
-                                hasError = true;
-                            }
                         }
                     }
                 }
-            } else {
-                session.setAttribute("imageError", "No image file uploaded.");
-                hasError = true;
             }
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "I/O error during image upload: {0}", e.getMessage());
-            session.setAttribute("imageError", "Failed to upload image: I/O error.");
-            hasError = true;
-        } catch (ServletException e) {
-            LOGGER.log(Level.SEVERE, "Servlet error during image upload: {0}", e.getMessage());
-            session.setAttribute("imageError", "Failed to upload image: Server error.");
+        } else {
+            session.setAttribute("imageError", "No image file uploaded.");
             hasError = true;
         }
-
-        if (hasError) {
-            session.setAttribute("errorMessage", "Please correct the errors below.");
-            response.sendRedirect("seller?service=requestInsert");
-            return;
-        }
-
-        try {
-            Product product = new Product();
-            product.setName(name);
-            product.setDescription(description);
-            product.setPrice(price);
-            product.setStock(stock);
-            product.setImgUrl(imageUrl);
-            product.setShelfLifeHours(shelfLifeHours);
-            product.setRate(0.0);
-
-            Category category = new Category();
-            category.setName(categoryName);
-            product.setCategory(category);
-
-            if (DAOSeller.insertProduct(product)) {
-                session.setAttribute("message", "Product inserted successfully.");
-            } else {
-                session.setAttribute("errorMessage", "Failed to insert product into database.");
-            }
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Insert failed: {0}", e.getMessage());
-            session.setAttribute("errorMessage", "Failed to insert product: " + e.getMessage());
-        }
-        response.sendRedirect("seller?service=list");
+    } catch (IOException e) {
+        LOGGER.log(Level.SEVERE, "I/O error during image upload: {0}", e.getMessage());
+        session.setAttribute("imageError", "Failed to upload image: I/O error.");
+        hasError = true;
+    } catch (ServletException e) {
+        LOGGER.log(Level.SEVERE, "Servlet error during image upload: {0}", e.getMessage());
+        session.setAttribute("imageError", "Failed to upload image: Server error.");
+        hasError = true;
     }
 
+    if (hasError) {
+        session.setAttribute("errorMessage", "Please correct the errors below.");
+        List<Category> categories = DAOCategory.getAllCategory();
+        request.setAttribute("categories", categories);
+        
+        Product product = new Product();
+        product.setName(name);
+        product.setDescription(description);
+        product.setPrice(price != null ? price : 0.0);
+        product.setStock(stock != null ? stock : 0);
+        product.setShelfLifeHours(shelfLifeHours != null ? shelfLifeHours : 0.0);
+        request.setAttribute("product", product);
+        request.getRequestDispatcher("view/SellerInsertProduct.jsp").forward(request, response);
+        return;
+    }
+
+    try {
+        Product product = new Product();
+        product.setName(name);
+        product.setDescription(description);
+        product.setPrice(price);
+        product.setStock(stock);
+        product.setImgUrl(imageUrl);
+        product.setShelfLifeHours(shelfLifeHours);
+        product.setRate(0.0);
+        product.setCategory(category);
+
+        if (DAOSeller.insertProduct(product)) {
+            session.setAttribute("message", "Product inserted successfully.");
+        } else {
+            session.setAttribute("errorMessage", "Failed to insert product into database.");
+        }
+    } catch (Exception e) {
+        LOGGER.log(Level.SEVERE, "Insert failed: {0}", e.getMessage());
+        session.setAttribute("errorMessage", "Failed to insert product: " + e.getMessage());
+    }
+    response.sendRedirect("seller?service=list");
+}
     private void handleUpdateProduct(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         String name = request.getParameter("name");
@@ -330,7 +354,8 @@ public class SellerServlet extends HttpServlet {
         String priceStr = request.getParameter("price");
         String stockStr = request.getParameter("stock");
         String shelfLifeStr = request.getParameter("shelfLifeHours");
-        String categoryName = request.getParameter("categoryName");
+        
+        String categoryIdStr = request.getParameter("categoryId");
         boolean hasError = false;
         int productId = 0;
 
@@ -408,12 +433,24 @@ public class SellerServlet extends HttpServlet {
                 }
             }
 
-            if (categoryName == null || categoryName.trim().isEmpty()) {
-                session.setAttribute("categoryError", "Category name is required.");
+            
+            Integer categoryId = null;
+            Category category = null;
+            if (categoryIdStr == null || categoryIdStr.trim().isEmpty()) {
+                session.setAttribute("categoryError", "Please select a category.");
                 hasError = true;
-            } else if (categoryName.length() > 100) {
-                session.setAttribute("categoryError", "Category name cannot exceed 100 characters.");
-                hasError = true;
+            } else {
+                try {
+                    categoryId = Integer.parseInt(categoryIdStr);
+                    category = DAOCategory.getCategoryById(categoryId);
+                    if (category == null) {
+                        session.setAttribute("categoryError", "Selected category does not exist.");
+                        hasError = true;
+                    }
+                } catch (NumberFormatException e) {
+                    session.setAttribute("categoryError", "Invalid category ID format.");
+                    hasError = true;
+                }
             }
 
             String imageUrl = existingProduct.getImgUrl();
@@ -462,6 +499,7 @@ public class SellerServlet extends HttpServlet {
                 hasError = true;
             }
 
+            
             if (hasError) {
                 session.setAttribute("errorMessage", "Please correct the errors below.");
                 List<Category> categories = DAOCategory.getAllCategory();
@@ -482,8 +520,7 @@ public class SellerServlet extends HttpServlet {
                 product.setShelfLifeHours(shelfLifeHours);
                 product.setRate(existingProduct.getRate());
 
-                Category category = new Category();
-                category.setName(categoryName);
+                
                 product.setCategory(category);
 
                 if (DAOSeller.updateProduct(product)) {

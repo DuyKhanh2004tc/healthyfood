@@ -1,6 +1,7 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,45 +9,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seller Order History - Healthy Food</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <style>
         body {
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            margin-top: 30px;
-            max-width: 1200px;
-            border: 2px solid black;
-            border-radius: 15px;
-        }
-        .table th, .table td {
-            vertical-align: middle;
-            text-align: center;
-        }
-        .order-details {
-            display: none;
-            background-color: #fff;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .alert {
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-        .pagination {
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .btn-toggle-details {
-            padding: 5px 10px;
-            font-size: 14px;
-        }
+    background-color: #E2FEE5;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.page-content {
+    padding-top: 180px; 
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+
+.container {
+    
+    background-color: #ffffff;
+    border-radius: 15px;
+    border: 1px solid black;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    max-width: 1200px;
+    margin-top: 30PX;
+}
+
+
+.table th, .table td {
+    vertical-align: middle;
+    text-align: center;
+}
+
+
+.order-details {
+    display: none;
+    background-color: #fefefe;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 15px;
+    border: 1px solid #ddd;
+}
+
+
+.alert {
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+
+.pagination {
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.pagination .page-item .page-link {
+    color: #2c3e50;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #A8E4A0;
+    border-color: #A8E4A0;
+    color: white;
+}
+
+.btn-toggle-details {
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
     </style>
 </head>
 <body>
-   
+    
+  <c:if test="${sessionScope.user.getRole().getId()==2||sessionScope.user.getRole().getId()==3||sessionScope.user.getRole().getId()==5}">
+    <jsp:include page="header.jsp"></jsp:include>
+    </c:if>
+    
+    
     <div class="container">
         <h2 class="mb-4 text-center">Order History</h2>
         

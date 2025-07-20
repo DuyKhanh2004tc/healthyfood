@@ -45,6 +45,25 @@ public class DAOCategory {
         }
         return categoryList;
     }
+    
+    public Category getCategoryById(int id) {
+        String sql = "SELECT * FROM Category WHERE id = ?";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setInt(1, id);
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    Category c = new Category();
+                    c.setId(rs.getInt("id"));
+                    c.setName(rs.getString("name"));
+                    return c;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error fetching category by id {0}: {1}", new Object[]{id, e.getMessage()});
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     // Add a new category
     public void addCategory(Category category) {

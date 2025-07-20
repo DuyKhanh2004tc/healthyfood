@@ -8,27 +8,19 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet">
         <link href="${pageContext.request.contextPath}/css/bootstrap-icons.css" rel="stylesheet">
-        <link rel="stylesheet" href="CSS/homeSeller.css">
+        <link href="${pageContext.request.contextPath}/CSS/homeManager.css" rel="stylesheet" type="text/css"/>
         
     </head>
-    <body>
-        <div class="seller-header">
-            <div class="logo">
-<!--                <a href="${pageContext.request.contextPath}/home">-->
-                <img src="${pageContext.request.contextPath}/images/logo_3.png" alt="Logo">
-                <!--</a>-->
-            </div>
-            <div class="menu-content-left">
-                <h3>Welcome Seller : ${sessionScope.user.getName()}</h3>
-                <a href="${pageContext.request.contextPath}/seller">View Product List</a>
-
-                <a href="${pageContext.request.contextPath}/logout">Logout</a>
-
-            </div>
-        </div>
-
-        <jsp:include page="SideBarOfSheller.jsp"></jsp:include>
-
+    <body class="seller-page">
+       <jsp:include page="headerSeller.jsp"></jsp:include> 
+      <jsp:include page="SideBarOfSheller.jsp"></jsp:include>
+        
+           
+     
+     
+         
+         
+         <div class="main-content">
         <div class="container-fluid mt-4" ">
             <div class="d-flex justify-content-center" >
                 <div class="card shadow border-0" style="width: 95%;">
@@ -44,7 +36,7 @@
                         </div>
 
                         <!-- Search Form -->
-                        <form action="seller" class="input-group search-form shadow-sm" method="get">
+                        <form action="seller" class="input-group search-form-seller shadow-sm" method="get">
                             <input type="hidden" name="service" value="searchByKeywords"/>
                             <input type="text" class="form-control" id="keywords" name="keywords" placeholder="Search by product name" value="${keywords}">
                             <button class="btn btn-outline-primary" type="submit">
@@ -136,6 +128,7 @@
                         </c:choose>
                     </div>
                 </div>
+                            </div>
             </div>
         </div>
 

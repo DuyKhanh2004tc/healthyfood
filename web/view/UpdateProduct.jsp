@@ -74,88 +74,88 @@
         .btn-secondary {
             margin-left: 10px;
         }
+        .notification-bar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+            max-width: 500px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <jsp:include page="headerSeller.jsp"></jsp:include>
+    <jsp:include page="header.jsp"></jsp:include>
     <jsp:include page="SideBarOfSheller.jsp" />
+    <div class="notification-bar" id="notificationBar">
+        <span id="notificationMessage"></span>
+    </div>
     <div class="container">
         <div class="card">
             <div class="card-header text-center">
                 <h4><i class="bi bi-pencil-square me-2"></i>Update Product</h4>
             </div>
             <div class="card-body">
-                <c:if test="${not empty errorMessage}">
-                    <p class="general-error">${errorMessage}</p>
-                </c:if>
+                
                 <form action="seller" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="service" value="update"/>
                     <input type="hidden" name="productId" value="${product.id}"/>
 
                     <!-- Product Name -->
                     <div class="form-group">
-                        <label for="name" class="form-label">Product Name</label>
-                        <input type="text" class="form-control" id="name" name="name" value="${product.name}">
-                        <c:if test="${not empty nameError}">
-                            <span class="error-message">${nameError}</span>
-                        </c:if>
+                        <label for="name" class="form-label">Product Name <span>*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" value="${product.name}" maxlength="255" required>
                     </div>
 
                     <!-- Description -->
                     <div class="form-group">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="4">${product.description}</textarea>
-                        <c:if test="${not empty descriptionError}">
-                            <span class="error-message">${descriptionError}</span>
-                        </c:if>
+                        <label for="description" class="form-label">Description <span>*</span></label>
+                        <textarea class="form-control" id="description" name="description" rows="4" maxlength="1000" required>${product.description}</textarea>
                     </div>
 
                     <!-- Price -->
                     <div class="form-group">
-                        <label for="price" class="form-label">Price ($)</label>
-                        <input type="number" step="0.01" min="0" class="form-control" id="price" name="price" value="${product.price}">
-                        <c:if test="${not empty priceError}">
-                            <span class="error-message">${priceError}</span>
-                        </c:if>
+                        <label for="price" class="form-label">Price ($) <span>*</span></label>
+                        <input type="number" step="0.01" min="0.01" class="form-control" id="price" name="price" value="${product.price}" required>
                     </div>
 
                     <!-- Stock -->
                     <div class="form-group">
-                        <label for="stock" class="form-label">Stock</label>
-                        <input type="number" min="0" class="form-control" id="stock" name="stock" value="${product.stock}">
-                        <c:if test="${not empty stockError}">
-                            <span class="error-message">${stockError}</span>
-                        </c:if>
+                        <label for="stock" class="form-label">Stock <span>*</span></label>
+                        <input type="number" min="0" class="form-control" id="stock" name="stock" value="${product.stock}" required>
                     </div>
 
                     <!-- Image -->
                     <div class="form-group">
-                        <label for="imageFile" class="form-label">Product Image</label><br>
+                        <label for="imageFile" class="form-label">Product Image <span>*</span></label><br>
                         <c:if test="${not empty product.imgUrl}">
                             <img src="${product.imgUrl}" alt="Current Image" class="current-image">
                         </c:if>
-                        <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/jpeg,image/png">
-                        <c:if test="${not empty imageError}">
-                            <span class="error-message">${imageError}</span>
-                        </c:if>
+                        <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/jpeg,image/png" required>
                     </div>
 
                     <!-- Shelf Life -->
                     <div class="form-group">
-                        <label for="shelfLifeHours" class="form-label">Shelf Life (hours)</label>
-                        <input type="number" step="0.1" min="0" class="form-control" id="shelfLifeHours" name="shelfLifeHours" value="${product.shelfLifeHours}">
-                        <c:if test="${not empty shelfLifeError}">
-                            <span class="error-message">${shelfLifeError}</span>
-                        </c:if>
+                        <label for="shelfLifeHours" class="form-label">Shelf Life (hours) <span>*</span></label>
+                        <input type="number" step="0.1" min="0" class="form-control" id="shelfLifeHours" name="shelfLifeHours" value="${product.shelfLifeHours}" required>
                     </div>
 
                     <!-- Category -->
                     <div class="form-group">
-                        <label for="categoryName" class="form-label">Category</label>
-                        <input type="text" class="form-control" id="categoryName" name="categoryName" value="${product.category.name}" maxlength="100">
-                        <c:if test="${not empty categoryError}">
-                            <span class="error-message">${categoryError}</span>
-                        </c:if>
+                        <label for="categoryId" class="form-label">Category <span>*</span></label>
+                        <select class="form-control" id="categoryId" name="categoryId" required>
+                            <option value="" disabled <c:if test="${empty product.category.id || empty param.categoryId}">selected</c:if>>Select a category</option>
+                            <c:forEach var="category" items="${categories}">
+                                <option value="${category.id}" <c:if test="${category.id == product.category.id || category.id == param.categoryId}">selected</c:if>>${category.name}</option>
+                            </c:forEach>
+                        </select>
                     </div>
 
                     <!-- Submit Buttons -->
@@ -170,5 +170,22 @@
         </div>
     </div>
     <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
+                            <script>
+        
+        window.onload = function() {
+            const errorMessage = document.getElementById('generalError').innerText;
+            if (errorMessage) {
+                const notificationBar = document.getElementById('notificationBar');
+                const notificationMessage = document.getElementById('notificationMessage');
+                notificationMessage.innerText = errorMessage;
+                notificationBar.classList.add('show');
+
+                //  5 
+                setTimeout(() => {
+                    notificationBar.classList.remove('show');
+                }, 5000);
+            }
+        };
+    </script>
 </body>
 </html>
