@@ -1,4 +1,4 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -32,29 +32,60 @@
             </div>
         </c:if>
         <div class="nb-main-content">
-            <form class ="search-form" action="searchBlog" method="get">                   
-                            <input type="image" src="${pageContext.request.contextPath}/icons/search_icon.png" alt="Search" width="20" height="20">
-                            <input type="text" name="keyword" value="${param.keyword}" placeholder="Search blogs by title or content">
-                        </form>
             <div class="nb-content-wrapper">
-                <div class="nb-filter-box">
-                    <h3>Filter by Tags</h3>
-                    <c:forEach items="${requestScope.tagList}" var="tag">
+                <div class="nb-left-column">
+                    <form class="search-form" action="searchBlog" method="get">                   
+                        <input type="image" src="${pageContext.request.contextPath}/icons/search_icon.png" alt="Search" width="20" height="20">
+                        <input type="text" name="keyword" value="${param.keyword}" placeholder="Search blogs by title">
+                    </form>
+
+                    <div class="nb-filter-box">
+                        <h3>Filter by Tags</h3>
+                        <c:forEach items="${requestScope.tagList}" var="tag">
+                            <form method="get" action="${pageContext.request.contextPath}/nutritionBlog">
+                                <label>
+                                    <input type="checkbox" name="tag" value="${tag.slug}"
+                                           <c:if test="${param.tag == tag.slug}">checked</c:if>
+                                               onchange="this.form.submit()">
+                                    ${tag.name}
+                                </label>
+                            </form>
+                        </c:forEach>
                         <form method="get" action="${pageContext.request.contextPath}/nutritionBlog">
                             <label>
-                                <input type="checkbox" name="tag" value="${tag.slug}"
-                                       <c:if test="${param.tag == tag.slug}">checked</c:if>
-                                       onchange="this.form.submit()">
-                                ${tag.name}
+                                <input type="submit" value="Clear Filter" class="nb-clear-filter">
                             </label>
                         </form>
-                    </c:forEach>
-                    <form method="get" action="${pageContext.request.contextPath}/nutritionBlog">
-                        <label>
-                            <input type="submit" value="Clear Filter" class="nb-clear-filter">
-                        </label>
-                    </form>
+                    </div>
+
+                    <c:if test="${sessionScope.user.getRole().getId() == 4}">        
+                        <div class="nb-filter-box">
+                            <h3>Manage Blog</h3>
+                            <form method="post" action="${pageContext.request.contextPath}/manageBlog">
+                                <input type="hidden" name="action" value="addBlog">
+                                <button type="submit">Add Blog</button>
+                            </form>
+                            <form method="post" action="${pageContext.request.contextPath}/manageBlog">
+                                <input type="hidden" name="action" value="deleteBlog">
+                                <button type="submit">Delete Blog</button>
+                            </form>
+                            <form method="post" action="${pageContext.request.contextPath}/manageBlog">
+                                <input type="hidden" name="action" value="addTag">
+                                <button type="submit">Add Tag</button>
+                            </form>
+                            <form method="post" action="${pageContext.request.contextPath}/manageBlog">
+                                <input type="hidden" name="action" value="editTag">
+                                <button type="submit">Edit Tag</button>
+                            </form>
+                            <form method="post" action="${pageContext.request.contextPath}/manageBlog">
+                                <input type="hidden" name="action" value="deleteTag">
+                                <button type="submit">Delete Tag</button>
+                            </form>
+                        </div>
+                    </c:if>
                 </div>
+
+
                 <div class="nb-container">
                     <div class="nb-head">
                         <h1>Welcome to Our Nutrition Blog</h1>

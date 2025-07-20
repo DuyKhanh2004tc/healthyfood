@@ -5,25 +5,18 @@
 
 package controller;
 
-import dal.DAOCategory;
-import dal.DAOProduct;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.util.List;
-import model.Category;
-import model.Product;
-import utils.Pagination;
 
 /**
  *
- * @author ASUS
+ * @author Hoa
  */
-public class NutritionistHomeServlet extends HttpServlet {
+public class ManageBlogServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -40,10 +33,10 @@ public class NutritionistHomeServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet NutritionistHomeServlet</title>");  
+            out.println("<title>Servlet ManageBlogServlet</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet NutritionistHomeServlet at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet ManageBlogServlet at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -60,31 +53,7 @@ public class NutritionistHomeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        DAOProduct dao = new DAOProduct();
-        HttpSession session = request.getSession();
-        session.removeAttribute("keyword");
-        session.removeAttribute("categoryId");
-        List<Product> productList = dao.getAllProduct();
-        int page = 1;
-        int pageSize = 12;
-        String index_raw = request.getParameter("index");
-        if (index_raw != null) {
-            try {
-                page = Integer.parseInt(index_raw);
-            } catch (NumberFormatException e) {
-                page = 1;
-            }
-        }
-
-        int totalPages = (int) Math.ceil((double) productList.size() / pageSize);
-        List<Product> pagedList = Pagination.paginate(productList, page, pageSize);       
-        request.setAttribute("productList", pagedList);
-        request.setAttribute("currentPage", page);
-        request.setAttribute("totalPage", totalPages);
-        DAOCategory dao2 = new DAOCategory();
-        List<Category> categoryList = dao2.getAllCategory();
-        request.setAttribute("categoryList",categoryList);
-        request.getRequestDispatcher("/view/nutritionistHome.jsp").forward(request, response);
+        processRequest(request, response);
     } 
 
     /** 
@@ -97,7 +66,7 @@ public class NutritionistHomeServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-       
+        processRequest(request, response);
     }
 
     /** 

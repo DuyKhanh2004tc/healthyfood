@@ -66,7 +66,7 @@ public class NutritionBlogServlet extends HttpServlet {
     if (tagSlug != null && !tagSlug.isEmpty()) {
         blogList = daoBlog.getBlogsByTagSlug(tagSlug);
     } else {
-        blogList = daoBlog.getAllBlog();
+        blogList = daoBlog.getAllBlogsByNewest();
     }
 
     request.setAttribute("blogList", blogList);
