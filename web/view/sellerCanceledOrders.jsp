@@ -30,6 +30,7 @@
                                         <p><strong>Customer:</strong> ${order.receiverName}</p>
                                         <p><strong>Customer Phone:</strong> ${order.receiverPhone}</p>
                                         <p><strong>Address:</strong> ${order.shippingAddress}</p>
+                                        <p><strong>Delivery Message:</strong> ${order.deliveryMessage}</p>
                                         <p><strong>Time:</strong> <fmt:formatDate value="${order.orderDate}" pattern="hh:mm a z"/></p>
                                         <p><strong>Total:</strong> $<fmt:formatNumber value="${order.totalAmount}" type="number" maxFractionDigits="2"/></p>
                                         <p><strong>Payment Method:</strong> ${order.paymentMethod}</p>
