@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dal.DAOCategory;
 import dal.DAOProposedProduct;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,6 +20,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import model.Category;
 import model.ProposedProduct;
 import model.User;
 
@@ -73,7 +75,9 @@ public class ProposeProductServlet extends HttpServlet {
         User user = (User) request.getSession().getAttribute("user");
         DAOProposedProduct dao = new DAOProposedProduct();
         List proposedProductList = dao.listProductByNutritionistId(user.getId());
-
+        DAOCategory dao2 = new DAOCategory();
+        List<Category> categoryList = dao2.getAllCategory();
+        request.setAttribute("categoryList", categoryList);
         request.setAttribute("proposedProductList", proposedProductList);
         request.getRequestDispatcher("view/proposedProduct.jsp").forward(request, response);
     }
@@ -150,7 +154,7 @@ public class ProposeProductServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/proposeProduct");
         }
         if ("add".equals(action)) {
-             Part filePart = request.getPart("file");
+            Part filePart = request.getPart("file");
             String fileName = getFileName(filePart);
 
             String appPath = request.getServletContext().getRealPath("");

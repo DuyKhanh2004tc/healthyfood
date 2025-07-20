@@ -243,7 +243,7 @@
     </servlet>
     <servlet>
         <servlet-name>AllRecipeServlet</servlet-name>
-        <servlet-class>nutritionist.AllRecipeServlet</servlet-class>
+        <servlet-class>controllerNutritionist.AllRecipeServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ProposeProductServlet</servlet-name>

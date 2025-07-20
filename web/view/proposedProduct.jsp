@@ -141,7 +141,7 @@
                             <form method="post" action="${pageContext.request.contextPath}/proposeProduct">
                                 <input type="hidden" name="proposedId" value="${i.id}">
                                 <c:if test="${i.status == 'pending'}">
-                                    <button type="button" onclick="openPopup('${i.id}', '${i.image}', '${i.name}', '${i.categoryName}', '${i.description}', '${i.reason}','${i.shelfLife}')">Edit</button>
+                                    <button type="button" onclick="openPopup('${i.id}', '${i.image}', '${i.name}', '${i.categoryName}', '${i.description}', '${i.reason}', '${i.shelfLife}')">Edit</button>
                                     <button type="submit" name="action" value="delete">Delete</button>
                                 </c:if>
                             </form>
@@ -165,12 +165,17 @@
                 <p>Name</p>
                 <input type="text" id="popupName" name="name" placeholder="Enter name here..." required>
                 <p>Category Name</p>
-                <input type="text" id="popupCategoryName" name="categoryName" placeholder="Enter category name here..." required>
+                <select name="categoryName" id="popupCategoryName">
+                    
+                    <c:forEach items="${requestScope.categoryList}" var="o">
+                        <option value="${o.name}">${o.name}</option>
+                    </c:forEach>    
+                </select>              
                 <p>Description</p>
                 <textarea id="popupDescription" name="description" placeholder="Enter description here..." required></textarea>
                 <p>Reason</p>
                 <textarea id="popupReason" name="reason" placeholder="Enter reason here..." required></textarea>
-                 <p>Shelf Life</p>
+                <p>Shelf Life</p>
                 <textarea  id="popupShelfLife" name="shelfLife" placeholder="Enter reason here..." required></textarea>
                 <button type="submit" class="button">Save</button>
                 <button type="button" class="button" onclick="closePopup()">Cancel</button>
@@ -186,7 +191,11 @@
                 <p>Name</p>
                 <input type="text"  name="name" placeholder="Enter name here..." required>
                 <p>Category Name</p>
-                <input type="text" name="categoryName" placeholder="Enter category name here..." required>
+                <select name="category">                 
+                    <c:forEach items="${requestScope.categoryList}" var="o">
+                        <option value="${o.name}">${o.name}</option>
+                    </c:forEach>    
+                </select>
                 <p>Description</p>
                 <textarea  name="description" placeholder="Enter description here..." required></textarea>
                 <p>Reason</p>
@@ -199,7 +208,7 @@
         </div>
 
         <script>
-            function openPopup(proposedId, image, name, categoryName, description, reason,shelfLife) {
+            function openPopup(proposedId, image, name, categoryName, description, reason, shelfLife) {
                 document.getElementById('popup').style.display = 'block';
                 document.getElementById('overlay').style.display = 'block';
                 document.getElementById('popupProposedId').value = proposedId;
