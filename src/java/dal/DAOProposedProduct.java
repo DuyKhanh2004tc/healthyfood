@@ -249,6 +249,173 @@ public class DAOProposedProduct {
         return list;
     }
 
+    public List<ProposedProduct> getProposedProductsByStatus(String status) {
+        List<ProposedProduct> list = new ArrayList<>();
+        String sql = "SELECT p.*, u.name AS nutritionist_name, c.name AS category_name "
+                + "FROM ProposedProduct p "
+                + "JOIN Users u ON p.nutritionist_id = u.id "
+                + "JOIN Category c ON p.category_id = c.id "
+                + "WHERE p.status = ?";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setString(1, status);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                ProposedProduct p = new ProposedProduct();
+                p.setId(rs.getInt("id"));
+
+                User u = new User();
+                u.setId(rs.getInt("nutritionist_id"));
+                u.setName(rs.getString("nutritionist_name"));
+                p.setNutritionist(u);
+
+                p.setName(rs.getString("name"));
+                p.setImage(rs.getString("image"));
+                Category c = new Category();
+                c.setId(rs.getInt("category_id"));
+                c.setName(rs.getString("category_name"));
+                p.setCategory(c);
+                p.setDescription(rs.getString("description"));
+                p.setReason(rs.getString("reason"));
+                p.setShelfLife(rs.getInt("shelf_life"));
+                p.setCreatedAt(rs.getTimestamp("created_at"));
+                p.setStatus(rs.getString("status"));
+
+                list.add(p);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<ProposedProduct> getProposedProductsByStatusDESC(String status) {
+        List<ProposedProduct> list = new ArrayList<>();
+        String sql = "SELECT p.*, u.name AS nutritionist_name, c.name AS category_name "
+                + "FROM ProposedProduct p "
+                + "JOIN Users u ON p.nutritionist_id = u.id "
+                + "JOIN Category c ON p.category_id = c.id "
+                + "WHERE p.status = ? "
+                + "ORDER BY p.created_at DESC";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setString(1, status);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                ProposedProduct p = new ProposedProduct();
+                p.setId(rs.getInt("id"));
+
+                User u = new User();
+                u.setId(rs.getInt("nutritionist_id"));
+                u.setName(rs.getString("nutritionist_name"));
+                p.setNutritionist(u);
+
+                p.setName(rs.getString("name"));
+                p.setImage(rs.getString("image"));
+                Category c = new Category();
+                c.setId(rs.getInt("category_id"));
+                c.setName(rs.getString("category_name"));
+                p.setCategory(c);
+                p.setDescription(rs.getString("description"));
+                p.setReason(rs.getString("reason"));
+                p.setShelfLife(rs.getInt("shelf_life"));
+                p.setCreatedAt(rs.getTimestamp("created_at"));
+                p.setStatus(rs.getString("status"));
+
+                list.add(p);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<ProposedProduct> getProposedProductBySearch(String keyword) {
+        List<ProposedProduct> list = new ArrayList<>();
+        String sql = "SELECT p.*, u.name AS nutritionist_name, c.name AS category_name "
+                + "FROM ProposedProduct p "
+                + "JOIN Users u ON p.nutritionist_id = u.id "
+                + "JOIN Category c ON p.category_id = c.id "
+                + "WHERE p.name LIKE ? OR u.name LIKE ? "
+                + "ORDER BY created_at ASC";
+
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setString(1, "%" + keyword + "%");
+            st.setString(2, "%" + keyword + "%");
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                ProposedProduct p = new ProposedProduct();
+                p.setId(rs.getInt("id"));
+
+                User u = new User();
+                u.setId(rs.getInt("nutritionist_id"));
+                u.setName(rs.getString("nutritionist_name"));
+                p.setNutritionist(u);
+
+                p.setName(rs.getString("name"));
+                p.setImage(rs.getString("image"));
+
+                Category c = new Category();
+                c.setId(rs.getInt("category_id"));
+                c.setName(rs.getString("category_name"));
+                p.setCategory(c);
+
+                p.setDescription(rs.getString("description"));
+                p.setReason(rs.getString("reason"));
+                p.setShelfLife(rs.getInt("shelf_life"));
+                p.setCreatedAt(rs.getTimestamp("created_at"));
+                p.setStatus(rs.getString("status"));
+
+                list.add(p);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<ProposedProduct> getProposedProductBySearchDESC(String keyword) {
+        List<ProposedProduct> list = new ArrayList<>();
+        String sql = "SELECT p.*, u.name AS nutritionist_name, c.name AS category_name "
+                + "FROM ProposedProduct p "
+                + "JOIN Users u ON p.nutritionist_id = u.id "
+                + "JOIN Category c ON p.category_id = c.id "
+                + "WHERE p.name LIKE ? OR u.name LIKE ? "
+                + "ORDER BY created_at DESC";
+
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setString(1,  "%" + keyword + "%" );
+            st.setString(2,  "%" + keyword + "%");
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                ProposedProduct p = new ProposedProduct();
+                p.setId(rs.getInt("id"));
+
+                User u = new User();
+                u.setId(rs.getInt("nutritionist_id"));
+                u.setName(rs.getString("nutritionist_name"));
+                p.setNutritionist(u);
+
+                p.setName(rs.getString("name"));
+                p.setImage(rs.getString("image"));
+
+                Category c = new Category();
+                c.setId(rs.getInt("category_id"));
+                c.setName(rs.getString("category_name"));
+                p.setCategory(c);
+
+                p.setDescription(rs.getString("description"));
+                p.setReason(rs.getString("reason"));
+                p.setShelfLife(rs.getInt("shelf_life"));
+                p.setCreatedAt(rs.getTimestamp("created_at"));
+                p.setStatus(rs.getString("status"));
+
+                list.add(p);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     public void updateProposedProductStatusById(int proposedId, String status) {
         String sql = "UPDATE ProposedProduct SET status = ? WHERE id = ?";
         try (PreparedStatement st = con.prepareStatement(sql)) {

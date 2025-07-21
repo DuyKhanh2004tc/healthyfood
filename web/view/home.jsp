@@ -25,8 +25,8 @@
                 <div class="content-left">
                     <form class ="search-form" action="search" method="get">                   
                         <input type="image" src="${pageContext.request.contextPath}/icons/search_icon.png" alt="Search" width="20" height="20">
-                    <input type="text" name="keyword" placeholder="Search for products...">
-                </form>
+                        <input type="text" name="keyword" placeholder="Search for products...">
+                    </form>
                 <b>New Product:</b>
 
                 <div class="newProduct">                  
@@ -192,8 +192,8 @@
                         </div>
                     </c:forEach>
                 </div>
-               
-                
+
+
                 <div class="pagination">                                     
                     <c:if test="${currentPage > 1}">
                         <c:url var="prevUrl" value="/home">
@@ -266,6 +266,15 @@
             </div>   
 
         </div>
+
+        <c:if test="${not empty sessionScope.stockError}">
+            <script>
+        alert("${sessionScope.stockError}");
+            </script>
+            <%
+                session.removeAttribute("stockError");
+            %>
+        </c:if>
         <jsp:include page="chatbot.jsp"></jsp:include>
         <jsp:include page="footer.jsp"></jsp:include>
     </body>

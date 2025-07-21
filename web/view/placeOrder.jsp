@@ -121,8 +121,90 @@
 
 
         </div>
+        <c:if test="${sessionScope.user != null}">        
+        <form class="form-placeOrder" action="orderCheckout" method="post" onsubmit="return confirmOrder()">
+            <table>
+                <tr>
+                    <td>Receiver Name:</td>
+                    <td>Phone Number:</td>
+                </tr>
+                <tr>
+                    <td><input type="text" id="userName" name="userName" maxlength="30" value="${sessionScope.user.name}"></td>
+                    <td><input type="text" id="phone" name="phone" maxlength="11" value="${sessionScope.user.phone}"></td>
 
+                </tr>
+                <tr>
+                    <td><p class="error-message" id="errorName"></p></td>
+                    <td><p class="error-message" id="errorPhone"></p></td>
+                </tr>
 
+                <tr>
+                    <td>House number / Area:</td>
+                    <td>Ward / Commune:</td>
+                </tr>
+                <tr>
+                    <td><input type="text" id="street" name="street" maxlength="30" value=""></td>
+                    <td><input type="text" id="ward" name="ward" maxlength="40" value=""></td>
+                </tr>
+                <tr>
+                    <td><p class="error-message" id="errorStreet"></p></td>
+                    <td><p class="error-message" id="errorWard"></p></td>
+                </tr>
+
+                <tr>
+                    <td>District:</td>
+                    <td>Province / City:</td>
+                </tr>
+                <tr>
+                    <td><input type="text" id="district" name="district" maxlength="40" value=""></td>
+                    <td><input type="text" id="province" name="province" maxlength="50" value=""></td>
+                </tr>
+                <tr>
+                    <td><p class="error-message" id="errorDistrict"></p></td>
+                    <td><p class="error-message" id="errorProvince"></p></td>
+                </tr>
+
+                <tr>
+                    <td>Email:</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><input type="email" id="email" name="email" maxlength="40" value="${sessionScope.user.email}"></td>
+                </tr>
+                <tr>
+                    <td><p class="error-message" id="errorEmail"></p></td>
+                </tr>
+                <tr>
+                    <td>Message for delivery:
+                    </td>
+
+                </tr>
+                <tr></td>
+                    <td><textarea id="deliveryMes" name="deliveryMessage" value="" rows="10" cols="50" maxlength="300"></textarea></td>
+                    <td><p class="error-message" id="errorMessage"></td>
+                </tr>
+                <tr>
+                    <td>Select payment method:</td>
+                    <td>
+                        <input type="radio" id="pmOnline" name="paymentMethod" value="online">Online Payment
+                        <input type="radio" id="pmOffline" name="paymentMethod" value="offline">Payment after received                        
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><p class="error-message" id="errorPayment"></td></p>
+                </tr>
+            </table>
+            <input type="hidden" name="totalAmount" value="${totalAmount}">
+            <c:if test="${requestScope.product != null && requestScope.quantity != null}">
+                <input type="hidden" name="productId" value="${requestScope.product.id}">
+                <input type="hidden" name="quantity" value="${requestScope.quantity}">
+            </c:if>
+            <input class="btn_placeOrder" type="submit" value="Place Order">
+        </form>
+        </c:if>
+        
+        <c:if test="${sessionScope.user == null}">        
         <form class="form-placeOrder" action="orderCheckout" method="post" onsubmit="return confirmOrder()">
             <table>
                 <tr>
@@ -203,6 +285,7 @@
             </c:if>
             <input class="btn_placeOrder" type="submit" value="Place Order">
         </form>
+        </c:if>
 
         <jsp:include page="footer.jsp"></jsp:include>
         <script>
