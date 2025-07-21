@@ -22,7 +22,13 @@
                     <th>#</th>
                     <th>Image</th>
                     <th>Name</th>
-                    <th>Category Name</th>
+                    <th>Category</br>
+                        <select name="category" onchange="location.href = 'approve?categoryId=' + this.value;">
+                            <option value="0">All Products</option>
+                            <c:forEach items="${requestScope.categoryList}" var="o">
+                                <option value="${o.id}" ${sessionScope.categoryId == o.id ? 'selected' : ''}>${o.name}</option>
+                            </c:forEach>    
+                        </select></th>
                     <th>Description</th>
                     <th>Reason</th>
                     <th>Created At</th>
@@ -59,6 +65,7 @@
         <div class="sort-btn">
             <form class="sort-form" method="get" action="${pageContext.request.contextPath}/approve">  
                 <p>Sort By Date:</p>
+                <input type="hidden" name="categoryId" value="${sessionScope.categoryId}" />
                 <button type="submit" name="btn_sort" value="Ascending">Ascending</button>
                 <button type="submit" name="btn_sort" value="Descending">Descending</button>
             </form>
@@ -66,19 +73,23 @@
 
         <div class="pagination">
             <c:if test="${currentPage > 1}">
-                <c:url var="prevUrl" value="/approveNewProduct">
-                    <c:param name="index" value="${currentPage - 1}" />                           
+                <c:url var="prevUrl" value="/approve">
+                    <c:param name="page" value="${currentPage - 1}" />
+                    <c:param name="btn_sort" value="${param.btn_sort}" />
+                    <c:param name="categoryId" value="${sessionScope.categoryId}" />
                 </c:url>
                 <a class="page-link prev-next" href="${prevUrl}">Previous</a>
             </c:if>
             <c:forEach var="i" begin="1" end="${totalPages}">
-                <a href="${pageContext.request.contextPath}/approve?page=${i}&btn_sort=${param.btn_sort}" class="page-link">
+                <a href="${pageContext.request.contextPath}/approve?page=${i}&btn_sort=${param.btn_sort}&categoryId=${sessionScope.categoryId}" class="page-link">
                     ${i}
                 </a>
             </c:forEach>
-            <c:if test="${currentPage < totalPage}">
-                <c:url var="nextUrl" value="/approveNewProduct">
-                    <c:param name="index" value="${currentPage + 1}" />                  
+            <c:if test="${currentPage < totalPages}">
+                <c:url var="nextUrl" value="/approve">
+                    <c:param name="page" value="${currentPage + 1}" />
+                    <c:param name="btn_sort" value="${param.btn_sort}" />
+                    <c:param name="categoryId" value="${sessionScope.categoryId}" />
                 </c:url>
                 <a class="page-link prev-next" href="${nextUrl}">Next</a>
             </c:if>
