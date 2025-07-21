@@ -26,7 +26,9 @@ public class DAOProposedProduct {
 
     public List<ProposedProduct> listProductByNutritionistId(int nutritionistId) {
         List<ProposedProduct> list = new ArrayList<>();
-        String sql = "SELECT * FROM ProposedProduct WHERE nutritionist_id = ?";
+        String sql = "SELECT p.*, c.name AS category_name FROM ProposedProduct p "
+                + "JOIN Category c ON p.category_id = c.id "
+                + "WHERE p.nutritionist_id = ?";
         try {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, nutritionistId);
