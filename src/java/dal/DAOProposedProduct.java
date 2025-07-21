@@ -26,7 +26,9 @@ public class DAOProposedProduct {
 
     public List<ProposedProduct> listProductByNutritionistId(int nutritionistId) {
         List<ProposedProduct> list = new ArrayList<>();
-        String sql = "SELECT * FROM ProposedProduct WHERE nutritionist_id = ?";
+        String sql = "SELECT p.*, c.name AS category_name FROM ProposedProduct p "
+                + "JOIN Category c ON p.category_id = c.id "
+                + "WHERE p.nutritionist_id = ?";
         try {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, nutritionistId);
@@ -42,7 +44,8 @@ public class DAOProposedProduct {
                 p.setImage(rs.getString("image"));
                 Category c = new Category();
                 c.setId(rs.getInt("category_id"));
-               p.setCategory(c);
+                c.setName(rs.getString("category_name"));
+                p.setCategory(c);
                 p.setDescription(rs.getString("description"));
                 p.setReason(rs.getString("reason"));
                 p.setCreatedAt(rs.getTimestamp("created_at"));
@@ -93,7 +96,8 @@ public class DAOProposedProduct {
 
     public List<ProposedProduct> getAllProposedProduct() {
         List<ProposedProduct> list = new ArrayList<>();
-        String sql = "SELECT p.*, u.name AS nutritionist_name FROM ProposedProduct p "
+        String sql = "SELECT p.*, u.name AS nutritionist_name, c.name AS category_name FROM ProposedProduct p "
+                + "JOIN Category c ON p.category_id = c.id "
                 + "JOIN Users u ON p.nutritionist_id = u.id";
         try (PreparedStatement st = con.prepareStatement(sql); ResultSet rs = st.executeQuery()) {
             while (rs.next()) {
@@ -102,14 +106,15 @@ public class DAOProposedProduct {
 
                 User u = new User();
                 u.setId(rs.getInt("nutritionist_id"));
-                u.setName(rs.getString("nutritionist_name")); 
+                u.setName(rs.getString("nutritionist_name"));
                 p.setNutritionist(u);
 
                 p.setName(rs.getString("name"));
                 p.setImage(rs.getString("image"));
                 Category c = new Category();
                 c.setId(rs.getInt("category_id"));
-               p.setCategory(c);
+                c.setName(rs.getString("category_name"));
+                p.setCategory(c);
                 p.setDescription(rs.getString("description"));
                 p.setReason(rs.getString("reason"));
                 p.setShelfLife(rs.getInt("shelf_life"));
@@ -124,9 +129,11 @@ public class DAOProposedProduct {
         }
         return list;
     }
+
     public List<ProposedProduct> getAllProposedProductOrderByDESC() {
         List<ProposedProduct> list = new ArrayList<>();
-        String sql = "SELECT p.*, u.name AS nutritionist_name FROM ProposedProduct p "
+        String sql = "SELECT p.*, u.name AS nutritionist_name, c.name AS category_name FROM ProposedProduct p "
+                  + "JOIN Category c ON p.category_id = c.id "
                 + "JOIN Users u ON p.nutritionist_id = u.id "
                 + "ORDER BY created_at DESC";
         try (PreparedStatement st = con.prepareStatement(sql); ResultSet rs = st.executeQuery()) {
@@ -136,14 +143,15 @@ public class DAOProposedProduct {
 
                 User u = new User();
                 u.setId(rs.getInt("nutritionist_id"));
-                u.setName(rs.getString("nutritionist_name")); 
+                u.setName(rs.getString("nutritionist_name"));
                 p.setNutritionist(u);
 
                 p.setName(rs.getString("name"));
                 p.setImage(rs.getString("image"));
                 Category c = new Category();
                 c.setId(rs.getInt("category_id"));
-               p.setCategory(c);
+                c.setName(rs.getString("category_name"));
+                p.setCategory(c);
                 p.setDescription(rs.getString("description"));
                 p.setReason(rs.getString("reason"));
                 p.setShelfLife(rs.getInt("shelf_life"));

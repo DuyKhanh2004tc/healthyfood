@@ -19,7 +19,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import model.Category;
 import model.ProposedProduct;
 import model.User;
@@ -98,7 +100,7 @@ public class ProposeProductServlet extends HttpServlet {
         String action = request.getParameter("action");
         String proposeIdStr = request.getParameter("proposedId");
         String name = request.getParameter("name");
-        String categoryName = request.getParameter("categoryName");
+        String category = request.getParameter("category");
         String description = request.getParameter("description");
         String reason = request.getParameter("reason");
         String shelfLifestr = request.getParameter("shelfLife");
@@ -134,7 +136,9 @@ public class ProposeProductServlet extends HttpServlet {
             ProposedProduct p = new ProposedProduct();
             p.setId(Integer.parseInt(proposeIdStr));
             p.setName(name);
-            p.setCategoryName(categoryName);
+            Category c = new Category();
+            c.setId(Integer.parseInt(category.trim()));
+            p.setCategory(c);
             p.setDescription(description);
             p.setImage(image);
             p.setNutritionist(user);
@@ -181,7 +185,9 @@ public class ProposeProductServlet extends HttpServlet {
             }
             ProposedProduct p = new ProposedProduct();
             p.setName(name);
-            p.setCategoryName(categoryName);
+            Category c = new Category();
+            c.setId(Integer.parseInt(category.trim()));
+            p.setCategory(c);
             p.setDescription(description);
             p.setImage(image);
             p.setNutritionist(user);
