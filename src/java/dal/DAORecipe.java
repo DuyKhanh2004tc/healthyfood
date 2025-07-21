@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import model.CookingRecipe;
+import model.Product;
 import model.RecipeType;
 import model.User;
 
@@ -147,6 +148,137 @@ public class DAORecipe {
         }
         return list;
     }
+public void insertCookingRecipeProduct(int recipeId, List<Integer> productIds) {
+    String sql = "INSERT INTO Cooking_Recipe_Product (cooking_recipe_id, product_id) VALUES (?, ?)";
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        for (int productId : productIds) {
+            ps.setInt(1, recipeId);
+            ps.setInt(2, productId);
+            ps.addBatch();
+        }
+        ps.executeBatch();
+    } catch (SQLException e) {
+        status = "Error: " + e.getMessage();
+    }
+}
+
+public void deleteCookingRecipeProduct(int recipeId) {
+    String sql = "DELETE FROM Cooking_Recipe_Product WHERE cooking_recipe_id = ?";
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, recipeId);
+        ps.executeUpdate();
+    } catch (SQLException e) {
+        status = "Error: " + e.getMessage();
+    }
+}
+public void insertCookingRecipe(CookingRecipe recipe) {
+    String sql = "INSERT INTO Cooking_Recipe (name, image, description, created_at, nutritionist_id, type_id) "
+               + "VALUES (?, ?, ?, ?, ?, ?)";
+    try (PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        ps.setString(1, recipe.getName());
+        ps.setString(2, recipe.getImage());
+        ps.setString(3, recipe.getDescription());
+        ps.setTimestamp(4, recipe.getCreatedAt());
+        ps.setInt(5, recipe.getNutritionist().getId());
+        ps.setInt(6, recipe.getType().getId());
+
+        ps.executeUpdate();
+
+      
+        try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                recipe.setId(generatedKeys.getInt(1));
+            }
+        }
+    } catch (SQLException e) {
+        status = "Error: " + e.getMessage();
+    }
+}
+public void deleteCookingRecipe(int recipeId) {
+    String sql = "DELETE FROM Cooking_Recipe WHERE id = ?";
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, recipeId);
+        ps.executeUpdate();
+    } catch (SQLException e) {
+        status = "Error: " + e.getMessage();
+    }
+}
+public CookingRecipe getRecipeById(int recipeId) {
+    CookingRecipe recipe = null;
+    String sql = "SELECT r.id, r.name, r.image, r.description, r.created_at, "
+               + "r.nutritionist_id, t.id AS type_id, t.name AS type_name "
+               + "FROM Cooking_Recipe r "
+               + "JOIN Recipe_Type t ON r.type_id = t.id "
+               + "WHERE r.id = ?";
+
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, recipeId);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                recipe = new CookingRecipe();
+                recipe.setId(rs.getInt("id"));
+                recipe.setName(rs.getString("name"));
+                recipe.setImage(rs.getString("image"));
+                recipe.setDescription(rs.getString("description"));
+                recipe.setCreatedAt(rs.getTimestamp("created_at"));
+
+                User nutritionist = new User();
+                nutritionist.setId(rs.getInt("nutritionist_id"));
+                recipe.setNutritionist(nutritionist);
+
+                RecipeType type = new RecipeType();
+                type.setId(rs.getInt("type_id"));
+                type.setName(rs.getString("type_name"));
+                recipe.setType(type);
+            }
+        }
+    } catch (SQLException e) {
+        status = "Error: " + e.getMessage();
+    }
+    return recipe;
+}
+
+public List<Product> getProductByRecipeId(int recipeId) {
+    List<Product> products = new ArrayList<>();
+    String sql = "SELECT p.id, p.name "
+               + "FROM Product p "
+               + "JOIN Cooking_Recipe_Product crp ON p.id = crp.product_id "
+               + "WHERE crp.cooking_recipe_id = ?";
+
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, recipeId);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Product product = new Product();
+                product.setId(rs.getInt("id"));
+                product.setName(rs.getString("name"));
+                products.add(product);
+            }
+        }
+    } catch (SQLException e) {
+        status = "Error: " + e.getMessage();
+    }
+
+    return products;
+}
+
+public void updateCookingRecipe(CookingRecipe recipe) {
+    String sql = "UPDATE Cooking_Recipe SET name = ?, image = ?, description = ?, "
+               + "created_at = ?, nutritionist_id = ?, type_id = ? WHERE id = ?";
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, recipe.getName());
+        ps.setString(2, recipe.getImage());
+        ps.setString(3, recipe.getDescription());
+        ps.setTimestamp(4, recipe.getCreatedAt());
+        ps.setInt(5, recipe.getNutritionist().getId());
+        ps.setInt(6, recipe.getType().getId());
+        ps.setInt(7, recipe.getId());
+
+        ps.executeUpdate();
+    } catch (SQLException e) {
+        status = "Error: " + e.getMessage();
+    }
+}
 
     public static void main(String[] args) {
 

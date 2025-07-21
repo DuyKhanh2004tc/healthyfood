@@ -9,17 +9,26 @@ import dal.DAORecipe;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import model.*;
 
 /**
  *
  * @author HP
  */
+@MultipartConfig
 public class AllRecipeServlet extends HttpServlet {
 
     /**
@@ -31,6 +40,8 @@ public class AllRecipeServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    private final String SAVE_DIR = "images";
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -73,7 +84,7 @@ public class AllRecipeServlet extends HttpServlet {
             }
         }
         List<CookingRecipe> recipeByProductId = dao.listAllCookingRecipeByProductIds(productIdList);
-        if (typeIdstr != null&& !typeIdstr.trim().isEmpty()) {
+        if (typeIdstr != null && !typeIdstr.trim().isEmpty()) {
             List<CookingRecipe> filteredRecipe = new ArrayList<>();
             int typeId = Integer.parseInt(typeIdstr);
             for (CookingRecipe c : recipeByProductId) {
@@ -85,6 +96,7 @@ public class AllRecipeServlet extends HttpServlet {
         }
 
         List<RecipeType> typeList = dao.listAllRecipeType();
+        request.setAttribute("productList", productList);
         request.setAttribute("typeList", typeList);
         request.setAttribute("cookingRecipeList", recipeByProductId);
         request.getRequestDispatcher("/view/allRecipe.jsp").forward(request, response);
@@ -101,7 +113,67 @@ public class AllRecipeServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        User user = (User) request.getSession().getAttribute("user");
+        String image = request.getParameter("image");
+        String name = request.getParameter("name");
+        String[] productIdstr = request.getParameterValues("chooseProduct");
+        String typeIdStr = request.getParameter("typeId");
+        String description = request.getParameter("description");
+        Part filePart = request.getPart("file");
+        DAORecipe dao = new DAORecipe();
+        List<CookingRecipe> recipeList = dao.listAllCookingRecipe();
+        String fileName = getFileName(filePart);
+
+        String appPath = request.getServletContext().getRealPath("");
+        File projectRoot = new File(appPath).getParentFile().getParentFile();
+        String savePath = projectRoot.getAbsolutePath() + File.separator + "build" + File.separator + "web" + File.separator + SAVE_DIR;
+
+        if (fileName != null && !fileName.isEmpty()) {
+            File fileSaveDir = new File(savePath);
+            if (!fileSaveDir.exists()) {
+                fileSaveDir.mkdirs();
+            }
+
+            File saveFile = new File(savePath, fileName);
+            File parentDir = saveFile.getParentFile();
+            if (!parentDir.exists()) {
+                parentDir.mkdirs();
+            }
+
+            try (InputStream fileContent = filePart.getInputStream()) {
+                Files.copy(fileContent, saveFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            image = fileName;
+        }
+        CookingRecipe cook = new CookingRecipe();
+        cook.setImage(image);
+        cook.setName(name);
+        cook.setDescription(description);
+        cook.setNutritionist(user);
+        cook.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
+        RecipeType type = new RecipeType();
+        type.setId(Integer.parseInt(typeIdStr));
+        cook.setType(type);
+        recipeList.add(cook);
+        List<Integer> productId = new ArrayList<>();
+        for (String s : productIdstr) {
+            productId.add(Integer.parseInt(s.trim()));
+        }
+
+        dao.insertCookingRecipe(cook);
+        dao.insertCookingRecipeProduct(cook.getId(), productId);
+        response.sendRedirect(request.getContextPath() + "/allRecipe");
+    }
+
+    private String getFileName(Part part) {
+        String contentDisp = part.getHeader("content-disposition");
+        for (String token : contentDisp.split(";")) {
+            if (token.trim().startsWith("filename")) {
+                return token.substring(token.indexOf("=") + 2, token.length() - 1);
+            }
+        }
+        return "";
     }
 
     /**
