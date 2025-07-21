@@ -114,6 +114,7 @@ public class AuthenticationFilter implements Filter {
                 || path.equals("/productDetail")
                 || path.equals("/nutritionBlog")
                 || path.equals("/blogDetail")
+                || path.equals("/searchBlog")
                 || path.equals("/sortproduct")
                 || path.equals("/pricefilter")
                 || path.equals("/search")
@@ -167,6 +168,7 @@ public class AuthenticationFilter implements Filter {
                 || path.equals("/productDetail")
                 || path.equals("/nutritionBlog")
                 || path.equals("/blogDetail")
+                || path.equals("/searchBlog")
                 || path.equals("/sortproduct")
                 || path.equals("/pricefilter")
                 || path.equals("/search")
@@ -180,6 +182,7 @@ public class AuthenticationFilter implements Filter {
                 || path.equals("/ProcessingOrders")
                 || path.equals("/logout")
                 || path.equals("/seller");
+        
 
         boolean isManagerPath = path.equals("/DeliveredOrders")
                 || path.equals("/home")
@@ -188,6 +191,7 @@ public class AuthenticationFilter implements Filter {
                 || path.equals("/bmi")
                 || path.equals("/nutritionBlog")
                 || path.equals("/blogDetail")
+                || path.equals("/searchBlog")
                 || path.equals("/sortproduct")
                 || path.equals("/pricefilter")
                 || path.equals("/search")
@@ -200,6 +204,7 @@ public class AuthenticationFilter implements Filter {
                 || path.equals("/productDetail")
                 || path.equals("/nutritionBlog")
                 || path.equals("/blogDetail")
+                || path.equals("/searchBlog")
                 || path.equals("/sortproduct")
                 || path.equals("/pricefilter")
                 || path.equals("/search")
@@ -220,6 +225,8 @@ public class AuthenticationFilter implements Filter {
                 || path.equals("/logout")
                 || path.equals("/resendOTP")
                 || path.equals("/nutritionBlog")
+                || path.equals("/searchBlog")
+                || path.equals("/manageBlog")
                 || path.equals("/sortproduct")
                 || path.equals("/search")
                 || path.equals("/category")
