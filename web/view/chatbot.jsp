@@ -14,7 +14,11 @@
     </head>
     <body>
         <div class="chatwindow hidden">
+            <div class="chatbot-title">
+                <h3>🍀 HealthyBot - Your Nutrition Assistant</h3>
+            </div>
             <button class="close">❌</button>
+            
             <div class="chat">
                 <div class="model">
                     <p>Welcome, do you need any support?</p>

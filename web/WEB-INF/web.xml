@@ -245,11 +245,15 @@
     </servlet>
     <servlet>
         <servlet-name>AllRecipeServlet</servlet-name>
-        <servlet-class>nutritionist.AllRecipeServlet</servlet-class>
+        <servlet-class>controllerNutritionist.AllRecipeServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ManageBlogServlet</servlet-name>
         <servlet-class>controller.ManageBlogServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ChatbotDataServlet</servlet-name>
+        <servlet-class>controller.ChatbotDataServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ProposeProductServlet</servlet-name>
@@ -446,6 +450,10 @@
     <servlet-mapping>
         <servlet-name>ManageBlogServlet</servlet-name>
         <url-pattern>/manageBlog</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChatbotDataServlet</servlet-name>
+        <url-pattern>/chatbotdata</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>

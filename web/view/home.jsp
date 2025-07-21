@@ -10,7 +10,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Home Page</title>
         <link href="${pageContext.request.contextPath}/CSS/home.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
@@ -192,14 +192,8 @@
                         </div>
                     </c:forEach>
                 </div>
-                <c:choose>
-                    <c:when test="${not empty param.minPrice or not empty param.maxPrice}">
-                        <c:set var="baseUrl" value="/pricefilter" />
-                    </c:when>
-                    <c:otherwise>
-                        <c:set var="baseUrl" value="/home" />
-                    </c:otherwise>
-                </c:choose>
+               
+                
                 <div class="pagination">                                     
                     <c:if test="${currentPage > 1}">
                         <c:url var="prevUrl" value="/home">

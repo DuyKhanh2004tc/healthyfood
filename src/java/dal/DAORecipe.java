@@ -79,7 +79,7 @@ public class DAORecipe {
             return recipes;
         }
 
-        String sql = "SELECT DISTINCT c.id, c.name, c.description, c.created_at, c.nutritionist_id, c.type_id "
+        String sql = "SELECT DISTINCT c.id, c.name,c.image, c.description, c.created_at, c.nutritionist_id, c.type_id "
                 + "FROM Cooking_Recipe c "
                 + "INNER JOIN Cooking_Recipe_Product r ON r.cooking_recipe_id = c.id "
                 + "INNER JOIN Product p ON p.id = r.product_id "
@@ -95,6 +95,7 @@ public class DAORecipe {
                     CookingRecipe recipe = new CookingRecipe();
                     recipe.setId(rs.getInt("id"));
                     recipe.setName(rs.getString("name"));
+                    recipe.setImage(rs.getString("image"));
                     recipe.setDescription(rs.getString("description"));
                     recipe.setCreatedAt(rs.getTimestamp("created_at"));
                     RecipeType t = new RecipeType();

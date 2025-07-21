@@ -1,0 +1,60 @@
+/* Nền trang */
+body {
+    background-color: #f8f9fa;
+}
+
+/* Tiêu đề trang */
+.page-title {
+    font-size: 1.8rem;
+    color: #212529;
+}
+
+/* Card đơn hàng */
+.order-card {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    transition: box-shadow 0.2s ease;
+}
+
+.order-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Nội dung trong card */
+.order-card p {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.order-card strong {
+    font-weight: 600;
+    color: #000;
+}
+
+/* Select box */
+.form-select {
+    font-size: 0.9rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+}
+
+/* Nút Update */
+.btn-primary {
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+/* Responsive khoảng cách */
+.row > div {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}

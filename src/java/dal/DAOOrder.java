@@ -84,7 +84,8 @@ public class DAOOrder {
 
     public List<Order> getOrdersByStatusIn(List<Integer> statusIds) throws SQLException {
         List<Order> orders = new ArrayList<>();
-        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name "
+        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, "
+                + "o.delivery_message "
                 + "FROM [dbo].[Orders] o "
                 + "LEFT JOIN [dbo].[OrderStatus] os ON o.status_id = os.id "
                 + "LEFT JOIN [dbo].[Users] u ON o.user_id = u.id "
@@ -121,7 +122,7 @@ public class DAOOrder {
                     System.out.println("Warning: No shipper found for shipper_id: " + (rs.wasNull() ? "NULL" : shipperId));
                 }
                 orders.add(order);
-                System.out.println("Retrieved order ID: " + order.getId() + ", Status: " + order.getStatus().getStatusName() + ", Shipper ID: " + (shipper != null ? shipper.getId() : "null"));
+                System.out.println("Retrieved order ID: " + order.getId() + ", Status: " + order.getStatus().getStatusName() + ", Delivery Message: " + order.getDeliveryMessage());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -183,7 +184,8 @@ public class DAOOrder {
 
     public List<Order> getOrdersByShipper(int shipperId, int page, int pageSize) throws SQLException {
         List<Order> orders = new ArrayList<>();
-        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone "
+        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone, "
+                + "o.delivery_message "
                 + "FROM Orders o "
                 + "JOIN OrderStatus os ON o.status_id = os.id "
                 + "LEFT JOIN Users u ON o.user_id = u.id "
@@ -258,7 +260,8 @@ public class DAOOrder {
 
     public List<Order> getAllOrders(int page, int pageSize) throws SQLException {
         List<Order> orders = new ArrayList<>();
-        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone "
+        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone, "
+                + "o.delivery_message "
                 + "FROM Orders o "
                 + "JOIN OrderStatus os ON o.status_id = os.id "
                 + "LEFT JOIN Users u ON o.user_id = u.id "
@@ -307,7 +310,8 @@ public class DAOOrder {
 
     public Order getOrderById(int orderId) throws SQLException {
         Order order = null;
-        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone "
+        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, s.phone AS shipper_phone, "
+                + "o.delivery_message "
                 + "FROM Orders o "
                 + "JOIN OrderStatus os ON o.status_id = os.id "
                 + "LEFT JOIN Users u ON o.user_id = u.id "
