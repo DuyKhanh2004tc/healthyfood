@@ -45,7 +45,7 @@
                             <img  src="${pageContext.request.contextPath}/images/${i.image}"  width="80" alt="${i.name}">
                         </td>
                         <td>${i.name}</td>
-                        <td>${i.categoryName}</td>
+                        <td>${i.category.name}</td>
                         <td>${i.description}</td>
                         <td>${i.reason}</td>
                         <td>${i.createdAt}</td>

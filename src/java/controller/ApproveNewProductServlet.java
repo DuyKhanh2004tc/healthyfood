@@ -91,7 +91,7 @@ public class ApproveNewProductServlet extends HttpServlet {
                     : daoPropose.getAllProposedProductOrderByDESC();
         } else {
             proposedList = (categoryId != 0)
-                    ? daoPropose.getAllProposedProductByCategory(categoryName)
+                    ? daoPropose.getAllProposedProductByCategory(categoryId)
                     : daoPropose.getAllProposedProduct();
         }
 
