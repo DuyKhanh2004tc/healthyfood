@@ -12,7 +12,7 @@
         
     </head>
     <body class="seller-page">
-       <jsp:include page="headerSeller.jsp"></jsp:include> 
+      
       <jsp:include page="SideBarOfSheller.jsp"></jsp:include>
         
            
@@ -30,7 +30,7 @@
                     <div class="card-body">
                         <!-- Insert Button -->
                         <div class="text-center mb-4">
-                            <a href="seller?service=requestInsert" class="btn btn-insert">
+                            <a href="insertProduct?service=requestInsert" class="btn btn-insert">
                                 <i class="bi bi-plus-circle me-1"></i> Insert New Product
                             </a>
                         </div>
@@ -82,7 +82,7 @@
                                                     <td class="text-center">${product.category != null ? product.category.name : 'N/A'}</td>
                                                     <td class="text-center">${String.format("%.1f", product.rate)}</td>
                                                     <td class="text-center">
-                                                        <a href="seller?service=requestUpdate&productId=${product.id}" class="btn btn-success btn-edit">
+                                                        <a href="updateProduct?service=requestUpdate&productId=${product.id}" class="btn btn-success btn-edit">
                                                             <i class="bi bi-pencil"></i> Edit
                                                         </a>
                                                         <a href="seller?service=requestDelete&productId=${product.id}" class="btn btn-action btn-delete" onclick="return confirm('Are you sure you want to delete ${product.name}?');">
