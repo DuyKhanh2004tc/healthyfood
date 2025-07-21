@@ -11,6 +11,7 @@ import model.ProposedProduct;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import model.Category;
 import model.User;
 
 public class DAOProposedProduct {
@@ -39,7 +40,9 @@ public class DAOProposedProduct {
                 p.setNutritionist(u);
                 p.setName(rs.getString("name"));
                 p.setImage(rs.getString("image"));
-                p.setCategoryName(rs.getString("category_name"));
+                Category c = new Category();
+                c.setId(rs.getInt("category_id"));
+               p.setCategory(c);
                 p.setDescription(rs.getString("description"));
                 p.setReason(rs.getString("reason"));
                 p.setCreatedAt(rs.getTimestamp("created_at"));
@@ -68,14 +71,14 @@ public class DAOProposedProduct {
     }
 
     public void insertProposedProduct(ProposedProduct p) {
-        String sql = "INSERT INTO ProposedProduct (nutritionist_id, image, name, category_name, description, reason,shelf_life, created_at) "
+        String sql = "INSERT INTO ProposedProduct (nutritionist_id, image, name, category_id, description, reason,shelf_life, created_at) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?,?)";
         try {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, p.getNutritionist().getId());
             ps.setString(2, p.getImage());
             ps.setString(3, p.getName());
-            ps.setString(4, p.getCategoryName());
+            ps.setInt(4, p.getCategory().getId());
             ps.setString(5, p.getDescription());
             ps.setString(6, p.getReason());
             ps.setInt(7, p.getShelfLife());
@@ -104,7 +107,9 @@ public class DAOProposedProduct {
 
                 p.setName(rs.getString("name"));
                 p.setImage(rs.getString("image"));
-                p.setCategoryName(rs.getString("category_name"));
+                Category c = new Category();
+                c.setId(rs.getInt("category_id"));
+               p.setCategory(c);
                 p.setDescription(rs.getString("description"));
                 p.setReason(rs.getString("reason"));
                 p.setShelfLife(rs.getInt("shelf_life"));
@@ -171,7 +176,9 @@ public class DAOProposedProduct {
 
                 p.setName(rs.getString("name"));
                 p.setImage(rs.getString("image"));
-                p.setCategoryName(rs.getString("category_name"));
+                Category c = new Category();
+                c.setId(rs.getInt("category_id"));
+               p.setCategory(c);
                 p.setDescription(rs.getString("description"));
                 p.setReason(rs.getString("reason"));
                 p.setShelfLife(rs.getInt("shelf_life"));
@@ -234,12 +241,12 @@ public class DAOProposedProduct {
     }
 
     public void updateProposedProduct(ProposedProduct p) {
-        String sql = "UPDATE ProposedProduct SET image = ?, name = ?, category_name = ?, description = ?, reason = ?, shelf_life = ?, created_at = ?, status = ? WHERE id = ? AND nutritionist_id = ?";
+        String sql = "UPDATE ProposedProduct SET image = ?, name = ?, category_id = ?, description = ?, reason = ?, shelf_life = ?, created_at = ?, status = ? WHERE id = ? AND nutritionist_id = ?";
         try {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, p.getImage());
             ps.setString(2, p.getName());
-            ps.setString(3, p.getCategoryName());
+            ps.setInt(3, p.getCategory().getId());
             ps.setString(4, p.getDescription());
             ps.setString(5, p.getReason());
             ps.setInt(6, p.getShelfLife());
