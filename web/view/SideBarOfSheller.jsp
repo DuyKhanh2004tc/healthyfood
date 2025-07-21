@@ -35,18 +35,15 @@
         </style>
     </head>
     <body>
+        <jsp:include page="header.jsp" />
+        <div class="container-fluid">
+            <!-- Nút mở sidebar -->
+            <button class="btn btn-success mt-2 ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+                <i class="bi bi-list"></i> Menu
+            </button>
+        </div>
 
-        <!-- Navbar chứa nút mở sidebar -->
-        <nav class="navbar navbar-light bg-light">
-            <div class="container-fluid">
-                <button class="btn btn-success" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
-                    <i class="bi bi-list"></i> Menu
-                </button>
-
-            </div>
-        </nav>
-
-        <!-- Sidebar Offcanvas -->
+        <!-- Sidebar Offcanvas (chỉ load khi cần) -->
         <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title">Dashboard Menu</h5>
@@ -61,10 +58,14 @@
                 <a href="SellerCanceledOrders"><i class="bi bi-x-circle me-2"></i>Cancel Order</a>
                 <a href="SellerOrderHistory"><i class="bi bi-clock-history me-2"></i>Order History</a>
             </div>
+        </div>
 
-
+        <!-- Page content -->
+        <div class="container mt-4">
+            <!-- your processing orders content here -->
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
+
 </html>

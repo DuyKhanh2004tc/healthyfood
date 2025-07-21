@@ -16,6 +16,8 @@
         <url-pattern>/resetPassword</url-pattern>
         <url-pattern>/nutritionBlog</url-pattern>
         <url-pattern>/blogDetail</url-pattern>
+        <url-pattern>/searchBlog</url-pattern>
+        <url-pattern>/manageBlog</url-pattern>
         <url-pattern>/search</url-pattern>
         <url-pattern>/sortproduct</url-pattern>
         <url-pattern>/pricefilter</url-pattern>

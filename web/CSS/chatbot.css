@@ -27,7 +27,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 
 .chatwindow .close {
     align-self: flex-end;
-    margin: 8px;
+    margin: -44px 10px 0px 0px;
     background-color: #D6D6D4;
     color: white;
     border: none;
@@ -40,6 +40,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 .chatwindow .close:hover {
     background-color: #B3B0A9;
 }
+
 
 
 .chatwindow .chat {
@@ -132,3 +133,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
 .chatwindow.hidden {
     display: none;
 }
+.chatbot-title {
+    color: #2e7d32;
+    text-align: center;
+    font-size: 12px;
+    width: 85%;
+}
+
+
