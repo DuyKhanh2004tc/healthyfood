@@ -340,7 +340,7 @@ button, input, select, textarea {
             </div>
         </c:if>
         <form method="get" action="${pageContext.request.contextPath}/allRecipe">
-            <input type="text" value="${param.productName}" name="productName"/>    
+            <input type="text" value="${param.productName}" placeholder="Search product name" name="productName"/>    
             <select name="typeId">
                 <option value="" ${param.typeId == null || param.typeId == '' ? 'selected' : ''}>All Types</option>
                 <c:forEach items="${requestScope.typeList}" var="i">
