@@ -28,7 +28,9 @@
                         <a href="${pageContext.request.contextPath}/register">Register</a>
                         <a href="${pageContext.request.contextPath}/bmi">BMI Calculator</a>
                         <a href="${pageContext.request.contextPath}/cart">Cart</a>
+                        <a href="${pageContext.request.contextPath}/allRecipe">Cooking Recipe</a>
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
+                        
                         
                     </c:if>
                     <c:if test="${sessionScope.user.getRole().getId()==3}">
@@ -37,6 +39,7 @@
                         <a href="${pageContext.request.contextPath}/bmi">BMI Calculator</a>
                         <a href="${pageContext.request.contextPath}/cart">Cart</a>
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
+                        <a href="${pageContext.request.contextPath}/allRecipe">Cooking Recipe</a>
                         <a href="${pageContext.request.contextPath}/logout">Logout</a>
                         
                     </c:if>
@@ -46,6 +49,7 @@
                         <a href="${pageContext.request.contextPath}/SellerOrderHistory">Order History</a>
                         <a href="${pageContext.request.contextPath}/approve">Approve new products</a>                   
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
+                        <a href="${pageContext.request.contextPath}/allRecipe">Cooking Recipe</a>
                         <a href="${pageContext.request.contextPath}/logout">Logout</a>
                         
                     </c:if>
@@ -54,6 +58,7 @@
                         <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
                         <a href="${pageContext.request.contextPath}/seller">Manage Product</a>                 
                         <a href="${pageContext.request.contextPath}/nutritionBlog">Blog</a>
+                        <a href="${pageContext.request.contextPath}/allRecipe">Cooking Recipe</a>
                         <a href="${pageContext.request.contextPath}/logout">Logout</a>
                         
                     </c:if>       
