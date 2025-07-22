@@ -16,7 +16,7 @@
             * {
                 margin: 0;
                 padding: 0;
-                box-sizing: border-box;
+                
                 font-family: 'Arial', sans-serif;
             }
 
@@ -220,7 +220,7 @@
             .recipe-list {
                 display: flex;
                 flex-wrap: wrap;
-                gap: 20px;
+                gap: 50px;
                 justify-content: center;
                 padding: 20px 0;
             }
@@ -234,6 +234,7 @@
                 max-width: 300px;
                 text-align: center;
                 transition: transform 0.3s ease, box-shadow 0.3s ease;
+                
             }
 
             .recipe-card:hover {
@@ -241,7 +242,7 @@
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             }
 
-            img {
+            .recipe-img {
                 max-width: 100%;
                 height: auto;
                 border-radius: 8px;
@@ -393,7 +394,7 @@
             <c:forEach items="${requestScope.cookingRecipeList}" var="i">
                 <a href="${pageContext.request.contextPath}/recipeDetail?recipeId=${i.id}">
                     <div class="recipe-card">
-                        <img src="${pageContext.request.contextPath}/images/${i.image}" alt="${name}">
+                        <img class="recipe-img" src="${pageContext.request.contextPath}/images/${i.image}" alt="${name}">
                         <p>${i.name}</p>
                         <p>${i.description}</p>
                         <fmt:formatDate value="${i.createdAt}" pattern="dd/MM/yyyy" />
