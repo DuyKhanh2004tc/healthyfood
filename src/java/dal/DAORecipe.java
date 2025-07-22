@@ -206,9 +206,11 @@ public void deleteCookingRecipe(int recipeId) {
 public CookingRecipe getRecipeById(int recipeId) {
     CookingRecipe recipe = null;
     String sql = "SELECT r.id, r.name, r.image, r.description, r.created_at, "
-               + "r.nutritionist_id, t.id AS type_id, t.name AS type_name "
+               + "r.nutritionist_id, u.name AS uname, "
+               + "t.id AS type_id, t.name AS type_name "
                + "FROM Cooking_Recipe r "
                + "JOIN Recipe_Type t ON r.type_id = t.id "
+               + "JOIN Users u ON r.nutritionist_id = u.id "
                + "WHERE r.id = ?";
 
     try (PreparedStatement ps = con.prepareStatement(sql)) {
@@ -224,6 +226,7 @@ public CookingRecipe getRecipeById(int recipeId) {
 
                 User nutritionist = new User();
                 nutritionist.setId(rs.getInt("nutritionist_id"));
+                nutritionist.setName(rs.getString("uname"));
                 recipe.setNutritionist(nutritionist);
 
                 RecipeType type = new RecipeType();
@@ -237,6 +240,7 @@ public CookingRecipe getRecipeById(int recipeId) {
     }
     return recipe;
 }
+
 
 public List<Product> getProductByRecipeId(int recipeId) {
     List<Product> products = new ArrayList<>();

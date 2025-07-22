@@ -33,7 +33,9 @@ import model.User;
  */
 @MultipartConfig
 public class RecipeDetailServlet extends HttpServlet {
-   private final String SAVE_DIR = "images";
+
+    private final String SAVE_DIR = "images";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -75,7 +77,7 @@ public class RecipeDetailServlet extends HttpServlet {
         String recipeIdstr = request.getParameter("recipeId");
         int recipeId = Integer.parseInt(recipeIdstr.trim());
         DAORecipe dao = new DAORecipe();
-        DAOProduct dao2 =new DAOProduct();
+        DAOProduct dao2 = new DAOProduct();
         CookingRecipe cook = dao.getRecipeById(recipeId);
         List<CookingRecipe> c = dao.listAllCookingRecipe();
         int prevId = 0;
@@ -93,7 +95,7 @@ public class RecipeDetailServlet extends HttpServlet {
         }
         List<RecipeType> typeList = dao.listAllRecipeType();
         List<Product> productByRecipeId = dao.getProductByRecipeId(recipeId);
-         List<Product> productList = dao2.getAllProduct();
+        List<Product> productList = dao2.getAllProduct();
         request.setAttribute("recipeId", cook.getId());
         request.setAttribute("name", cook.getName());
         request.setAttribute("image", cook.getImage());
@@ -102,9 +104,9 @@ public class RecipeDetailServlet extends HttpServlet {
         request.setAttribute("type", cook.getType().getName());
         request.setAttribute("typeList", typeList);
         request.setAttribute("recipe", cook);
-          request.setAttribute("description", cook.getDescription());
+        request.setAttribute("description", cook.getDescription());
         request.setAttribute("productByRecipeId", productByRecipeId);
-         request.setAttribute("productList", productList);
+        request.setAttribute("productList", productList);
         request.setAttribute("prevId", prevId != 0 ? prevId : c.get(c.size() - 1).getId());
         request.setAttribute("nextId", nextId != 0 ? nextId : c.get(0).getId());
         request.getRequestDispatcher("view/recipeDetail.jsp").forward(request, response);
@@ -121,49 +123,49 @@ public class RecipeDetailServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       User user = (User) request.getSession().getAttribute("user");
-       String recipeIdstr = request.getParameter("recipeId");
-       int recipeId = Integer.parseInt(recipeIdstr.trim());
+        User user = (User) request.getSession().getAttribute("user");
+        String recipeIdstr = request.getParameter("recipeId");
+        int recipeId = Integer.parseInt(recipeIdstr.trim());
         String image = request.getParameter("image");
         String name = request.getParameter("name");
         String[] productIdstr = request.getParameterValues("chooseProduct");
         String typeIdStr = request.getParameter("typeId");
         String description = request.getParameter("description");
-        Part filePart = request.getPart("file");
+        String action = request.getParameter("action");
+     
         DAORecipe dao = new DAORecipe();
        
-        String action = request.getParameter("action");
-        String fileName = getFileName(filePart);
-        
-        if(action.equals("editRecipe")){
-        String appPath = request.getServletContext().getRealPath("");
-        File projectRoot = new File(appPath).getParentFile().getParentFile();
-        String savePath = projectRoot.getAbsolutePath() + File.separator + "build" + File.separator + "web" + File.separator + SAVE_DIR;
+        if (action.equals("editRecipe")) {
+               Part filePart = request.getPart("file");
+                String fileName = getFileName(filePart);
+            String appPath = request.getServletContext().getRealPath("");
+            File projectRoot = new File(appPath).getParentFile().getParentFile();
+            String savePath = projectRoot.getAbsolutePath() + File.separator + "build" + File.separator + "web" + File.separator + SAVE_DIR;
 
-        if (fileName != null && !fileName.isEmpty()) {
-            File fileSaveDir = new File(savePath);
-            if (!fileSaveDir.exists()) {
-                fileSaveDir.mkdirs();
+            if (fileName != null && !fileName.isEmpty()) {
+                File fileSaveDir = new File(savePath);
+                if (!fileSaveDir.exists()) {
+                    fileSaveDir.mkdirs();
+                }
+
+                File saveFile = new File(savePath, fileName);
+                File parentDir = saveFile.getParentFile();
+                if (!parentDir.exists()) {
+                    parentDir.mkdirs();
+                }
+
+                try (InputStream fileContent = filePart.getInputStream()) {
+                    Files.copy(fileContent, saveFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
+
+                image = fileName;
             }
-
-            File saveFile = new File(savePath, fileName);
-            File parentDir = saveFile.getParentFile();
-            if (!parentDir.exists()) {
-                parentDir.mkdirs();
-            }
-
-            try (InputStream fileContent = filePart.getInputStream()) {
-                Files.copy(fileContent, saveFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            }
-
-            image = fileName;
-        }
-       CookingRecipe cook = new CookingRecipe();
-             cook.setId(recipeId);
+            CookingRecipe cook = new CookingRecipe();
+            cook.setId(recipeId);
             cook.setName(name);
             cook.setDescription(description);
             cook.setImage(image);
-            cook. setNutritionist(user);
+            cook.setNutritionist(user);
             cook.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
             RecipeType type = new RecipeType();
             type.setId(Integer.parseInt(typeIdStr.trim()));
@@ -171,15 +173,15 @@ public class RecipeDetailServlet extends HttpServlet {
             dao.updateCookingRecipe(cook);
             dao.deleteCookingRecipeProduct(recipeId);
             List<Integer> productId = new ArrayList<Integer>();
-            for(String p:productIdstr){
+            for (String p : productIdstr) {
                 productId.add(Integer.parseInt(p.trim()));
             }
             dao.insertCookingRecipeProduct(recipeId, productId);
-        response.sendRedirect(request.getContextPath() + "/recipeDetail?recipeId="+recipeId);
-        }else if(action.equals("deleteRecipe")){
+            response.sendRedirect(request.getContextPath() + "/recipeDetail?recipeId=" + recipeId);
+        } else if (action.equals("deleteRecipe")) {
             dao.deleteCookingRecipeProduct(recipeId);
             dao.deleteCookingRecipe(recipeId);
-              response.sendRedirect(request.getContextPath() + "/allRecipe");
+            response.sendRedirect(request.getContextPath() + "/allRecipe");
         }
     }
 

@@ -2,6 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="model.*" %>
 <%@ page import="java.sql.Timestamp, java.util.*, java.text.*" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -72,6 +74,8 @@ body {
     height: auto;
     border-radius: 10px;
     margin-bottom: 1rem;
+    align-items: center;
+     
 }
 
 .recipe-content h3 {
@@ -230,61 +234,16 @@ form button[type="button"]:focus,
     outline: 2px solid #4CAF50;
     outline-offset: 2px;
 }
-
-/* Responsive design */
-@media (max-width: 768px) {
-    .main-content {
-        margin: 1rem;
-        padding: 1rem;
-    }
-
-    .nav-buttons {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .nav-button {
-        width: 100%;
-        text-align: center;
-    }
-
-    .popup {
-        width: 95%;
-        padding: 1.5rem;
-    }
-
-    .recipe-content h3 {
-        font-size: 1.5rem;
-    }
-
-    .popup .product-list {
-        max-height: 150px;
-    }
+.popup-image {
+    display: block;
+    max-width: 80%;
+    height: auto;
+    margin: 1rem auto;
+    border-radius: 10px;
 }
 
-@media (max-width: 480px) {
-    .recipe-content h3 {
-        font-size: 1.25rem;
-    }
 
-    .recipe-content p,
-    .meta {
-        font-size: 0.875rem;
-    }
 
-    .popup h3 {
-        font-size: 1.25rem;
-    }
-
-    .popup .button {
-        width: 100%;
-        margin: 0.5rem 0;
-    }
-
-    .popup .product-list {
-        max-height: 120px;
-    }
-}
 </style>
     </head>
     <body>
@@ -331,30 +290,31 @@ form button[type="button"]:focus,
                 </div>
                 <div class="recipe-content">
                     <img src="${pageContext.request.contextPath}/images/${image}" alt="${name}">
-                    <p>${type}</p>
+                    
                     <h3>${name}</h3>
-                    <p>Main ingredients</p>
+                    <p>Food type : ${type}</p>
+                    <p>Main ingredients: </p>
                     <div class="ingredients-list">
                         <%
                             ArrayList<Product> pro = (ArrayList<Product>)request.getAttribute("productByRecipeId");
                             if (pro != null && !pro.isEmpty()) {
                                 for (Product p : pro) {
                         %>
-                            <span><%= p.getName() %></span>
+                            <span>- <%= p.getName() %></span>
                         <%
                                 }
                             }
                         %>
                     </div>
                     <div class="meta">
-                        <span class="date">${createdAt}</span>
+                        <fmt:formatDate value="${createdAt}" pattern="dd/MM/yyyy" />
                         <span class="author">By ${createBy}</span>
                     </div>
                     <p class="description">${description}</p>
                 </div>
                 <c:if test="${sessionScope.user.getId() == recipe.getNutritionist().getId()}">
                     <div>
-                        <form method="post" action="${pageContext.request.contextPath}/recipeDetail">
+                        <form method="post"  action="${pageContext.request.contextPath}/recipeDetail">
                             <input type="hidden" name="recipeId" value="${recipeId}">
                             <button type="button" onclick="openPopup('${recipeId}', '${image}', '${name}', '${description}', '${type}')">Edit</button>
                             <button type="submit" name="action" value="deleteRecipe">Delete</button>
@@ -365,13 +325,13 @@ form button[type="button"]:focus,
             <div class="overlay" id="overlay"></div>
             <div class="popup" id="popup">
                 <h3>Edit Recipe</h3>
-                <form id="editRecipe" method="post" enctype="multipart/form-data" action="${pageContext.request.contextPath}/recipeDetail">
+                <form id="editRecipe" method="post" enctype="multipart/form-data" accept-charset="UTF-8" action="${pageContext.request.contextPath}/recipeDetail">
                     <input type="hidden" id="popupRecipeId" name="recipeId" value="${recipeId}">
                     <input type="hidden" name="action" value="editRecipe">
                     <input type="hidden" name="image" id="popupImage" value="${image}">
                     <p>Image</p>
-                    <input type="file" name="file" accept="image/*" />
-                    <img src="${pageContext.request.contextPath}/images/${image}" alt="${name}">
+                    <input  type="file" name="file" accept="image/*" />
+                    <img class="popup-image" src="${pageContext.request.contextPath}/images/${image}" alt="${name}">
                     <p>Type</p>
                     <select name="typeId" id="popupType">
                         <option value="" ${param.typeId == null || param.typeId == '' ? 'selected' : ''}>All Types</option>
