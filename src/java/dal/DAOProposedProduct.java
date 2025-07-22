@@ -44,6 +44,7 @@ public class DAOProposedProduct {
                 p.setImage(rs.getString("image"));
                 Category c = new Category();
                 c.setId(rs.getInt("category_id"));
+                c.setName(rs.getString("category_name"));
                 p.setCategory(c);
                 p.setDescription(rs.getString("description"));
                 p.setReason(rs.getString("reason"));
