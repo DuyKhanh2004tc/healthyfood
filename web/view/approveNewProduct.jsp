@@ -87,7 +87,7 @@
         </div>
 
 
-        <div class="pagination">
+        
             <div class="pagination">
                 <c:if test="${currentPage > 1}">
                     <c:url var="prevUrl" value="/approve">
@@ -138,7 +138,7 @@
                     <a class="page-link prev-next" href="${nextUrl}">Next</a>
                 </c:if>
             </div>
-        </div>
+        
 
     </body>
 </html>

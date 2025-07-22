@@ -179,31 +179,30 @@ public class OrderCheckoutServlet extends HttpServlet {
                 } else if (productId_raw == null && u == null) {
                     session.removeAttribute("itemList");
                 }
-                if (u == null) {
-                    StringBuilder content = new StringBuilder();
-                    content.append("Dear ").append(userName).append(",\n\n");
-                    content.append("Thank you for shopping with Healthy Food!\n\n");
-                    content.append("We have received your order successfully. Below are your order details:\n\n");
-                    content.append("Order ID: ").append(order.getId()).append("\n");
-                    content.append("Total Amount: $").append(order.getTotalAmount()).append("\n");
-                    content.append("Shipping Address: ").append(address).append("\n");
-                    content.append("Phone: ").append(phone).append("\n");
-                    content.append("Email: ").append(email).append("\n");
-                    content.append("Payment Method: ").append(paymentMethod).append("\n\n");
 
-                    content.append("Items Ordered:\n");
-                    for (CartItem item : itemList) {
-                        content.append("- ")
-                                .append(item.getProduct().getName())
-                                .append(" x ").append(item.getQuantity())
-                                .append(" - $").append(item.getProduct().getPrice()).append("\n");
-                    }
+                StringBuilder content = new StringBuilder();
+                content.append("Dear ").append(userName).append(",\n\n");
+                content.append("Thank you for shopping with Healthy Food!\n\n");
+                content.append("We have received your order successfully. Below are your order details:\n\n");
+                content.append("Order ID: ").append(order.getId()).append("\n");
+                content.append("Total Amount: $").append(order.getTotalAmount()).append("\n");
+                content.append("Shipping Address: ").append(address).append("\n");
+                content.append("Phone: ").append(phone).append("\n");
+                content.append("Email: ").append(email).append("\n");
+                content.append("Payment Method: ").append(paymentMethod).append("\n\n");
 
-                    content.append("\nWe will process and ship your order soon!\n\n");
-                    content.append("Best regards,\nHealthy Food Team ");
-
-                    Mail.sendMail(email, "[HealthyFood] Order Confirmation - Order #" + order.getId(), content.toString());
+                content.append("Items Ordered:\n");
+                for (CartItem item : itemList) {
+                    content.append("- ")
+                            .append(item.getProduct().getName())
+                            .append(" x ").append(item.getQuantity())
+                            .append(" - $").append(item.getProduct().getPrice()).append("\n");
                 }
+
+                content.append("\nWe will process and ship your order soon!\n\n");
+                content.append("Best regards,\nHealthy Food Team ");
+
+                Mail.sendMail(email, "[HealthyFood] Order Confirmation - Order #" + order.getId(), content.toString());
 
                 request.setAttribute("order", order);
                 request.setAttribute("itemList", itemList);
