@@ -368,7 +368,6 @@
             </tbody>
         </table>
         <button type="button" onclick="openAddPopup()">Add</button>
-
         <div class="overlay" id="overlay"></div>
         <div class="popup" id="popup">
             <h3>Edit Product</h3>
