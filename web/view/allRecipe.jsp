@@ -14,305 +14,305 @@
         <style>
 
             * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
-}
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Arial', sans-serif;
+            }
 
-body {
-    background-color: #f4f4f9;
-    color: #333;
-    line-height: 1.6;
-    padding: 20px;
-    min-height: 100vh;
-}
+            body {
+                background-color: #f4f4f9;
+                color: #333;
+                line-height: 1.6;
+                padding: 20px;
+                min-height: 100vh;
+            }
 
-form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-    align-items: center;
-    justify-content: center;
-}
+            form {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-bottom: 20px;
+                align-items: center;
+                justify-content: center;
+            }
 
-input[type="text"], select {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    width: 100%;
-    max-width: 200px;
-    transition: border-color 0.3s ease;
-}
+            input[type="text"], select {
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-size: 16px;
+                width: 100%;
+                max-width: 200px;
+                transition: border-color 0.3s ease;
+            }
 
-input[type="text"]:focus, select:focus {
-    outline: none;
-    border-color: #28a745;
-    box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
-}
+            input[type="text"]:focus, select:focus {
+                outline: none;
+                border-color: #28a745;
+                box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+            }
 
-/* Button styling */
-button[type="submit"], button[type="button"] {
-    padding: 10px 20px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
+            /* Button styling */
+            button[type="submit"], button[type="button"] {
+                padding: 10px 20px;
+                background-color: #28a745;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+                transition: background-color 0.3s ease, transform 0.2s ease;
+            }
 
-button[type="submit"]:hover, button[type="button"]:hover {
-    background-color: #218838;
-    transform: translateY(-2px);
-}
+            button[type="submit"]:hover, button[type="button"]:hover {
+                background-color: #218838;
+                transform: translateY(-2px);
+            }
 
-button[onclick="openAddPopup()"] {
-    display: block;
-    margin: 0 auto 20px;
-}
+            button[onclick="openAddPopup()"] {
+                display: block;
+                margin: 0 auto 20px;
+            }
 
-.overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 1000;
-    transition: opacity 0.3s ease;
-}
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.6);
+                z-index: 1000;
+                transition: opacity 0.3s ease;
+            }
 
-.popup {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    max-width: 500px;
-    max-height: 80vh;
-    overflow-y: auto;
-    z-index: 1001;
-    animation: fadeIn 0.3s ease;
-}
+            .popup {
+                display: none;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                width: 90%;
+                max-width: 500px;
+                max-height: 80vh;
+                overflow-y: auto;
+                z-index: 1001;
+                animation: fadeIn 0.3s ease;
+            }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -60%);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, -50%);
-    }
-}
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translate(-50%, -60%);
+                }
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, -50%);
+                }
+            }
 
-.popup h3 {
-    margin-bottom: 20px;
-    color: #28a745;
-    text-align: left;
-    font-size: 1.5rem;
-}
+            .popup h3 {
+                margin-bottom: 20px;
+                color: #28a745;
+                text-align: left;
+                font-size: 1.5rem;
+            }
 
-.popup form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: flex-start;
-}
+            .popup form {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
 
-.popup input[type="text"],
-.popup textarea,
-.popup select,
-.popup input[type="file"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 14px;
-    transition: border-color 0.3s ease;
-}
+            .popup input[type="text"],
+            .popup textarea,
+            .popup select,
+            .popup input[type="file"] {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                font-size: 14px;
+                transition: border-color 0.3s ease;
+            }
 
-.popup input[type="text"]:focus,
-.popup textarea:focus,
-.popup select:focus {
-    outline: none;
-    border-color: #28a745;
-    box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
-}
+            .popup input[type="text"]:focus,
+            .popup textarea:focus,
+            .popup select:focus {
+                outline: none;
+                border-color: #28a745;
+                box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+            }
 
-.popup textarea {
-    resize: vertical;
-    min-height: 100px;
-}
+            .popup textarea {
+                resize: vertical;
+                min-height: 100px;
+            }
 
-/* Checkbox container */
-.checkbox-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    max-height: 150px;
-    width: 100%;
-    overflow-y: auto;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-}
+            /* Checkbox container */
+            .checkbox-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                max-height: 150px;
+                width: 100%;
+                overflow-y: auto;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                background-color: #f9f9f9;
+            }
 
-.checkbox-item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 14px;
-}
+            .checkbox-item {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                font-size: 14px;
+            }
 
-.popup input[type="checkbox"] {
-    margin: 0;
-    accent-color: #28a745;
-    width: 16px;
-    height: 16px;
-}
+            .popup input[type="checkbox"] {
+                margin: 0;
+                accent-color: #28a745;
+                width: 16px;
+                height: 16px;
+            }
 
-/* Button container for Save and Cancel */
-.button-container {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-}
+            /* Button container for Save and Cancel */
+            .button-container {
+                display: flex;
+                gap: 10px;
+                width: 100%;
+            }
 
-.popup .button {
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    flex: 1;
-}
+            .popup .button {
+                padding: 10px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: background-color 0.3s ease, transform 0.2s ease;
+                flex: 1;
+            }
 
-.popup .button.save {
-    background-color: #28a745;
-    color: white;
-    border: none;
-}
+            .popup .button.save {
+                background-color: #28a745;
+                color: white;
+                border: none;
+            }
 
-.popup .button.cancel {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-}
+            .popup .button.cancel {
+                background-color: #dc3545;
+                color: white;
+                border: none;
+            }
 
-.popup .button:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
-}
+            .popup .button:hover {
+                opacity: 0.9;
+                transform: translateY(-2px);
+            }
 
-/* Recipe list styling */
-.recipe-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    padding: 20px 0;
-}
+            /* Recipe list styling */
+            .recipe-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+                justify-content: center;
+                padding: 20px 0;
+            }
 
-.recipe-card {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    width: 100%;
-    max-width: 300px;
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+            .recipe-card {
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                padding: 15px;
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
 
-.recipe-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
+            .recipe-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
 
-img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    object-fit: cover;
-    aspect-ratio: 4/3;
-}
+            img {
+                max-width: 100%;
+                height: auto;
+                border-radius: 8px;
+                margin-bottom: 10px;
+                object-fit: cover;
+                aspect-ratio: 4/3;
+            }
 
-p {
-    margin: 5px 0;
-    font-size: 14px;
-}
+            p {
+                margin: 5px 0;
+                font-size: 14px;
+            }
 
-p:first-of-type {
-    font-weight: bold;
-    font-size: 16px;
-    color: #28a745;
-}
+            p:first-of-type {
+                font-weight: bold;
+                font-size: 16px;
+                color: #28a745;
+            }
 
-.recipe-card p:nth-of-type(1) {
-    text-transform: capitalize;
-    font-weight: bold;
-    font-size: 16px;
-    color: #28a745;
-}
+            .recipe-card p:nth-of-type(1) {
+                text-transform: capitalize;
+                font-weight: bold;
+                font-size: 16px;
+                color: #28a745;
+            }
 
-.recipe-card p:nth-of-type(2) {
-    text-transform: lowercase;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    height: 4.5em;
-    font-size: 14px;
-}
+            .recipe-card p:nth-of-type(2) {
+                text-transform: lowercase;
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                height: 4.5em;
+                font-size: 14px;
+            }
 
-:focus {
-    outline: 2px solid #28a745;
-    outline-offset: 2px;
-}
+            :focus {
+                outline: 2px solid #28a745;
+                outline-offset: 2px;
+            }
 
-button, input, select, textarea {
-    font-size: 16px;
-}
+            button, input, select, textarea {
+                font-size: 16px;
+            }
 
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
-    
-}
+            .sr-only {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                border: 0;
 
-.recipe-list a {
-    text-decoration: none;
-    color: inherit;
-}
+            }
 
-.recipe-list a:visited {
-    color: inherit;
-}
+            .recipe-list a {
+                text-decoration: none;
+                color: inherit;
+            }
 
-.recipe-list a p {
-    text-decoration: none;
-    color: inherit;
-}
+            .recipe-list a:visited {
+                color: inherit;
+            }
+
+            .recipe-list a p {
+                text-decoration: none;
+                color: inherit;
+            }
 
         </style>
     </head>
@@ -396,32 +396,32 @@ button, input, select, textarea {
                         <img src="${pageContext.request.contextPath}/images/${i.image}" alt="${name}">
                         <p>${i.name}</p>
                         <p>${i.description}</p>
-                         <fmt:formatDate value="${i.createdAt}" pattern="dd/MM/yyyy" />
+                        <fmt:formatDate value="${i.createdAt}" pattern="dd/MM/yyyy" />
                     </div>
                 </a>
             </c:forEach></div>
-        </div>
-        <script>
-            function openAddPopup() {
-                document.getElementById('popupadd').style.display = 'block';
-                document.getElementById('overlay').style.display = 'block';
-            }
+    </div>
+    <script>
+        function openAddPopup() {
+            document.getElementById('popupadd').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
 
-            function closePopup() {
-                document.getElementById('popupadd').style.display = 'none';
-                document.getElementById('overlay').style.display = 'none';
-                document.getElementById('productSearch').value = '';
-                filterProducts();
-            }
+        function closePopup() {
+            document.getElementById('popupadd').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('productSearch').value = '';
+            filterProducts();
+        }
 
-            function filterProducts() {
-                const searchTerm = document.getElementById('productSearch').value.toLowerCase();
-                const checkboxItems = document.querySelectorAll('.checkbox-item');
-                checkboxItems.forEach(item => {
-                    const label = item.querySelector('label').textContent.toLowerCase();
-                    item.style.display = label.includes(searchTerm) ? 'flex' : 'none';
-                });
-            }
-        </script>            
-    </body>
+        function filterProducts() {
+            const searchTerm = document.getElementById('productSearch').value.toLowerCase();
+            const checkboxItems = document.querySelectorAll('.checkbox-item');
+            checkboxItems.forEach(item => {
+                const label = item.querySelector('label').textContent.toLowerCase();
+                item.style.display = label.includes(searchTerm) ? 'flex' : 'none';
+            });
+        }
+    </script>            
+</body>
 </html>

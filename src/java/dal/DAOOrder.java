@@ -4,6 +4,7 @@ import model.Order;
 import model.OrderDetail;
 import model.OrderStatus;
 import model.User;
+import model.Product;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,7 +13,6 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
-import model.Product;
 
 public class DAOOrder {
 
@@ -22,8 +22,16 @@ public class DAOOrder {
 
     public DAOOrder() {
         if (INSTANCE == null) {
-            con = new DBContext().connect;
-            System.out.println("Database connection established: " + (con != null));
+            try {
+                con = new DBContext().connect;
+                if (con == null) {
+                    throw new SQLException("Database connection is null");
+                }
+                System.out.println("Database connection established successfully at " + new java.util.Date());
+            } catch (SQLException e) {
+                System.err.println("Failed to establish database connection: " + e.getMessage());
+                e.printStackTrace();
+            }
         } else {
             INSTANCE = this;
         }
@@ -35,19 +43,11 @@ public class DAOOrder {
                 + "receiver_name, receiver_phone, receiver_email, shipping_address, delivery_message) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement st = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            if (order.getUser() != null) {
-                st.setInt(1, order.getUser().getId());
-            } else {
-                st.setNull(1, Types.INTEGER);
-            }
+            st.setObject(1, order.getUser() != null ? order.getUser().getId() : null, Types.INTEGER);
             st.setDouble(2, order.getTotalAmount());
             st.setString(3, order.getPaymentMethod());
             st.setInt(4, order.getStatus().getId());
-            if (order.getShipper() != null) {
-                st.setInt(5, order.getShipper().getId());
-            } else {
-                st.setNull(5, Types.INTEGER);
-            }
+            st.setObject(5, order.getShipper() != null ? order.getShipper().getId() : null, Types.INTEGER);
             st.setString(6, order.getReceiverName());
             st.setString(7, order.getReceiverPhone());
             st.setString(8, order.getReceiverEmail());
@@ -62,8 +62,8 @@ public class DAOOrder {
                 }
             }
         } catch (SQLException e) {
+            System.err.println("Error inserting order: " + e.getMessage());
             e.printStackTrace();
-            System.out.println("Error inserting order: " + e.getMessage());
         }
         return orderId;
     }
@@ -77,13 +77,17 @@ public class DAOOrder {
             st.setDouble(4, od.getPrice());
             st.executeUpdate();
         } catch (SQLException e) {
+            System.err.println("Error inserting order detail: " + e.getMessage());
             e.printStackTrace();
-            System.out.println("Error inserting order detail: " + e.getMessage());
         }
     }
 
     public List<Order> getOrdersByStatusIn(List<Integer> statusIds) throws SQLException {
         List<Order> orders = new ArrayList<>();
+        if (statusIds == null || statusIds.isEmpty()) {
+            System.out.println("No statusIds provided for getOrdersByStatusIn at " + new java.util.Date());
+            return orders;
+        }
         String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, s.name AS shipper_name, "
                 + "o.delivery_message "
                 + "FROM [dbo].[Orders] o "
@@ -121,12 +125,14 @@ public class DAOOrder {
                 } else {
                     System.out.println("Warning: No shipper found for shipper_id: " + (rs.wasNull() ? "NULL" : shipperId));
                 }
+                // Tải chi tiết đơn hàng
+                order.setOrderDetails(getOrderDetails(rs.getInt("id")));
                 orders.add(order);
                 System.out.println("Retrieved order ID: " + order.getId() + ", Status: " + order.getStatus().getStatusName() + ", Delivery Message: " + order.getDeliveryMessage());
             }
         } catch (SQLException e) {
+            System.err.println("SQL Error in getOrdersByStatusIn: " + e.getMessage());
             e.printStackTrace();
-            System.out.println("SQL Error in getOrdersByStatusIn: " + e.getMessage());
             throw e;
         }
         return orders;
@@ -237,23 +243,35 @@ public class DAOOrder {
 
     private List<OrderDetail> getOrderDetails(int orderId) throws SQLException {
         List<OrderDetail> details = new ArrayList<>();
-        String sql = "SELECT p.id, p.name, od.quantity, od.price "
+        if (orderId <= 0) {
+            System.err.println("Invalid orderId: " + orderId + " at " + new java.util.Date());
+            return details;
+        }
+        String sql = "SELECT od.id, p.id AS product_id, p.name, od.quantity, od.price "
                 + "FROM OrderDetail od JOIN Product p ON od.product_id = p.id "
                 + "WHERE od.order_id = ?";
         try (PreparedStatement st = con.prepareStatement(sql)) {
             st.setInt(1, orderId);
             try (ResultSet rs = st.executeQuery()) {
+                if (!rs.isBeforeFirst()) {
+                    System.out.println("No order details found for orderId: " + orderId + " at " + new java.util.Date());
+                }
                 while (rs.next()) {
                     Product product = new Product();
-                    product.setId(rs.getInt("id"));
+                    product.setId(rs.getInt("product_id"));
                     product.setName(rs.getString("name"));
                     OrderDetail detail = new OrderDetail();
+                    detail.setId(rs.getInt("id"));
                     detail.setProduct(product);
                     detail.setQuantity(rs.getInt("quantity"));
                     detail.setPrice(rs.getDouble("price"));
                     details.add(detail);
                 }
             }
+        } catch (SQLException e) {
+            System.err.println("SQL Error in getOrderDetails for orderId " + orderId + ": " + e.getMessage());
+            e.printStackTrace();
+            throw e;
         }
         return details;
     }
@@ -337,8 +355,14 @@ public class DAOOrder {
                     order.setShippingAddress(rs.getString("shipping_address"));
                     order.setDeliveryMessage(rs.getString("delivery_message"));
                     order.setOrderDetails(getOrderDetails(rs.getInt("id")));
+                } else {
+                    System.out.println("No order found with ID: " + orderId + " at " + new java.util.Date());
                 }
             }
+        } catch (SQLException e) {
+            System.err.println("SQL Error in getOrderById for orderId " + orderId + ": " + e.getMessage());
+            e.printStackTrace();
+            throw e;
         }
         return order;
     }

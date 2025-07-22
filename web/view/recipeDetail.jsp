@@ -14,7 +14,7 @@
        <style>
 /* General reset and base styles */
 * {
-    box-sizing: border-box;
+    
     margin: 0;
     padding: 0;
 }
@@ -36,6 +36,7 @@ body {
     padding: 1.5rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+    
 }
 
 /* Navigation buttons */
@@ -69,7 +70,7 @@ body {
 }
 
 /* Recipe content */
-.recipe-content img {
+.recipe-img {
     max-width: 100%;
     height: auto;
     border-radius: 10px;
