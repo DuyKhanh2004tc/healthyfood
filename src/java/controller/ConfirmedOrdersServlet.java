@@ -1,7 +1,6 @@
 package controller;
 
 import dal.DAOOrder;
-import dal.DAOOrderStatus;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,7 +19,8 @@ public class ConfirmedOrdersServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         DAOOrder dao = DAOOrder.INSTANCE;
-        DAOOrderStatus daoStatus = DAOOrderStatus.INSTANCE;
+        String orderIdParam = request.getParameter("orderId");
+
         try {
             HttpSession session = request.getSession(false);
             if (session == null || session.getAttribute("user") == null) {
@@ -34,11 +34,28 @@ public class ConfirmedOrdersServlet extends HttpServlet {
                 return;
             }
 
-            List<Order> pendingOrders = dao.getOrdersByStatusIn(List.of(1)); // Pending (chờ xác nhận)
-            request.setAttribute("pendingOrders", pendingOrders);
+            if (orderIdParam != null && !orderIdParam.isEmpty()) {
+                int orderId = Integer.parseInt(orderIdParam);
+                Order order = dao.getOrderById(orderId);
+                if (order != null) {
+                    request.setAttribute("order", order);
+                    request.getRequestDispatcher("/view/orderDetail.jsp").forward(request, response);
+                    return;
+                } else {
+                    request.setAttribute("error", "Order not found with ID: " + orderId);
+                }
+            } else {
+                List<Integer> statusIds = new ArrayList<>();
+                statusIds.add(1); // Pending
+                List<Order> pendingOrders = dao.getOrdersByStatusIn(statusIds);
+                request.setAttribute("pendingOrders", pendingOrders);
+            }
         } catch (SQLException e) {
             request.setAttribute("error", "Error fetching orders: " + e.getMessage());
             e.printStackTrace();
+        } catch (NumberFormatException e) {
+            request.setAttribute("error", "Invalid order ID");
+            request.getRequestDispatcher("/view/confirmedOrders.jsp").forward(request, response);
         }
         request.getRequestDispatcher("/view/confirmedOrders.jsp").forward(request, response);
     }
