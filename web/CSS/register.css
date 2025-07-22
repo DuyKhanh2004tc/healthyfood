@@ -36,7 +36,7 @@ body {
 .txt_field input[type="email"],
 .txt_field input[type="password"],
 .txt_field input[type="date"] {
-  width: 100%;
+  width: 96%;
   padding: 10px;
   border: none;
   border-bottom: 2px solid #aaa;

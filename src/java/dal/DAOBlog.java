@@ -153,6 +153,30 @@ public class DAOBlog {
         }
         return blog;
     }
+    
+    public int insertBlog(Blog blog) {
+    int generatedId = -1;
+    String sql = "INSERT INTO Blog (title, image, description, user_id, created_at) VALUES (?, ?, ?, ?, ?)";
+    try (PreparedStatement st = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        st.setString(1, blog.getTitle());
+        st.setString(2, blog.getImage());
+        st.setString(3, blog.getDescription());
+        st.setInt(4, blog.getUser().getId());
+        st.setTimestamp(5, blog.getCreated_at());
+
+        int affectedRows = st.executeUpdate();
+        if (affectedRows > 0) {
+            try (ResultSet generatedKeys = st.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    generatedId = generatedKeys.getInt(1);
+                }
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return generatedId;
+}
 
     public boolean updateBlog(Blog blog) {
         String sql = "UPDATE Blog SET title = ?, image = ?, description = ?, user_id = ? WHERE id = ?";

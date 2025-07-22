@@ -58,7 +58,7 @@
                         </form>
                     </div>
 
-                    <c:if test="${sessionScope.user.getRole().getId() == 4}">        
+                        <c:if test="${sessionScope.user.getRole().getId() == 4}">        
                         <div class="nb-filter-box">
                             <h3>Manage Blog</h3>
                             <form method="post" action="${pageContext.request.contextPath}/manageBlog">
@@ -87,28 +87,37 @@
 
 
                 <div class="nb-container">
-                    <div class="nb-head">
-                        <h1>Welcome to Our Nutrition Blog</h1>
-                        <p>Discover healthy eating tips and nutritious recipes to improve your lifestyle. Stay tuned for our latest posts!</p>
-                    </div>
-                    <section class="nb-blog-grid">
-                        <c:forEach items="${requestScope.blogList}" var="o">
-                            <article class="nb-blog-card">
-                                <a href="${pageContext.request.contextPath}/blogDetail?blogId=${o.id}">
-                                    <img src="${pageContext.request.contextPath}/images/${o.image}" alt="${o.title}">
-                                    <div class="nb-blog-card-content">
-                                        <h2>${o.title}</h2>
-                                        <p class="nb-description">${o.description}</p>
-                                        <p class="nb-date">${o.created_at}</p>
-                                    </div>
-                                </a>
-                            </article>
-                        </c:forEach>
-                    </section>
+                    <c:choose>
+                        <c:when test="${requestScope.showManageBlog == true}">
+                            <jsp:include page="ManageBlog.jsp" />
+                        </c:when>
+                        <c:otherwise>
+                            <div class="nb-head">
+                                <h1>Welcome to Our Nutrition Blog</h1>
+                                <p>Discover healthy eating tips and nutritious recipes to improve your lifestyle. Stay tuned for our latest posts!</p>
+                            </div>
+                            <section class="nb-blog-grid">
+                                <c:forEach items="${requestScope.blogList}" var="o">
+                                    <article class="nb-blog-card">
+                                        <a href="${pageContext.request.contextPath}/blogDetail?blogId=${o.id}">
+                                            <img src="${pageContext.request.contextPath}/images/${o.image}" alt="${o.title}">
+                                            <div class="nb-blog-card-content">
+                                                <h2>${o.title}</h2>
+                                                <p class="nb-description">${o.description}</p>
+                                                <p class="nb-date">${o.created_at}</p>
+                                            </div>
+                                        </a>
+                                    </article>
+                                </c:forEach>
+                            </section>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
         </div>
-        <jsp:include page="chatbot.jsp"></jsp:include>
-        <jsp:include page="footer.jsp" />
+        <c:if test="${sessionScope.user.getRole().getId() != 4}">
+            <jsp:include page="chatbot.jsp"></jsp:include>
+            <jsp:include page="footer.jsp" />
+        </c:if>
     </body>
 </html>
