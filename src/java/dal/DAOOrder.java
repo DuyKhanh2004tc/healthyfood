@@ -366,4 +366,21 @@ public class DAOOrder {
         }
         return order;
     }
+
+    public boolean isProductOrdered(int productId) {
+        String sql = "SELECT 1 FROM OrderDetail od "
+                + "JOIN Orders o ON od.order_id = o.id "
+                + "WHERE od.product_id = ? AND o.status_id = 6";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setInt(1, productId);
+            try (ResultSet rs = st.executeQuery()) {
+                return rs.next(); // Trả về true nếu có ít nhất một đơn hàng đã thanh toán chứa sản phẩm này
+            }
+        } catch (SQLException e) {
+            System.err.println("Error checking if product is ordered and paid: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }
