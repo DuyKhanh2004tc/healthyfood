@@ -1,4 +1,3 @@
-<%-- view/sellerWaitingOrders.jsp --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -12,6 +11,22 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="CSS/processingOrders.css"> <!-- Tái sử dụng CSS hiện có -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .order-card {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .order-card:hover {
+            background-color: #f0f8ff;
+        }
+        .order-link {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        .order-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
     <jsp:include page="SideBarOfSheller.jsp" />
@@ -30,7 +45,7 @@
                         <div class="col-md-6 mb-4">
                             <div class="order-card shadow-sm">
                                 <div class="card-body">
-                                    <p><strong>Order ID:</strong> ${order.id}</p>
+                                    <p><strong>Order ID:</strong> <a href="${pageContext.request.contextPath}/SellerWaitingOrders?orderId=${order.id}" class="order-link">${order.id}</a></p>
                                     <p><strong>Customer:</strong> ${order.receiverName}</p>
                                     <p><strong>Customer Phone:</strong> ${order.receiverPhone}</p>
                                     <p><strong>Address:</strong> ${order.shippingAddress}</p>

@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpSession;
 import model.Order;
 import model.User;
 
+@WebServlet("/SellerCanceledOrdersServlet")
 public class SellerCanceledOrdersServlet extends HttpServlet {
 
     @Override
@@ -21,6 +22,8 @@ public class SellerCanceledOrdersServlet extends HttpServlet {
             throws ServletException, IOException {
         DAOOrder dao = DAOOrder.INSTANCE;
         DAOOrderStatus daoStatus = DAOOrderStatus.INSTANCE;
+        String orderIdParam = request.getParameter("orderId");
+
         try {
             HttpSession session = request.getSession(false);
             if (session == null || session.getAttribute("user") == null) {
@@ -29,17 +32,38 @@ public class SellerCanceledOrdersServlet extends HttpServlet {
             }
 
             User user = (User) session.getAttribute("user");
-            if (user.getRole().getId() != 5) {
+            if (user.getRole().getId() != 5) { // Kiểm tra role_id = 5 (Seller)
                 response.sendRedirect("login");
                 return;
             }
 
-            List<Order> canceledOrders = dao.getOrdersByStatusIn(List.of(7));
-            request.setAttribute("canceledOrders", canceledOrders);
+            if (orderIdParam != null && !orderIdParam.isEmpty()) {
+                int orderId = Integer.parseInt(orderIdParam);
+                Order order = dao.getOrderById(orderId);
+                if (order != null) {
+                    request.setAttribute("order", order);
+                    request.getRequestDispatcher("/view/orderDetail.jsp?fromPage=canceled").forward(request, response);
+                    return;
+                } else {
+                    request.setAttribute("error", "Order not found with ID: " + orderId);
+                }
+            } else {
+                List<Order> canceledOrders = dao.getOrdersByStatusIn(List.of(7)); // Canceled
+                request.setAttribute("canceledOrders", canceledOrders);
+            }
         } catch (SQLException e) {
             request.setAttribute("error", "Error fetching canceled orders: " + e.getMessage());
             e.printStackTrace();
+        } catch (NumberFormatException e) {
+            request.setAttribute("error", "Invalid order ID");
+            request.getRequestDispatcher("/view/sellerCanceledOrders.jsp").forward(request, response);
         }
         request.getRequestDispatcher("/view/sellerCanceledOrders.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doGet(request, response);
     }
 }
