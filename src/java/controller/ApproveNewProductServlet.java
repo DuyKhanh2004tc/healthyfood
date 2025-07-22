@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dal.DAOCategory;
 import dal.DAOProposedProduct;
 import dal.DAOUser;
 import java.io.IOException;
@@ -12,7 +13,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
+import model.Category;
 import model.ProposedProduct;
 import model.User;
 import utils.Pagination;
@@ -62,16 +65,54 @@ public class ApproveNewProductServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         DAOProposedProduct daoPropose = new DAOProposedProduct();
+        DAOCategory daoCategory = new DAOCategory();
+        List<Category> categoryList = daoCategory.getAllCategory();
         String orderBy = request.getParameter("btn_sort");
-        List<ProposedProduct> proposedList;
-        if(orderBy != null && orderBy.equalsIgnoreCase("Ascending")){
-            proposedList = daoPropose.getAllProposedProduct();
-        } else if (orderBy != null && orderBy.equalsIgnoreCase("Descending")){
-            proposedList = daoPropose.getAllProposedProductOrderByDESC();
+        String keyword = request.getParameter("keyword");
+        HttpSession session = request.getSession();
+        String categoryId_raw = request.getParameter("categoryId");
+        int categoryId = 0;
+
+        if (categoryId_raw != null && !categoryId_raw.equals("0")) {
+            try {
+                categoryId = Integer.parseInt(categoryId_raw);
+                request.getSession().setAttribute("categoryId", categoryId);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+
         } else {
-            proposedList = daoPropose.getAllProposedProduct();
+            session.removeAttribute("categoryId");
         }
-        
+
+        String status = request.getParameter("status");
+        if (status == null || status.equals("all")) {
+            session.removeAttribute("status");
+        } else {
+            session.setAttribute("status", status);
+        }
+
+        List<ProposedProduct> proposedList;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            request.setAttribute("keyword", keyword.trim());
+            proposedList = "Descending".equalsIgnoreCase(orderBy)
+                    ? daoPropose.getProposedProductBySearchDESC(keyword.trim())
+                    : daoPropose.getProposedProductBySearch(keyword.trim());
+        } else if (categoryId != 0) {
+            proposedList = "Descending".equalsIgnoreCase(orderBy)
+                    ? daoPropose.getProposedProductsByCategoryDESC(categoryId)
+                    : daoPropose.getAllProposedProductByCategory(categoryId);
+        } else if (status != null && !status.equalsIgnoreCase("all")) {
+            proposedList = "Descending".equalsIgnoreCase(orderBy)
+                    ? daoPropose.getProposedProductsByStatusDESC(status)
+                    : daoPropose.getProposedProductsByStatus(status);
+        } else {
+            proposedList = "Descending".equalsIgnoreCase(orderBy)
+                    ? daoPropose.getAllProposedProductOrderByDESC()
+                    : daoPropose.getAllProposedProduct();
+        }
+
         request.setAttribute("proposedList", proposedList);
 
         int page = 1;
@@ -90,7 +131,7 @@ public class ApproveNewProductServlet extends HttpServlet {
         request.setAttribute("proposedList", pagedList);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
-
+        request.setAttribute("categoryList", categoryList);
         request.getRequestDispatcher("/view/approveNewProduct.jsp").forward(request, response);
 
     }

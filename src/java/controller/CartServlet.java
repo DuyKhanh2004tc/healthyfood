@@ -107,15 +107,24 @@ public class CartServlet extends HttpServlet {
                     e.printStackTrace();
                 }
             }
+            
+            
             if (u.getRole().getId() == 3) {
                 List<CartItem> itemList = daoCart.getCartItemsByUserId(u.getId());
                 List<Product> productList = new ArrayList<>();
+                boolean outOfStock = false;
                 for (CartItem i : itemList) {
                     Product p = dao.getProductById(i.getProduct().getId());
+                    if (i.getQuantity() > p.getStock()) {
+                        outOfStock = true;
+                    }
                     productList.add(p);
                 }
-                request.setAttribute("productList", productList);
+                if (outOfStock) {
+                    request.setAttribute("stockError", "Some items in your cart are out of stock.");
+                }
 
+                request.setAttribute("productList", productList);
                 request.setAttribute("itemList", itemList);
                 request.getRequestDispatcher("/view/cart.jsp").forward(request, response);
                 return;
@@ -183,6 +192,23 @@ public class CartServlet extends HttpServlet {
                     e.printStackTrace();
                 }
             }
+            List<CartItem> itemList = (List<CartItem>) session.getAttribute("itemList");
+            boolean hasOutOfStock = false;
+
+            if (itemList != null) {
+                for (CartItem ci : itemList) {
+                    Product p = dao.getProductById(ci.getProduct().getId());
+                    if (ci.getQuantity() > p.getStock()) {
+                        hasOutOfStock = true;
+                        break;
+                    }
+                }
+            }
+
+            if (hasOutOfStock) {
+                request.setAttribute("stockError", "Some items in your cart are out of stock.");
+            }
+            request.setAttribute("itemList", itemList);
             request.getRequestDispatcher("/view/cart.jsp").forward(request, response);
         }
     }
