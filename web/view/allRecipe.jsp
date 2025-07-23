@@ -314,7 +314,14 @@
                 text-decoration: none;
                 color: inherit;
             }
-
+.recipe-img {
+    width: 100%; /* Ensures the image takes the full width of the card */
+    height: 200px; /* Set a fixed height for consistency */
+    border-radius: 8px;
+    margin-bottom: 10px;
+    object-fit: cover; /* Ensures the image covers the area without distortion */
+    object-position: center; /* Centers the image */
+}
         </style>
     </head>
     <body>

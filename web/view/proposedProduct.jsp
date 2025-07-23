@@ -2,6 +2,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="model.*, java.sql.Timestamp, java.util.*, java.text.*" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -9,7 +10,7 @@
         <link href="${pageContext.request.contextPath}/CSS/nutritionistHome.css" rel="stylesheet" type="text/css"/>
         <link href="${pageContext.request.contextPath}/CSS/home.css" rel="stylesheet" type="text/css"/>
         <style>
-            
+
             * {
                 margin: 0;
                 padding: 0;
@@ -23,6 +24,7 @@
                 line-height: 1.6;
                 padding: 20px;
                 min-height: 100vh;
+
             }
 
             /* Table styling */
@@ -99,6 +101,7 @@
                 cursor: pointer;
                 font-size: 16px;
                 transition: background-color 0.3s ease, transform 0.2s ease;
+                margin-top: 20px;
             }
 
             button[onclick="openAddPopup()"]:hover {
@@ -139,8 +142,14 @@
             }
 
             @keyframes fadeIn {
-                from { opacity: 0; transform: translate(-50%, -60%); }
-                to { opacity: 1; transform: translate(-50%, -50%); }
+                from {
+                    opacity: 0;
+                    transform: translate(-50%, -60%);
+                }
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, -50%);
+                }
             }
 
             .popup h3 {
@@ -219,7 +228,7 @@
                 background-color: #28a745;
                 color: white;
                 border: none;
-                
+
             }
 
             .popup .button.cancel {
@@ -231,53 +240,6 @@
             .popup .button:hover {
                 opacity: 0.9;
                 transform: translateY(-2px);
-            }
-
-            /* Responsive design */
-            @media (max-width: 768px) {
-                table {
-                    font-size: 14px;
-                }
-
-                th, td {
-                    padding: 8px;
-                }
-
-                td img {
-                    max-width: 60px;
-                }
-
-                .popup {
-                    width: 95%;
-                }
-            }
-
-            @media (max-width: 480px) {
-                body {
-                    padding: 10px;
-                }
-
-                td form {
-                    flex-direction: column;
-                    gap: 5px;
-                }
-
-                td button {
-                    width: 100%;
-                }
-
-                .button-container {
-                    flex-direction: column;
-                    gap: 10px;
-                }
-
-                .popup .button {
-                    width: 100%;
-                }
-
-                .popup h3 {
-                    font-size: 1.2rem;
-                }
             }
 
             /* Accessibility improvements */
@@ -299,6 +261,47 @@
                 overflow: hidden;
                 clip: rect(0, 0, 0, 0);
                 border: 0;
+            }
+            /* Search section styling */
+            form[method="get"] {
+                margin-top: 20px;
+                display: flex;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            form[method="get"] input[type="text"] {
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 14px;
+                width: 200px;
+                transition: border-color 0.3s ease;
+            }
+
+            form[method="get"] input[type="text"]:focus {
+                outline: none;
+                border-color: #28a745;
+                box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+            }
+
+            form[method="get"] button[type="submit"] {
+                padding: 10px 20px;
+                background-color: #28a745;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: background-color 0.3s ease, transform 0.2s ease;
+            }
+
+            form[method="get"] button[type="submit"]:hover {
+                background-color: #218838;
+                transform: translateY(-2px);
+            }
+            .search_add{
+                display: flex;
             }
         </style>
     </head>
@@ -324,26 +327,45 @@
                 </div>
             </div>
         </c:if>
-
+        <div class="search_add">
+            <form method="get" action="${pageContext.request.contextPath}/proposeProduct">
+                <input type="text" value="${param.productName}" placeholder="Search product name" name="productName"/>               
+                <button type="submit">Search</button>
+            </form> 
+            <button type="button" onclick="openAddPopup()">Add new propose product</button>
+        </div>
         <table border="1">
             <thead>
                 <tr>
                     <th>#</th>
                     <th>Image</th>
                     <th>Name</th>
-                    <th>Category Name</th>
+                    <th>Category</br>
+                        <select name="categoryId" onchange="location.href = 'proposeProduct?categoryId=' + this.value;">
+                            <option value="0">All Products</option>
+                            <c:forEach items="${requestScope.categoryList}" var="o">
+                                <option value="${o.id}" ${sessionScope.categoryId == o.id ? 'selected' : ''}>${o.name}</option>
+                            </c:forEach>    
+                        </select></th>
                     <th>Description</th>
                     <th>Reason</th>
                     <th>Shelf Life</th>
                     <th>Created At</th>
-                    <th>Status</th>
+                    <th>Status<br/>
+                        <select name="status" onchange="location.href = 'proposeProduct?status=' + this.value">
+                            <option value="all" ${param.status == 'all' ? 'selected' : ''}>All Status</option>
+                            <option value="pending" ${param.status == 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="accept" ${param.status == 'accept' ? 'selected' : ''}>Accepted</option>
+                            <option value="reject" ${param.status == 'reject' ? 'selected' : ''}>Rejected</option>
+                        </select>
+                    </th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <c:forEach items="${requestScope.proposedProductList}" var="i" varStatus="loop">
                     <tr>
-                        <td>${loop.index + 1}</td>
+                        <td>${(currentPage - 1) * 5 + loop.index + 1}</td>
                         <td>
                             <img src="${pageContext.request.contextPath}/images/${i.image}" width="80" alt="${i.name}">
                         </td>
@@ -352,7 +374,7 @@
                         <td>${i.description}</td>
                         <td>${i.reason}</td>
                         <td>${i.shelfLife}</td>
-                        <td>${i.createdAt}</td>
+                        <td><fmt:formatDate value="${i.createdAt}" pattern="dd/MM/yyyy" /></td> 
                         <td>${i.status}</td>
                         <td>
                             <form method="post" action="${pageContext.request.contextPath}/proposeProduct">
@@ -367,7 +389,7 @@
                 </c:forEach>
             </tbody>
         </table>
-        <button type="button" onclick="openAddPopup()">Add</button>
+
         <div class="overlay" id="overlay"></div>
         <div class="popup" id="popup">
             <h3>Edit Product</h3>
@@ -423,7 +445,58 @@
                 </div>
             </form>
         </div>
-
+        <div class="pagination">
+            <div class="pagination">
+                <c:if test="${currentPage > 1}">
+                    <c:url var="prevUrl" value="/proposeProduct">
+                        <c:param name="page" value="${currentPage - 1}" />
+                        
+                        <c:if test="${param.productName != null}">
+                            <c:param name="keyword" value="${param.productName}" />
+                        </c:if>
+                        <c:if test="${sessionScope.categoryId != null}">
+                            <c:param name="categoryId" value="${sessionScope.categoryId}" />
+                        </c:if>
+                        <c:if test="${sessionScope.status != null}">
+                            <c:param name="status" value="${sessionScope.status}" />
+                        </c:if>
+                    </c:url>
+                    <a class="page-link prev-next" href="${prevUrl}">Previous</a>
+                </c:if>
+                <c:forEach var="i" begin="1" end="${totalPages}">
+                    <c:url var="pageUrl" value="/proposeProduct">
+                        <c:param name="page" value="${i}" />
+                        
+                        <c:if test="${param.keyword != null}">
+                            <c:param name="keyword" value="${param.productName}" />
+                        </c:if>
+                        <c:if test="${sessionScope.categoryId != null}">
+                            <c:param name="categoryId" value="${sessionScope.categoryId}" />
+                        </c:if>
+                        <c:if test="${sessionScope.status != null}">
+                            <c:param name="status" value="${sessionScope.status}" />
+                        </c:if>
+                    </c:url>
+                    <a href="${pageUrl}" class="page-link">${i}</a>
+                </c:forEach>
+                <c:if test="${currentPage < totalPages}">
+                    <c:url var="nextUrl" value="/approve">
+                        <c:param name="page" value="${currentPage + 1}" />
+                        
+                        <c:if test="${param.productName != null}">
+                            <c:param name="keyword" value="${param.productName}" />
+                        </c:if>
+                        <c:if test="${sessionScope.categoryId != null}">
+                            <c:param name="categoryId" value="${sessionScope.categoryId}" />
+                        </c:if>
+                        <c:if test="${sessionScope.status != null}">
+                            <c:param name="status" value="${sessionScope.status}" />
+                        </c:if>
+                    </c:url>
+                    <a class="page-link prev-next" href="${nextUrl}">Next</a>
+                </c:if>
+            </div>
+        </div>
         <script>
             function openPopup(proposedId, image, name, categoryId, description, reason, shelfLife) {
                 document.getElementById('popup').style.display = 'block';

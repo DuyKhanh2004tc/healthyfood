@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="model.*" %>
 <%@ page import="java.sql.Timestamp, java.util.*, java.text.*" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -114,7 +115,6 @@
                 z-index: 999;
             }
 
-           
             .popup {
                 display: none;
                 position: fixed;
@@ -198,6 +198,46 @@
                 transform: none;
             }
 
+            /* Style for Edit and Delete buttons */
+            .blog-actions {
+                display: flex;
+                gap: 1rem;
+                justify-content: flex-end;
+                margin-top: 1rem;
+            }
+
+            .blog-actions button {
+                display: inline-block;
+                padding: 0.75rem 1.5rem;
+                border: none;
+                border-radius: 6px;
+                font-size: 1rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            }
+
+            .blog-actions button.edit {
+                background-color: #15803d; 
+                color: #fff;
+            }
+
+            .blog-actions button.edit:hover {
+                background-color: #166534; 
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            .blog-actions button.delete {
+                background-color: #dd0000; 
+                color: #fff;
+            }
+
+            .blog-actions button.delete:hover {
+                background-color: #dc2626; 
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
         </style>
     </head>
     <body>
@@ -205,7 +245,6 @@
             <jsp:include page="header.jsp" />
         </c:if>
         <c:if test="${sessionScope.user.getRole().getId()==4}">
-
             <div class="nutrition-header">
                 <div class="logo">
                     <a href="${pageContext.request.contextPath}/nutritionistHome">
@@ -219,14 +258,12 @@
                     <a href="${pageContext.request.contextPath}/proposeProduct">Propose new product</a>                 
                     <a href="${pageContext.request.contextPath}/nutritionBlog">Manage Blog</a>
                     <a href="${pageContext.request.contextPath}/logout">Logout</a>
-
                 </div>
             </div>
         </c:if>
         
         <div class="main-content">
             <div class="container">
-
                 <!-- Navigation Buttons -->
                 <div class="nav-buttons">
                     <c:choose>
@@ -237,7 +274,6 @@
                             <a class="nav-button disabled">⇐ Previous</a>
                         </c:otherwise>
                     </c:choose>
-
                     <c:choose>
                         <c:when test="${not empty nextId}">
                             <a href="${pageContext.request.contextPath}/blogDetail?blogId=${nextId}" class="nav-button">Next ⇒</a>
@@ -248,43 +284,38 @@
                     </c:choose>
                 </div>
 
-
                 <div class="blog-content">
-
                     <img src="${pageContext.request.contextPath}/images/${image}" alt="${title}">
-
                     <h3>${title}</h3>
                     <p> 
                         <%
-                                                ArrayList<Tag> tag = (ArrayList<Tag>)request.getAttribute("tag");
-                                                if(tag!=null&&!tag.isEmpty()){
-                                                for(Tag t : tag){
+                            ArrayList<Tag> tag = (ArrayList<Tag>)request.getAttribute("tag");
+                            if(tag!=null&&!tag.isEmpty()){
+                                for(Tag t : tag){
                         %>
                         #<%= t.getName()%> 
                         <%
-                                             }
-                                      }
+                                }
+                            }
                         %>
                     </p>
                     <div class="meta">
-                        <span class="date">${created_at}</span>
+                         <fmt:formatDate value="${created_at}" pattern="dd/MM/yyyy" />
                         <span class="author">By ${createBy}</span>
                     </div>
                     <p class="description">${description}</p>
                 </div>
 
                 <c:if test="${sessionScope.user.getId()== blog.getUser().getId()}">
-                    <div>
+                    <div class="blog-actions">
                         <form method="post" action="${pageContext.request.contextPath}/blogDetail">
                             <input type="hidden" name="blogId" value="${blogId}">
-                            <button type="button" onclick="openPopup('${blogId}', '${image}', '${title}', '${description}')">Edit</button>
-                            <button type="submit" name="action" value="deleteBlog">Delete</button>
+                            <button type="button" class="edit" onclick="openPopup('${blogId}', '${image}', '${title}', '${description}')">Edit</button>
+                            <button type="submit" class="delete" name="action" value="deleteBlog">Delete</button>
                         </form>
                     </div>
                 </c:if>
-
             </div>
-
 
             <div class="overlay" id="overlay"></div>
             <div class="popup" id="popup">
@@ -293,31 +324,29 @@
                     <input type="hidden" id="popupBlogId" name="blogId" value="${blogId}">
                     <input type="hidden" name="action" value="editBlog">
                     <input type="hidden" name="image" id="popupImage" value="${image}"> 
-
                     <p>Image</p>
                     <input type="file" name="file" accept="image/*" />
                     <img src="${pageContext.request.contextPath}/images/${image}" alt="${title}">
                     <p>Tag</p>                
                     <p> 
                         <%
-                                                ArrayList<Tag> tagList = (ArrayList<Tag>)request.getAttribute("tagList");
-                                                if(tagList!=null&&!tagList.isEmpty()){
-                                                for(Tag t : tagList){ 
-                                                        boolean check = false;
-                                                             if(tag != null){
-                                                                                  for(Tag ta : tag){
-                                                                                 if(ta.getId()==t.getId()){
-                                                                                            check=true;
-                                                                                              break;
-                                                                              }
-                                                                      }
-                                                          }
-                                                    %>                 
-
+                            ArrayList<Tag> tagList = (ArrayList<Tag>)request.getAttribute("tagList");
+                            if(tagList!=null&&!tagList.isEmpty()){
+                                for(Tag t : tagList){ 
+                                    boolean check = false;
+                                    if(tag != null){
+                                        for(Tag ta : tag){
+                                            if(ta.getId()==t.getId()){
+                                                check=true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                        %>                 
                         <input type="checkbox" name="chooseTag" value="<%= t.getId()%>" <%= check ? "checked":"" %>><%= t.getName()%> <br>
                         <%
-                                             }
-                                      }
+                                }
+                            }
                         %>
                     </p>
                     <p>Title</p>

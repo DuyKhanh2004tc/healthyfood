@@ -241,7 +241,25 @@ form button[type="button"]:focus,
     margin: 1rem auto;
     border-radius: 10px;
 }
+/* Recipe content image */
+.recipe-content img {
+    width: 80%; /* Set width to 90% of the parent container */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    display: block; /* Ensure the image is centered */
+    margin-left: auto;
+    margin-right: auto;
+}
 
+/* Popup image */
+.popup-image {
+    width: 90%; /* Set width to 90% of the parent container */
+    height: auto; /* Maintain aspect ratio */
+    margin: 1rem auto;
+    border-radius: 10px;
+    display: block; /* Ensure the image is centered */
+}
 
 
 </style>

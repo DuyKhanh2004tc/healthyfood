@@ -2,6 +2,7 @@
 <%@ page import="model.*" %>
 <%@ page import="java.sql.Timestamp, java.util.*, java.text.*" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -200,6 +201,10 @@
             .twoButtonP{
                 display: flex;
                 width: 276px;
+            }
+            .twoButtonPopup{
+                display: flex;
+                
             }
             .twoButtonEdit{
                 display: flex;
@@ -410,7 +415,7 @@
                     <div>
                         <h3><%= f.getUser().getName() %></h3>
                         <p><%= f.getContent() %></p>
-                        <p><%= f.getCreatedAt() %></p>
+                        <fmt:formatDate value="<%= f.getCreatedAt() %>" pattern="dd/MM/yyyy" />
                         <p><%= f.getRate() %> ★</p>
                     </div>
                     <% if (sessionUser != null && sessionUser.getId() == f.getUser().getId()) { %>
@@ -439,26 +444,19 @@
                         <input type="hidden" name="productId" value="<%= productId %>">
                         <input type="hidden" name="feedbackId" id="feedbackId">
                         <input type="hidden" name="action" value="editFeedback">
-                        <div class="stars">
-                            <label for="editStar1">★</label>
-                            <input type="radio" id="editStar1" name="rating" value="1">
-
-                            <label for="editStar2">★</label>
-                            <input type="radio" id="editStar2" name="rating" value="2">
-
-                            <label for="editStar3">★</label>
-                            <input type="radio" id="editStar3" name="rating" value="3">
-
-                            <label for="editStar4">★</label>
-                            <input type="radio" id="editStar4" name="rating" value="4">
-
-                            <label for="editStar5">★</label>
-                            <input type="radio" id="editStar5" name="rating" value="5">
-                        </div>
+                       <div class="stars" >
+                                <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+                                <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+                                <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+                                <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+                                <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+                            </div>
 
                         <textarea id="feedbackText" name="content" placeholder="Enter your feedback here..." required></textarea>
+                        <div class="twoButtonPopup">
                         <button type="submit" class="button">Save</button>
                         <button type="button" class="button" onclick="closePopup()">Cancel</button>
+                        </div>
                     </form>
                 </div>
 
@@ -466,22 +464,13 @@
                     <form method="post" action="${pageContext.request.contextPath}/productDetail">
                         <input type="hidden" name="productId" value="<%= productId %>">
                         <c:if test="${sessionScope.user.role.id == 3&&productOrdered == true}">
-                            <div class="stars">
-                                <label for="editStar1">★</label>
-                                <input type="radio" id="editStar1" name="rating" value="1">
-
-                                <label for="editStar2">★</label>
-                                <input type="radio" id="editStar2" name="rating" value="2">
-
-                                <label for="editStar3">★</label>
-                                <input type="radio" id="editStar3" name="rating" value="3">
-
-                                <label for="editStar4">★</label>
-                                <input type="radio" id="editStar4" name="rating" value="4">
-
-                                <label for="editStar5">★</label>
-                                <input type="radio" id="editStar5" name="rating" value="5">
-                            </div>
+                           <div class="stars" >
+                                <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+                                <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+                                <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+                                <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+                                <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+                            </div >
                             <textarea name="content" placeholder="Write your comment..." required></textarea>
                             <button type="submit" name="action" value="comment">Submit Comment</button>
                         </c:if>
@@ -505,8 +494,8 @@
                 document.getElementById('overlay').style.display = 'block';
                 document.getElementById('feedbackText').value = content;
                 document.getElementById('feedbackId').value = feedbackId;
+                document.getElementById('star' + rating).checked = true;
 
-                document.querySelector(`input[name="rating"][value="${rating}"]`).checked = true;
             }
 
             function closePopup() {

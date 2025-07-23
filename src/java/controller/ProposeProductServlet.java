@@ -19,12 +19,14 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import model.Category;
 import model.ProposedProduct;
 import model.User;
+import utils.Pagination;
 
 /**
  *
@@ -74,11 +76,63 @@ public class ProposeProductServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        User user = (User) request.getSession().getAttribute("user");
+        User user = (User) session.getAttribute("user");
         DAOProposedProduct dao = new DAOProposedProduct();
-        List proposedProductList = dao.listProductByNutritionistId(user.getId());
+        List<ProposedProduct> proposedProductList = dao.listProductByNutritionistId(user.getId());
         DAOCategory dao2 = new DAOCategory();
         List<Category> categoryList = dao2.getAllCategory();
+        String categoryId_raw = request.getParameter("categoryId");
+        int categoryId = 0;
+
+        if (categoryId_raw != null && !categoryId_raw.equals("0")) {
+
+            categoryId = Integer.parseInt(categoryId_raw);
+            session.setAttribute("categoryId", categoryId);
+            proposedProductList = dao.getProposedProductByNutritionistIdAndCategoryId(user.getId(), categoryId);
+            request.setAttribute("categoryList", categoryList);
+            request.setAttribute("proposedProductList", proposedProductList);
+            request.getRequestDispatcher("view/proposedProduct.jsp").forward(request, response);
+            return;
+        }
+
+        String status = request.getParameter("status");
+        if (status != null && !status.equals("all")) {
+            session.setAttribute("status", status);
+            proposedProductList = dao.getProposedProductByNutritionistIdAndStatus(user.getId(), status);
+            request.setAttribute("categoryList", categoryList);
+            request.setAttribute("proposedProductList", proposedProductList);
+            request.getRequestDispatcher("view/proposedProduct.jsp").forward(request, response);
+            return;
+        }
+        String productName = request.getParameter("productName");
+        if (productName != null && !productName.isEmpty()) {
+            List<ProposedProduct> list = new ArrayList<>();
+            for (ProposedProduct p : proposedProductList) {
+                if (p.getName().toLowerCase().contains(productName.toLowerCase())) {
+                    list.add(p);
+                }
+            }
+            proposedProductList = list;
+            request.setAttribute("categoryList", categoryList);
+            request.setAttribute("proposedProductList", proposedProductList);
+            request.getRequestDispatcher("view/proposedProduct.jsp").forward(request, response);
+            return;
+        }
+        int page = 1;
+        int pageSize = 5;
+        if (request.getParameter("page") != null) {
+            try {
+                page = Integer.parseInt(request.getParameter("page"));
+            } catch (NumberFormatException e) {
+                page = 1;
+            }
+        }
+        List<ProposedProduct> pagedList = Pagination.paginate(proposedProductList, page, pageSize);
+        int totalPages = (int) Math.ceil((double) proposedProductList.size() / pageSize);
+
+        request.setAttribute("proposedList", pagedList);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
         request.setAttribute("categoryList", categoryList);
         request.setAttribute("proposedProductList", proposedProductList);
         request.getRequestDispatcher("view/proposedProduct.jsp").forward(request, response);
