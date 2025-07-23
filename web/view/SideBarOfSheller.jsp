@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -49,8 +50,17 @@
                 <h5 class="offcanvas-title">Dashboard Menu</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
             </div>
+            <c:if test="${sessionScope.user.getRole().getId()== 2}">
             <div class="offcanvas-body">
                 <a href="seller"><i class="bi bi-boxes me-2"></i>Product Management</a>
+                <a href="ManagerCategoriesServlet"><i class="bi bi-boxes me-2"></i>Category Management</a>
+                <a href="approve"><i class="bi bi-check2-circle me-2"></i>Approve New Product</a>
+                <a href="SellerCanceledOrders"><i class="bi bi-x-circle me-2"></i>Cancel Order</a>
+                <a href="SellerOrderHistory"><i class="bi bi-clock-history me-2"></i>Order History</a>
+            </div>
+            </c:if>
+            <c:if test="${sessionScope.user.getRole().getId()== 5}">
+            <div class="offcanvas-body">             
                 <a href="ConfirmedOrders"><i class="bi bi-check2-circle me-2"></i>Confirm Order</a>
                 <a href="ProcessingOrders"><i class="bi bi-gear-wide-connected me-2"></i>Processing Order</a>
                 <a href="SellerWaitingOrders"><i class="bi bi-truck me-2"></i>Waiting for Delivery</a>
@@ -58,6 +68,7 @@
                 <a href="SellerCanceledOrders"><i class="bi bi-x-circle me-2"></i>Cancel Order</a>
                 <a href="SellerOrderHistory"><i class="bi bi-clock-history me-2"></i>Order History</a>
             </div>
+            </c:if>
         </div>
 
         <!-- Page content -->

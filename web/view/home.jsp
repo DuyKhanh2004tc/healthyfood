@@ -37,7 +37,6 @@
                         </a>
                         <div class="card-body">
                             <p>Product: ${requestScope.newProduct.name}</p>
-
                             <p>Price: ${requestScope.newProduct.price}$</p>
                             <p>Stock: ${requestScope.newProduct.stock}</p>
                             <p>Rating: ${requestScope.newProduct.rate}</p>

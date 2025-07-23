@@ -15,7 +15,8 @@
         <link href="${pageContext.request.contextPath}/CSS/approveNewProduct.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
-        <jsp:include page="header.jsp" />
+        
+        <jsp:include page="SideBarOfSheller.jsp"></jsp:include>
         <table class="proposed-table" border="1">
             <thead>
                 <tr>

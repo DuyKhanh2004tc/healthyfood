@@ -2,6 +2,7 @@ package controller;
 
 import dal.DAOSeller;
 import dal.DAOCategory;
+import dal.DAOProposedProduct;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -21,6 +22,7 @@ import model.Category;
 @WebServlet(name = "InsertProductServlet", urlPatterns = {"/insertProduct"})
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 10)
 public class InsertProductServlet extends HttpServlet {
+
     private DAOSeller DAOSeller;
     private DAOCategory DAOCategory;
     private static final Logger LOGGER = Logger.getLogger(InsertProductServlet.class.getName());
@@ -44,6 +46,29 @@ public class InsertProductServlet extends HttpServlet {
                 session.setAttribute("errorMessage", "Không có danh mục nào. Vui lòng liên hệ quản trị viên.");
                 response.sendRedirect("updateProduct?service=list");
                 return;
+            }
+            String proposedId_raw = request.getParameter("proposedId");
+            if (proposedId_raw != null && !proposedId_raw.isEmpty()) {
+                try {
+                    int proposedId = Integer.parseInt(proposedId_raw);
+                    DAOProposedProduct daoPropose = new DAOProposedProduct();
+                    model.ProposedProduct proposed = daoPropose.getProposedProductById(proposedId); // ⚠️ Bạn cần viết hàm này nếu chưa có
+
+                    if (proposed != null) {
+
+                        Product product = new Product();
+                        product.setName(proposed.getName());
+                        product.setImgUrl(proposed.getImage());
+                        product.setDescription(proposed.getDescription());
+                        
+                        product.setShelfLifeHours(proposed.getShelfLife());
+                        Category category = DAOCategory.getCategoryById(proposed.getCategory().getId());
+                        product.setCategory(category);
+                        request.setAttribute("product", product);
+                    }
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
             }
             request.setAttribute("categories", categories);
             request.getRequestDispatcher("view/SellerInsertProduct.jsp").forward(request, response);

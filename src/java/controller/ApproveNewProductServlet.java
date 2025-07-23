@@ -156,6 +156,10 @@ public class ApproveNewProductServlet extends HttpServlet {
                 int id = Integer.parseInt(id_raw);
                 DAOProposedProduct dao = new DAOProposedProduct();
                 dao.updateProposedProductStatusById(id, status);
+                if ("accept".equalsIgnoreCase(status)) {
+                    response.sendRedirect(request.getContextPath() + "/insertProduct?service=requestInsert&proposedId=" + id);
+                    return;
+                }
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
