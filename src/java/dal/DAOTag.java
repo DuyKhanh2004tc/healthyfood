@@ -117,7 +117,6 @@ public Tag getTagBySlug(String slug) {
     return null;
 }
 
-// Thêm tag mới
 public boolean insertTag(Tag tag) {
     String sql = "INSERT INTO Tag (name, slug, description) VALUES (?, ?, ?)";
     try (PreparedStatement ps = con.prepareStatement(sql)) {
@@ -132,7 +131,6 @@ public boolean insertTag(Tag tag) {
     }
 }
 
-// Cập nhật tag
 public boolean updateTag(Tag tag) {
     String sql = "UPDATE Tag SET name = ?, slug = ?, description = ? WHERE id = ?";
     try (PreparedStatement ps = con.prepareStatement(sql)) {
@@ -148,7 +146,6 @@ public boolean updateTag(Tag tag) {
     }
 }
 
-// Xóa tag (xóa cả BlogTag trước)
 public boolean deleteTag(int tagId) {
     String sqlDeleteBlogTag = "DELETE FROM BlogTag WHERE tag_id = ?";
     String sqlDeleteTag = "DELETE FROM Tag WHERE id = ?";
@@ -170,7 +167,6 @@ public boolean deleteTag(int tagId) {
     }
 }
 
-// Lấy tag theo ID
 public Tag getTagById(int tagId) {
     String sql = "SELECT * FROM Tag WHERE id = ?";
     try (PreparedStatement ps = con.prepareStatement(sql)) {

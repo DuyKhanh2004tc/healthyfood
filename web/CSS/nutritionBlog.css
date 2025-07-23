@@ -1,6 +1,5 @@
 .nb-main-content * {
     margin: 0;
-    padding: 0;
     box-sizing: border-box;
 }
 
@@ -84,6 +83,7 @@
 }
 
 .nb-head {
+    margin-bottom: 15px;
     text-align: center;
 }
 
@@ -173,7 +173,7 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem;
-    margin-top: 50px;
+    margin-top: 90px;
     background: #ffffff;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
@@ -197,4 +197,11 @@
 
 .nb-filter-box form button:hover {
     background: #145a4b;
+}
+
+.nb-selected-tag p {
+    font-weight: 600; 
+    font-size: 18px;
+    color: #198e1d;
+    margin-bottom: 15px;
 }

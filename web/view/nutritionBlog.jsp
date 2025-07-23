@@ -27,6 +27,7 @@
                     <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
                     <a href="${pageContext.request.contextPath}/proposeProduct">Propose new product</a>
                     <a href="${pageContext.request.contextPath}/nutritionBlog">Manage Blog</a>
+                    <a href="${pageContext.request.contextPath}/allRecipe">Manage Cooking Recipe</a>
                     <a href="${pageContext.request.contextPath}/logout">Logout</a>
                 </div>
             </div>
@@ -58,7 +59,7 @@
                         </form>
                     </div>
 
-                        <c:if test="${sessionScope.user.getRole().getId() == 4}">        
+                    <c:if test="${sessionScope.user.getRole().getId() == 4}">        
                         <div class="nb-filter-box">
                             <h3>Manage Blog</h3>
                             <form method="post" action="${pageContext.request.contextPath}/manageBlog">
@@ -87,28 +88,78 @@
 
 
                 <div class="nb-container">
-                    <c:choose>
-                        <c:when test="${requestScope.showManageBlog == true}">
-                            <jsp:include page="ManageBlog.jsp" />
-                        </c:when>
-                        <c:otherwise>
-                            <div class="nb-head">
-                                <h1>Welcome to Our Nutrition Blog</h1>
-                                <p>Discover healthy eating tips and nutritious recipes to improve your lifestyle. Stay tuned for our latest posts!</p>
-                            </div>
-                            <section class="nb-blog-grid">
-                                <c:forEach items="${requestScope.blogList}" var="o">
-                                    <article class="nb-blog-card">
-                                        <a href="${pageContext.request.contextPath}/blogDetail?blogId=${o.id}">
-                                            <img src="${pageContext.request.contextPath}/images/${o.image}" alt="${o.title}">
-                                            <div class="nb-blog-card-content">
-                                                <h2>${o.title}</h2>
-                                                <p class="nb-description">${o.description}</p>
-                                                <p class="nb-date">${o.created_at}</p>
-                                            </div>
-                                        </a>
-                                    </article>
+                    <div>
+                        <c:choose>
+                            <c:when test="${requestScope.showManageBlog == true}">
+                                <jsp:include page="manageBlog.jsp" />
+                            </c:when>
+                            <c:otherwise>
+                                <div class="nb-head">
+                                    <h1>Welcome to Our Nutrition Blog</h1>
+                                    <p>Discover healthy eating tips and nutritious recipes to improve your lifestyle. Stay tuned for our latest posts!</p>
+                                </div>
+                                <c:if test="${not empty requestScope.selectedTag}">
+                                    <div class="nb-selected-tag">
+                                        <p>${requestScope.selectedTag.name}:${requestScope.selectedTag.description}</p>
+                                    </div>
+                                </c:if>
+                                <section class="nb-blog-grid">
+
+                                    <c:forEach items="${requestScope.blogList}" var="o">
+                                        <article class="nb-blog-card">
+                                            <a href="${pageContext.request.contextPath}/blogDetail?blogId=${o.id}">
+                                                <img src="${pageContext.request.contextPath}/images/${o.image}" alt="${o.title}">
+                                                <div class="nb-blog-card-content">
+                                                    <h2>${o.title}</h2>
+                                                    <p class="nb-description">${o.description}</p>
+                                                    <p class="nb-date">${o.created_at}</p>
+                                                </div>
+                                            </a>
+                                        </article>
+                                    </c:forEach>
+                            </div>                
+                            <div class="pagination">                                     
+                                <c:if test="${currentPage > 1}">
+                                    <c:url var="prevUrl" value="/nutritionBlog">
+                                        <c:param name="page" value="${currentPage - 1}" />
+                                        <c:if test="${not empty param.keyword}">
+                                            <c:param name="keyword" value="${param.keyword}" />
+                                        </c:if>
+                                        <c:if test="${not empty param.tag}">
+                                            <c:param name="tag" value="${param.tag}" />
+                                        </c:if>
+                                    </c:url>
+                                    <a class="page-link prev-next" href="${prevUrl}">Previous</a>
+                                </c:if>
+
+                                <c:forEach var="i" begin="1" end="${totalPage}">
+                                    <c:url var="pageUrl" value="/nutritionBlog">
+                                        <c:param name="page" value="${i}" />
+                                        <c:if test="${not empty param.keyword}">
+                                            <c:param name="keyword" value="${param.keyword}" />
+                                        </c:if>
+                                        <c:if test="${not empty param.tag}">
+                                            <c:param name="tag" value="${param.tag}" />
+                                        </c:if>
+                                    </c:url>
+                                    <a class="page-link ${i == currentPage ? 'active-page' : ''}" href="${pageUrl}">
+                                        ${i}
+                                    </a>
                                 </c:forEach>
+
+                                <c:if test="${currentPage < totalPage}">
+                                    <c:url var="nextUrl" value="/nutritionBlog">
+                                        <c:param name="page" value="${currentPage + 1}" />
+                                        <c:if test="${not empty param.keyword}">
+                                            <c:param name="keyword" value="${param.keyword}" />
+                                        </c:if>
+                                        <c:if test="${not empty param.tag}">
+                                            <c:param name="tag" value="${param.tag}" />
+                                        </c:if>
+                                    </c:url>
+                                    <a class="page-link prev-next" href="${nextUrl}">Next</a>
+                                </c:if>
+                            </div>
                             </section>
                         </c:otherwise>
                     </c:choose>

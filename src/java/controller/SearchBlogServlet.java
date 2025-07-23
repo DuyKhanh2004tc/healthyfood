@@ -18,6 +18,7 @@ import java.util.List;
 import model.Blog;
 import model.Tag;
 import model.User;
+import utils.Pagination;
 
 /**
  *
@@ -61,25 +62,44 @@ public class SearchBlogServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         //processRequest(request, response);
-        DAOBlog daoBlog = new DAOBlog();
-    DAOTag daoTag = new DAOTag();
+        DAOBlog daoBlog = new DAOBlog(); 
+        DAOTag daoTag = new DAOTag(); 
+        String keyword = request.getParameter("keyword"); 
 
-    String keyword = request.getParameter("keyword");
-    List<Blog> blogList = daoBlog.searchBlogsByTitle(keyword);
+        List<Blog> blogList; 
+        if (keyword != null && !keyword.isEmpty()) {
+            blogList = daoBlog.searchBlogsByTitle(keyword); 
+        } else {
+            blogList = daoBlog.getAllBlogsByNewest(); 
+        }
 
-    List<Tag> tagList = daoTag.listAllTag(); 
+        List<Tag> tagList = daoTag.listAllTag(); 
 
-    HttpSession session = request.getSession();
-    User u = (User) session.getAttribute("user");
-    session.removeAttribute("tag");
+        HttpSession session = request.getSession(); 
+        User u = (User) session.getAttribute("user"); 
 
-    request.setAttribute("keyword", keyword);
-    request.setAttribute("blogList", blogList);
-    request.setAttribute("tagList", tagList); // set lại vào requestScope
+        int page = 1; 
+        int pageSize = 6; 
+        if (request.getParameter("page") != null) {
+            try {
+                page = Integer.parseInt(request.getParameter("page"));
+            } catch (NumberFormatException e) {
+                page = 1; 
+            }
+        }
 
-    request.getRequestDispatcher("/view/nutritionBlog.jsp").forward(request, response);
-}
+        List<Blog> pagedList = Pagination.paginate(blogList, page, pageSize); 
+        int totalPages = (int) Math.ceil((double) blogList.size() / pageSize); 
 
+        // Gửi dữ liệu đến JSP
+        request.setAttribute("blogList", pagedList); 
+        request.setAttribute("tagList", tagList); 
+        request.setAttribute("currentPage", page); 
+        request.setAttribute("totalPage", totalPages); 
+        request.setAttribute("keyword", keyword); 
+
+        request.getRequestDispatcher("/view/nutritionBlog.jsp").forward(request, response); 
+    }
     /** 
      * Handles the HTTP <code>POST</code> method.
      * @param request servlet request

@@ -205,6 +205,8 @@ public class ManageBlogServlet extends HttpServlet {
     private void handleAddTag(HttpServletRequest request, HttpServletResponse response) 
             throws IOException, ServletException {
         String tagName = request.getParameter("tagName");
+        String description = request.getParameter("description");
+        
         if (tagName == null || tagName.trim().isEmpty()) {
             request.setAttribute("error", "Tag name is required");
             request.setAttribute("action", "addTag");
@@ -218,7 +220,7 @@ public class ManageBlogServlet extends HttpServlet {
         Tag tag = new Tag();
         tag.setName(tagName);
         tag.setSlug(slug);
-        tag.setDescription(""); // Default empty description
+        tag.setDescription(description != null ? description : "");
 
         if (daoTag.insertTag(tag)) {
             response.sendRedirect(request.getContextPath() + "/nutritionBlog");
