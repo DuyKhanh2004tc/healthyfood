@@ -103,46 +103,6 @@
                 pointer-events: none;
             }
 
-            /* Responsive design */
-            @media (max-width: 768px) {
-                .container {
-                    padding: 1.5rem;
-                }
-
-                .blog-content h3 {
-                    font-size: 1.75rem;
-                }
-
-                .blog-content img {
-                    max-height: 300px;
-                }
-
-                .nav-buttons {
-                    flex-direction: column;
-                    gap: 1rem;
-                }
-
-                .nav-button {
-                    text-align: center;
-                    width: 100%;
-                }
-            }
-
-            @media (max-width: 480px) {
-                .container {
-                    padding: 1rem;
-                }
-
-                .blog-content {
-                    padding: 1.5rem;
-                }
-
-                .blog-content h3 {
-                    font-size: 1.5rem;
-                }
-            }
-
-            /* Popup styles */
             .overlay {
                 display: none;
                 position: fixed;
@@ -154,7 +114,7 @@
                 z-index: 999;
             }
 
-            /* ======== Popup Edit Blog Clean Style ======== */
+           
             .popup {
                 display: none;
                 position: fixed;

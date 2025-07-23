@@ -18,6 +18,7 @@ import java.util.List;
 import model.Category;
 import model.Product;
 import model.User;
+import utils.Pagination;
 
 /**
  *
@@ -65,50 +66,62 @@ public class SortProductServlet extends HttpServlet {
             throws ServletException, IOException {
         DAOProduct dao = new DAOProduct();
         DAOCategory dao2 = new DAOCategory();
-        List<Product> productList;
         HttpSession session = request.getSession();
+
         User u = (User) session.getAttribute("user");
-        String order = request.getParameter("orderBy");
-        Product newest = dao.getNewestProduct();
-        request.setAttribute("newProduct", newest);
+        int userRoleId = (u != null && u.getRole() != null) ? u.getRole().getId() : -1;
+
+        String orderByPrice = request.getParameter("orderBy");
+        String orderByName = request.getParameter("nameOrderBy");
+        String orderByRate = request.getParameter("rateOrderBy");
+        String orderByDate = request.getParameter("dateOrderBy");
+        String index_raw = request.getParameter("index");
+        int index = 1;
+        if (index_raw != null) {
+            try {
+                index = Integer.parseInt(index_raw);
+            } catch (NumberFormatException e) {
+                index = 1;
+            }
+        }
+
         int categoryId = 0;
         if (session.getAttribute("categoryId") != null) {
             categoryId = (int) session.getAttribute("categoryId");
         }
-        String index_raw = request.getParameter("index");
-        if (index_raw == null) {
-            index_raw = "1";
-        }
-        int index = Integer.parseInt(index_raw);
-        int totalProduct;
-        if (categoryId == 0) {
-            totalProduct = dao.getTotalProduct();
+
+        List<Product> sortedList;
+        if (orderByRate != null) {
+            sortedList = (categoryId == 0) ? dao.getRatingSorted(orderByRate) : dao.getRatingSortedByCategoryId(orderByRate,categoryId);
+            request.setAttribute("rateOrderBy", orderByRate);
+        } else if (orderByName != null) {
+            sortedList = (categoryId == 0)
+                    ? dao.getNameSorted(orderByName)
+                    : dao.getNameSortedByCategoryId(orderByName,categoryId );
+            request.setAttribute("nameOrderBy", orderByName);
+        } else if (orderByPrice != null) {
+            sortedList = (categoryId == 0)
+                    ? dao.getPriceSorted(orderByPrice)
+                    : dao.getPriceSortedByCategoryId(orderByPrice, categoryId);
+            request.setAttribute("orderBy", orderByPrice);
         } else {
-            totalProduct = dao.getTotalProductByCid(categoryId);
-        }
-        int pages = totalProduct / 12;
-        if (totalProduct % 12 != 0) {
-            pages++;
-        }
-
-        request.setAttribute("totalPage", pages);
-
-        List<Category> categoryList = dao2.getAllCategory();
-        request.setAttribute("categoryList", categoryList);
-        int userRoleId = -1;
-        if (u != null && u.getRole() != null) {
-            userRoleId = u.getRole().getId();
+            sortedList = (categoryId == 0)
+                    ? dao.getTimeSorted(orderByDate)
+                    : dao.getTimeSortedByCategoryId(orderByDate, categoryId);
+            request.setAttribute("dateOrderBy", orderByDate);
         }
 
-        if (session.getAttribute("keyword") != null) {
-            String searchName = (String) session.getAttribute("keyword");
-            productList = dao.sortSearchedProduct(searchName, order);
-        } else if (categoryId == 0) {
-            productList = dao.getProductSortedPagination(index, 12, order);
-        } else {
-            productList = dao.getProductSortedPaginationByCid(categoryId, index, 12, order);
-        }
-        request.setAttribute("productList", productList);
+        int pageSize = 12;
+        int totalPage = (int) Math.ceil((double) sortedList.size() / pageSize);
+        List<Product> pagedList = Pagination.paginate(sortedList, index, pageSize);
+
+        request.setAttribute("productList", pagedList);
+        request.setAttribute("totalPage", totalPage);
+        request.setAttribute("currentPage", index);
+        request.setAttribute("categoryId", categoryId);
+        request.setAttribute("categoryList", dao2.getAllCategory());
+        request.setAttribute("newProduct", dao.getNewestProduct());
+
         if (userRoleId == 4) {
             request.getRequestDispatcher("/view/nutritionistHome.jsp").forward(request, response);
         } else {

@@ -120,9 +120,10 @@
                 border-radius: 6px;
                 cursor: pointer;
                 margin-right: 10px;
-                justify-content: space-between;
-                display: flex;
+                justify-content: space-between; /* ⚠ chỉ có tác dụng nếu dùng flex */
+                display: flex; /* ⚠ icon và text phải là 2 phần tử khác nhau */
             }
+
             button[type="submit"]:hover {
                 background-color: #3c8d40;
             }
@@ -174,21 +175,35 @@
                 flex-direction: row-reverse;
                 justify-content: flex-end;
             }
+
             .stars input {
                 display: none;
             }
+
             .stars label {
-                font-size: 2rem;
+                font-size: 30px;
                 color: #ccc;
                 cursor: pointer;
+                transition: color 0.2s;
             }
-            .stars input:checked ~ label,
+
+            /* Hover */
             .stars label:hover,
             .stars label:hover ~ label {
                 color: gold;
             }
-            .twoButton{
+
+            /* Checked */
+            .stars input:checked ~ label {
+                color: gold;
+            }
+            .twoButtonP{
                 display: flex;
+                width: 276px;
+            }
+            .twoButtonEdit{
+                display: flex;
+               
             }
             .productCart{
                 width: 500px;
@@ -244,6 +259,24 @@
             .popup .button:hover {
                 background-color: #7ed957;
             }
+            .feedback-button {
+                padding: 8px 15px;
+                background-color: #a8e6a1;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+                color: #2e4d32;
+                width: 80px;
+                margin-right: 5px;
+                text-align: center;
+            }
+
+            .feedback-button:hover {
+                background-color: #7ed957;
+            }
+
+
         </style>
     </head>
     <body>
@@ -340,9 +373,9 @@
                                     <input type="text" name="number" id="quantity" value="1" min="1" max="<%= stock %>">
                                     <button type="button" onclick="updateQuantity(1)">+</button>
                                 </div>
-                                <div class = "twoButton">
-                                    <button class="card-button" type="submit" name="action" value="add">🛒 Add to Cart</button>
-                                    <button class="card-button" type="submit" name= "action"value="buy">💰 Buy</button>
+                                <div class = "twoButtonP">
+                                    <button class="cardP-button" type="submit" name="action" value="add">🛒 Add to Cart</button>
+                                    <button class="cardP-button" type="submit" name= "action"value="buy">💰 Buy</button>
                                 </div>
                             </form>
 
@@ -385,8 +418,10 @@
                         <form method="post" action="${pageContext.request.contextPath}/productDetail" >
                             <input type="hidden" name="productId" value="<%= productId %>">
                             <input type="hidden" name="feedbackId" value="<%= f.getId() %>">
-                            <button type="button" onclick="openPopup(<%= f.getId() %>, '<%= f.getContent().replace("'", "\\'") %>', <%= f.getRate() %>)">Edit</button>
-                            <button type="submit" name="action" value="deleteFeedback">Delete</button>
+                            <div class="twoButtonEdit">
+                                <button type="button" class="feedback-button" onclick="openPopup(<%= f.getId() %>, '<%= f.getContent().replace("'", "\\'") %>', <%= f.getRate() %>)">Edit</button>
+                                <button type="submit" class="feedback-butt</div>on" name="action" value="del</div>eteFeedback">Delete</button>
+                            </div>
                         </form>
                     </div>
                     <% } %>
@@ -404,13 +439,23 @@
                         <input type="hidden" name="productId" value="<%= productId %>">
                         <input type="hidden" name="feedbackId" id="feedbackId">
                         <input type="hidden" name="action" value="editFeedback">
-                        <div class="stars" >
-                            <input type="radio" id="editStar5" name="rating" value="5"><label for="editStar5">★</label>
-                            <input type="radio" id="editStar4" name="rating" value="4"><label for="editStar4">★</label>
-                            <input type="radio" id="editStar3" name="rating" value="3"><label for="editStar3">★</label>
-                            <input type="radio" id="editStar2" name="rating" value="2"><label for="editStar2">★</label>
-                            <input type="radio" id="editStar1" name="rating" value="1"><label for="editStar1">★</label>
+                        <div class="stars">
+                            <label for="editStar1">★</label>
+                            <input type="radio" id="editStar1" name="rating" value="1">
+
+                            <label for="editStar2">★</label>
+                            <input type="radio" id="editStar2" name="rating" value="2">
+
+                            <label for="editStar3">★</label>
+                            <input type="radio" id="editStar3" name="rating" value="3">
+
+                            <label for="editStar4">★</label>
+                            <input type="radio" id="editStar4" name="rating" value="4">
+
+                            <label for="editStar5">★</label>
+                            <input type="radio" id="editStar5" name="rating" value="5">
                         </div>
+
                         <textarea id="feedbackText" name="content" placeholder="Enter your feedback here..." required></textarea>
                         <button type="submit" class="button">Save</button>
                         <button type="button" class="button" onclick="closePopup()">Cancel</button>
@@ -420,13 +465,22 @@
                 <div>
                     <form method="post" action="${pageContext.request.contextPath}/productDetail">
                         <input type="hidden" name="productId" value="<%= productId %>">
-                        <c:if test="${sessionScope.user.role.id == 3}">
-                            <div class="stars" >
-                                <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
-                                <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
-                                <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
-                                <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
-                                <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+                        <c:if test="${sessionScope.user.role.id == 3&&productOrdered == true}">
+                            <div class="stars">
+                                <label for="editStar1">★</label>
+                                <input type="radio" id="editStar1" name="rating" value="1">
+
+                                <label for="editStar2">★</label>
+                                <input type="radio" id="editStar2" name="rating" value="2">
+
+                                <label for="editStar3">★</label>
+                                <input type="radio" id="editStar3" name="rating" value="3">
+
+                                <label for="editStar4">★</label>
+                                <input type="radio" id="editStar4" name="rating" value="4">
+
+                                <label for="editStar5">★</label>
+                                <input type="radio" id="editStar5" name="rating" value="5">
                             </div>
                             <textarea name="content" placeholder="Write your comment..." required></textarea>
                             <button type="submit" name="action" value="comment">Submit Comment</button>

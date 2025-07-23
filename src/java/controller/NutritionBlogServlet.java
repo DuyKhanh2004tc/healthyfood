@@ -6,6 +6,7 @@
 package controller;
 
 import dal.DAOBlog;
+import dal.DAOTag;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -14,6 +15,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import model.Blog;
+import model.ProposedProduct;
+import model.Tag;
+import utils.Pagination;
 
 /**
  *
@@ -57,20 +61,44 @@ public class NutritionBlogServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
       
-    DAOBlog dao = new DAOBlog();
-    String tagSlug = request.getParameter("tag");
+    DAOBlog daoBlog = new DAOBlog();
+        DAOTag daoTag = new DAOTag(); 
+        String tagSlug = request.getParameter("tag");
+        String keyword = request.getParameter("keyword"); 
 
-    List<Blog> blogList;
-    if (tagSlug != null && !tagSlug.isEmpty()) {
-        blogList = dao.getBlogsByTagSlug(tagSlug);
-    } else {
-        blogList = dao.getAllBlog();
+        List<Blog> blogList; 
+        if (tagSlug != null && !tagSlug.isEmpty()) {
+            blogList = daoBlog.getBlogsByTagSlug(tagSlug); 
+            Tag selectedTag = daoTag.getTagBySlug(tagSlug);
+            request.setAttribute("selectedTag", selectedTag);
+        } else if (keyword != null && !keyword.isEmpty()) {
+            blogList = daoBlog.searchBlogsByTitle(keyword); 
+        } else {
+            blogList = daoBlog.getAllBlogsByNewest(); 
+        }
+
+        int page = 1; 
+        int pageSize = 6; 
+        if (request.getParameter("page") != null) {
+            try {
+                page = Integer.parseInt(request.getParameter("page"));
+            } catch (NumberFormatException e) {
+                page = 1; 
+            }
+        }
+
+        List<Blog> pagedList = Pagination.paginate(blogList, page, pageSize);
+        int totalPages = (int) Math.ceil((double) blogList.size() / pageSize); 
+
+        request.setAttribute("blogList", pagedList); 
+        request.setAttribute("tagList", daoTag.listAllTag());
+        request.setAttribute("currentPage", page); 
+        request.setAttribute("totalPage", totalPages);
+        request.setAttribute("keyword", keyword); 
+        request.setAttribute("tagSlug", tagSlug); 
+
+        request.getRequestDispatcher("/view/nutritionBlog.jsp").forward(request, response); 
     }
-
-    request.setAttribute("blogList", blogList);
-    request.getRequestDispatcher("/view/nutritionBlog.jsp").forward(request, response);
-    } 
-
     /** 
      * Handles the HTTP <code>POST</code> method.
      * @param request servlet request

@@ -52,8 +52,13 @@
                     <c:set var="totalAmount" value="${totalAmount + (i.product.price * i.quantity)}"/>
                 </c:forEach>
                 <tr class="totalAmount">
-                    <td colspan="5"><c:if test="${not empty stockError}">
-                            ${stockError}
+                    <td colspan="5"><c:if test="${not empty sessionScope.stockError}">
+                            ${sessionScope.stockError}
+                        </c:if>
+                        <c:if test="${not empty requestScope.stockError}">
+                            <div id="stockError" style="color: red; font-weight: bold;">
+                                ${sessionScope.stockError}
+                            </div>
                         </c:if></td>
                     <td>Total Amount:</td>
                     <td><fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
@@ -83,7 +88,12 @@
                     <c:set var="totalAmount" value="${totalAmount + (i.product.price * i.quantity)}"/>
                 </c:forEach>
                 <tr class="totalAmount">
-                    <td colspan="5"></td>
+                    <td colspan="5">
+                        <c:if test="${not empty requestScope.stockError}">
+                            <div id="stockError" style="color: red; font-weight: bold;">
+                                ${sessionScope.stockError}
+                            </div>
+                        </c:if></td>
                     <td>Total Amount:</td>
                     <td><fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                 </tr>
@@ -103,13 +113,27 @@
         }      
         %>
         <c:if test="${not empty requestScope.itemList or not empty sessionScope.itemList}">
-        <form class="btnBuy" action="placeOrder" method="get">
-            <button class="card-button" type="submit" value="buy">💰 Buy</button>
-        </form>
+            <form class="btnBuy" action="placeOrder" method="get">
+                <button class="card-button" type="submit" value="buy">💰 Buy</button>
+            </form>
         </c:if>
 
         <jsp:include page="footer.jsp"></jsp:include>
 
 
+
+
+        <script>
+            window.onload = function () {
+                const buyButtonForm = document.querySelector('.btnBuy');
+                const stockError = document.getElementById("stockError");
+                if (buyButtonForm && stockError) {
+                    buyButtonForm.addEventListener("submit", function (e) {
+                        alert("Some items in your cart are out of stock. Please update your cart before proceeding.");
+                        e.preventDefault();
+                    });
+                }
+            };
+        </script>
     </body>
 </html>

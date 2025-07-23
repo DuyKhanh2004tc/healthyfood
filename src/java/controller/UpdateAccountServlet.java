@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 import model.User;
 import model.Role;
 
@@ -34,11 +36,6 @@ public class UpdateAccountServlet extends HttpServlet {
         }
         try {
             String userId = request.getParameter("id");
-            if (userId == null || userId.trim().isEmpty()) {
-                request.setAttribute("error", "User ID is missing");
-                request.getRequestDispatcher("view/error.jsp").forward(request, response);
-                return;
-            }
             int id = Integer.parseInt(userId);
             DAOUser daoUser = DAOUser.INSTANCE;
             User user = daoUser.getUserById(id);
@@ -49,19 +46,10 @@ public class UpdateAccountServlet extends HttpServlet {
             }
 
             ArrayList<Role> roles = DAORole.INSTANCE.getAllRoles();
-            if (roles == null || roles.isEmpty()) {
-                request.setAttribute("error", "Error retrieving roles");
-                request.getRequestDispatcher("view/error.jsp").forward(request, response);
-                return;
-            }
-
             request.setAttribute("user", user);
             request.setAttribute("roles", roles);
             RequestDispatcher dispatcher = request.getRequestDispatcher("view/updateAccount.jsp");
             dispatcher.forward(request, response);
-        } catch (NumberFormatException e) {
-            request.setAttribute("error", "Invalid User ID");
-            request.getRequestDispatcher("view/error.jsp").forward(request, response);
         } catch (Exception e) {
             request.setAttribute("error", "Error: " + e.getMessage());
             request.getRequestDispatcher("view/error.jsp").forward(request, response);
@@ -84,13 +72,7 @@ public class UpdateAccountServlet extends HttpServlet {
         }
 
         try {
-            String userId = request.getParameter("id");
-            if (userId == null || userId.trim().isEmpty()) {
-                request.setAttribute("error", "User ID is missing");
-                request.getRequestDispatcher("view/updateAccount.jsp").forward(request, response);
-                return;
-            }
-            int id = Integer.parseInt(userId);
+            int id = Integer.parseInt(request.getParameter("id"));
 
             String name = request.getParameter("name");
             String email = request.getParameter("email");
@@ -101,15 +83,87 @@ public class UpdateAccountServlet extends HttpServlet {
             String genderStr = request.getParameter("gender");
             String roleIdStr = request.getParameter("roleId");
 
+            request.setAttribute("nameError", "");
+            request.setAttribute("emailError", "");
+            request.setAttribute("passwordError", "");
+            request.setAttribute("phoneError", "");
+            request.setAttribute("dobError", "");
+            request.setAttribute("addressError", "");
+            request.setAttribute("genderError", "");
+            request.setAttribute("roleIdError", "");
+
+            boolean hasError = false;
+
+            if (name == null || name.trim().isEmpty() || name.length() < 2 ||name.length() > 50 || !name.matches("^[\\p{L}\\s]+$")) {
+                request.setAttribute("nameError", "Full name must be 2-50 characters and contain only letters and spaces.");
+                hasError = true;
+            }
+
             if (email == null || email.trim().isEmpty()) {
-                request.setAttribute("error", "Email is required");
-                request.getRequestDispatcher("view/updateAccount.jsp").forward(request, response);
-                return;
+                request.setAttribute("emailError", "Email is required");
+                hasError = true;
+            } else if (!Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", email)) {
+                request.setAttribute("emailError", "Invalid email format");
+                hasError = true;
+            }
+
+            if (password == null || password.trim().isEmpty()) {
+                request.setAttribute("passwordError", "Password is required");
+                hasError = true;
+            } else if (password.trim().length() < 6) {
+                request.setAttribute("passwordError", "Password must be at least 6 characters");
+                hasError = true;
+            }
+
+            if (phone == null || phone.isEmpty() || !phone.matches("^(0|\\+84)[0-9]{9}$")) {
+                request.setAttribute("phoneError", "Phone number must start with 0 or +84 and contain exactly 9 digits.");
+                hasError = true;
+            }
+
+            Date dob = null;
+            if (dobStr == null || dobStr.trim().isEmpty()) {
+                request.setAttribute("dobError", "Date of birth is required.");
+                hasError = true;
+            } else {
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    sdf.setLenient(false);
+                    java.util.Date parsedDate = sdf.parse(dobStr);
+                    dob = new Date(parsedDate.getTime());
+
+                    LocalDate birthDate = LocalDate.parse(dobStr);
+                    if (birthDate.plusYears(13).isAfter(LocalDate.now())) {
+                        request.setAttribute("dobError", "You must be at least 13 years old.");
+                        hasError = true;
+                    }
+                } catch (ParseException e) {
+                    request.setAttribute("dobError", "Invalid date of birth format. Use YYYY-MM-DD.");
+                    hasError = true;
+                }
+            }
+
+            if (address == null || address.trim().isEmpty() || address.length() < 5 || address.length() > 100) {
+                request.setAttribute("addressError", "Address must be 5-100 characters.");
+                hasError = true;
+            }
+
+            if (genderStr == null || genderStr.trim().isEmpty()) {
+                request.setAttribute("genderError", "Gender is required");
+                hasError = true;
+            }
+
+            if (roleIdStr == null || roleIdStr.trim().isEmpty()) {
+                request.setAttribute("roleIdError", "Role is required");
+                hasError = true;
             }
 
             DAOUser daoUser = DAOUser.INSTANCE;
             if (daoUser.checkEmailExists(email, id)) {
-                request.setAttribute("error", "Email already exists for another user");
+                request.setAttribute("emailError", "Email already exists for another user");
+                hasError = true;
+            }
+
+            if (hasError) {
                 User user = daoUser.getUserById(id);
                 request.setAttribute("user", user);
                 request.setAttribute("roles", DAORole.INSTANCE.getAllRoles());
@@ -117,39 +171,17 @@ public class UpdateAccountServlet extends HttpServlet {
                 return;
             }
 
-            Date dob = null;
-            if (dobStr != null && !dobStr.trim().isEmpty()) {
-                try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    java.util.Date parsedDate = sdf.parse(dobStr);
-                    dob = new Date(parsedDate.getTime());
-                } catch (ParseException e) {
-                    request.setAttribute("error", "Invalid date format for DOB. Use YYYY-MM-DD");
-                    request.getRequestDispatcher("view/updateAccount.jsp").forward(request, response);
-                    return;
-                }
-            }
-
-            boolean gender = genderStr != null && genderStr.equals("1");
-            int roleId = 0;
-            if (roleIdStr != null && !roleIdStr.trim().isEmpty()) {
-                try {
-                    roleId = Integer.parseInt(roleIdStr);
-                } catch (NumberFormatException e) {
-                    request.setAttribute("error", "Invalid Role ID");
-                    request.getRequestDispatcher("view/updateAccount.jsp").forward(request, response);
-                    return;
-                }
-            }
+            boolean gender = genderStr.equals("1");
+            int roleId = Integer.parseInt(roleIdStr);
 
             User user = new User();
             user.setId(id);
-            user.setName(name);
-            user.setEmail(email);
-            user.setPassword(password);
-            user.setPhone(phone);
+            user.setName(name.trim());
+            user.setEmail(email.trim());
+            user.setPassword(password.trim());
+            user.setPhone(phone.trim());
             user.setDob(dob);
-            user.setAddress(address);
+            user.setAddress(address.trim());
             user.setGender(gender);
             Role role = new Role();
             role.setId(roleId);
@@ -157,23 +189,19 @@ public class UpdateAccountServlet extends HttpServlet {
 
             boolean updated = daoUser.updateUser(user);
             if (updated) {
-                session.setAttribute("success", "User with ID " + id + " updated successfully at " + new java.util.Date());
+                session.setAttribute("success", "User updated successfully");
                 response.sendRedirect("DisplayAccount?idRole=" + roleId + "&page=1");
             } else {
                 request.setAttribute("error", "Failed to update user: " + daoUser.getStatus());
+                User u = daoUser.getUserById(id);
+                request.setAttribute("user", u);
+                request.setAttribute("roles", DAORole.INSTANCE.getAllRoles());
                 request.getRequestDispatcher("view/updateAccount.jsp").forward(request, response);
             }
-        } catch (NumberFormatException e) {
-            request.setAttribute("error", "Invalid User ID or Role ID");
-            request.getRequestDispatcher("view/updateAccount.jsp").forward(request, response);
         } catch (Exception e) {
             request.setAttribute("error", "Error: " + e.getMessage());
             request.getRequestDispatcher("view/updateAccount.jsp").forward(request, response);
         }
     }
 
-    @Override
-    public String getServletInfo() {
-        return "Servlet for updating user account information";
-    }
 }

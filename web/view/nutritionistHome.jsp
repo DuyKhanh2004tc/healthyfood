@@ -26,6 +26,7 @@
                 <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
                 <a href="${pageContext.request.contextPath}/proposeProduct">Propose new product</a>                 
                 <a href="${pageContext.request.contextPath}/nutritionBlog">Manage Blog</a>
+                <a href="${pageContext.request.contextPath}/allRecipe">Manage Cooking Recipe</a>
                 <a href="${pageContext.request.contextPath}/logout">Logout</a>
 
             </div>
@@ -45,10 +46,25 @@
 
 
             <div>
-                <b>Sort Product:</b>
+                <b>Sort By Price:</b>
                 <button onclick="location.href = 'sortproduct?orderBy=desc'">Descending</button>
                 <button onclick="location.href = 'sortproduct?orderBy=asc'">Ascending</button>
             </div>
+            <div>
+                <b>Sort By Name:</b>
+                <button onclick="location.href = 'sortproduct?nameOrderBy=desc'">Name: A-Z</button>
+                <button onclick="location.href = 'sortproduct?nameOrderBy=asc'">Name: Z-A</button>
+            </div>
+            <div>
+                <b>Sort By Rating:</b>
+                <button onclick="location.href = 'sortproduct?rateOrderBy=desc'">Name: High To Low</button>
+                <button onclick="location.href = 'sortproduct?rateOrderBy=asc'">Name: Low To High</button>
+            </div>
+            <div>
+                <b>Sort By Date:</b>
+                <button onclick="location.href = 'sortproduct?dateOrderBy=desc'">Newest First</button>
+                <button onclick="location.href = 'sortproduct?dateOrderBy=asc'">Oldest First</button>
+            </div>   
             <div class="search-content">
                 <c:if test="${not empty sessionScope.keyword}">
                     <button onclick="location.href = 'nutritionistHome'">Back</button>
@@ -69,7 +85,6 @@
                     </a>
                     <div class="card-body">
                         <p>Product: ${o.name}</p>
-
                         <p>Price: ${o.price}$</p>
                         <p>Stock: ${o.stock}</p>
                         <p>Rating: ${o.rate}</p>
@@ -95,19 +110,77 @@
                 </div>
             </c:forEach>
         </div>
-                
-                <ul class="pagination">
-                    <c:if test="${sessionScope.categoryId == null}">
-                        <c:forEach begin="1" end="${requestScope.totalPage}" var="i">
-                            <li class="page-item"><a href="nutritionistHome?index=${i}" class="page-link">${i}</a></li>
-                            </c:forEach>
-                        </c:if>    
-                        <c:if test="${sessionScope.categoryId != null}">
-                            <c:forEach begin="1" end="${requestScope.totalPage}" var="o">
-                            <li class="page-item"><a href="category?categoryId=${sessionScope.categoryId}&index=${o}" class="page-link">${o}</a></li>
-                            </c:forEach>
-                        </c:if>    
-                </ul>
+
+
+        <div class="pagination">                                     
+            <c:if test="${currentPage > 1}">
+                <c:url var="prevUrl" value="/nutritionistHome">
+                    <c:param name="index" value="${currentPage - 1}" />
+                    <c:if test="${not empty param.keyword}">
+                        <c:param name="keyword" value="${param.keyword}" />
+                    </c:if>
+                    <c:if test="${not empty param.categoryId}">
+                        <c:param name="categoryId" value="${param.categoryId}" />
+                    </c:if>
+                    <c:if test="${not empty param.minPrice}">
+                        <c:param name="minPrice" value="${param.minPrice}" />
+                    </c:if>
+                    <c:if test="${not empty param.maxPrice}">
+                        <c:param name="maxPrice" value="${param.maxPrice}" />
+                    </c:if>
+                    <c:if test="${not empty param.orderBy}">
+                        <c:param name="orderBy" value="${param.orderBy}" />
+                    </c:if>
+                </c:url>
+                <a class="page-link prev-next" href="${prevUrl}">Previous</a>
+            </c:if>
+
+            <c:forEach var="i" begin="1" end="${totalPage}">
+                <c:url var="pageUrl" value="/nutritionistHome">
+                    <c:param name="index" value="${i}" />
+                    <c:if test="${not empty param.keyword}">
+                        <c:param name="keyword" value="${param.keyword}" />
+                    </c:if>
+                    <c:if test="${not empty param.categoryId}">
+                        <c:param name="categoryId" value="${param.categoryId}" />
+                    </c:if>
+                    <c:if test="${not empty param.minPrice}">
+                        <c:param name="minPrice" value="${param.minPrice}" />
+                    </c:if>
+                    <c:if test="${not empty param.maxPrice}">
+                        <c:param name="maxPrice" value="${param.maxPrice}" />
+                    </c:if>
+                    <c:if test="${not empty param.orderBy}">
+                        <c:param name="orderBy" value="${param.orderBy}" />
+                    </c:if>
+                </c:url>
+                <a class="page-link ${i == currentPage ? 'active-page' : ''}" href="${pageUrl}">
+                    ${i}
+                </a>
+            </c:forEach>
+
+            <c:if test="${currentPage < totalPage}">
+                <c:url var="nextUrl" value="/nutritionistHome">
+                    <c:param name="index" value="${currentPage + 1}" />
+                    <c:if test="${not empty param.keyword}">
+                        <c:param name="keyword" value="${param.keyword}" />
+                    </c:if>
+                    <c:if test="${not empty param.categoryId}">
+                        <c:param name="categoryId" value="${param.categoryId}" />
+                    </c:if>
+                    <c:if test="${not empty param.minPrice}">
+                        <c:param name="minPrice" value="${param.minPrice}" />
+                    </c:if>
+                    <c:if test="${not empty param.maxPrice}">
+                        <c:param name="maxPrice" value="${param.maxPrice}" />
+                    </c:if>
+                    <c:if test="${not empty param.orderBy}">
+                        <c:param name="orderBy" value="${param.orderBy}" />
+                    </c:if>
+                </c:url>
+                <a class="page-link prev-next" href="${nextUrl}">Next</a>
+            </c:if>
+        </div>
 
     </body>
 </html>

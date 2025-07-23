@@ -111,68 +111,76 @@ public class RegisterServlet extends HttpServlet {
             DAOUser dao = new DAOUser();
             ArrayList<User> user = dao.getUser();
             
+            boolean hasError = false;
 
             if (dao.checkEmailExists(email, -1)) {
-                request.setAttribute("error", "Email already exists");
-                request.getRequestDispatcher("view/register.jsp").forward(request, response);
-                return;
+                request.setAttribute("errorEmail", "Email already exists");
+                hasError = true;
             }
             
             if (fullName == null || fullName.isEmpty() || fullName.length() < 2 || fullName.length() > 50 || !fullName.matches("^[\\p{L}\\s]+$")) {
-                request.setAttribute("error", "Full name must be 2-50 characters and contain only letters and spaces.");
-                request.getRequestDispatcher("view/register.jsp").forward(request, response);
-                return;
+                request.setAttribute("errorName", "Full name must be 2-50 characters and contain only letters and spaces.");
+                hasError = true;
             }
 
             if (!phoneNumber.matches("^(0|\\+84)[0-9]{9}$")) {
-                request.setAttribute("error", "Invalid phone number. It must start with 0 or +84 and contain 9 digits after.");
-                request.getRequestDispatcher("view/register.jsp").forward(request, response);
-                return;
+                request.setAttribute("errorPhone", "Invalid phone number. It must start with 0 or +84 and contain 9 digits after.");
+                hasError = true;
             }
 
             Date dob = null;
-            if (dateOfBirth != null && !dateOfBirth.trim().isEmpty()) {
+            if (dateOfBirth == null || dateOfBirth.trim().isEmpty()) {
+                request.setAttribute("errorDOB", "Date of birth is required.");
+                hasError = true;
+            } else {
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    sdf.setLenient(false);
                     java.util.Date parsedDate = sdf.parse(dateOfBirth);
                     dob = new Date(parsedDate.getTime());
 
                     LocalDate birthDate = LocalDate.parse(dateOfBirth);
                     if (birthDate.plusYears(13).isAfter(LocalDate.now())) {
-                        request.setAttribute("error", "You must be at least 13 years old to register.");
-                        request.getRequestDispatcher("view/register.jsp").forward(request, response);
-                        return;
+                        request.setAttribute("errorDOB", "You must be at least 13 years old.");
+                        hasError = true;
                     }
                 } catch (ParseException e) {
-                    request.setAttribute("error", "Invalid date format for DOB. Use YYYY-MM-DD");
-                    request.getRequestDispatcher("view/register.jsp").forward(request, response);
-                    return;
+                    request.setAttribute("errorDOB", "Invalid date of birth format. Use YYYY-MM-DD.");
+                    hasError = true;
                 }
             }
             
+            if (address == null || address.isEmpty() || address.length() < 5 || address.length() > 100) {
+                request.setAttribute("errorAddress", "Address must be 5-100 characters.");
+                hasError = true;
+            }
+            
+            if (gender == null || (!gender.equals("0") && !gender.equals("1"))) {
+                request.setAttribute("errorGender", "Please select a gender.");
+                hasError = true;
+            }
+            
             if (password.length() <= 8 || password.length() >= 32) {
-                request.setAttribute("error", "Password must be between 8 and 32 characters long.");
-                request.getRequestDispatcher("view/register.jsp").forward(request, response);
-                return;
+                request.setAttribute("errorPassword", "Password must be between 8 and 32 characters long.");
+                hasError = true;
             }
             
             if (password == null || password.contains(" ")) {
-                request.setAttribute("error", "The password must not contain any spaces.");
-                request.getRequestDispatcher("view/register.jsp").forward(request, response);
-                return;
+                request.setAttribute("errorPassword", "The password must not contain any spaces.");
+                hasError = true;
             }           
             
             if (!password.equals(confirmPassword)) {
                     request.setAttribute("error", "Password and Confirm Password do not match.");
-                    request.getRequestDispatcher("view/register.jsp").forward(request, response);
-                    return;
+                    hasError = true;
                 }
             
-            if (password == null || password.contains(" ")) {
-                request.setAttribute("error", "The password must not contain any spaces.");
+            if(hasError){
                 request.getRequestDispatcher("view/register.jsp").forward(request, response);
                 return;
             }
+            
+            
             
             boolean genderSQL = "1".equals(gender);
 

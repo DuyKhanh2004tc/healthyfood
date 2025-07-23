@@ -40,7 +40,6 @@ public class ShipperUpdateStatusServlet extends HttpServlet {
         try {
             // Cập nhật trạng thái và shipper_id nếu chưa có
             dao.updateOrderStatus(orderId, newStatusId, shipperId);
-
             // Chuyển hướng dựa trên trạng thái mới
             if (newStatusId == 5) { // Delivering
                 response.sendRedirect("DeliveringOrders");

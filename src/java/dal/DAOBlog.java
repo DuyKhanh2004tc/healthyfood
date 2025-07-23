@@ -64,6 +64,52 @@ public class DAOBlog {
         return blogList;
 
     }
+    
+    public List<Blog> getAllBlogsByNewest() {
+    List<Blog> blogList = new ArrayList<>();
+    String sql = "SELECT b.id, b.title, b.image, b.description, b.created_at, "
+            + "u.id AS user_id, u.name, u.email, u.password, u.phone, u.dob, u.address, u.gender, u.created_at AS user_created_at, "
+            + "r.id AS role_id, r.role_name "
+            + "FROM Blog b "
+            + "JOIN Users u ON u.id = b.user_id "
+            + "JOIN Role r ON r.id = u.role_id "
+            + "ORDER BY b.id DESC";
+
+    try {
+        PreparedStatement st = con.prepareStatement(sql);
+        ResultSet rs = st.executeQuery();
+        while (rs.next()) {
+            Blog b = new Blog();
+            b.setId(rs.getInt("id"));
+            b.setTitle(rs.getString("title"));
+            b.setImage(rs.getString("image"));
+            b.setDescription(rs.getString("description"));
+            b.setCreated_at(rs.getTimestamp("created_at"));
+
+            User u = new User();
+            u.setId(rs.getInt("user_id"));
+            u.setName(rs.getString("name"));
+            u.setEmail(rs.getString("email"));
+            u.setPassword(rs.getString("password"));
+            u.setPhone(rs.getString("phone"));
+            u.setDob(rs.getDate("dob"));
+            u.setAddress(rs.getString("address"));
+            u.setGender(rs.getBoolean("gender"));
+            u.setCreatedAt(rs.getTimestamp("user_created_at"));
+
+            Role r = new Role();
+            r.setId(rs.getInt("role_id"));
+            r.setRoleName(rs.getString("role_name"));
+
+            u.setRole(r);
+            b.setUser(u);
+            blogList.add(b);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return blogList;
+}
 
     public Blog getBlogById(int blogId) {
         Blog blog = null;
@@ -107,6 +153,30 @@ public class DAOBlog {
         }
         return blog;
     }
+    
+    public int insertBlog(Blog blog) {
+    int generatedId = -1;
+    String sql = "INSERT INTO Blog (title, image, description, user_id, created_at) VALUES (?, ?, ?, ?, ?)";
+    try (PreparedStatement st = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        st.setString(1, blog.getTitle());
+        st.setString(2, blog.getImage());
+        st.setString(3, blog.getDescription());
+        st.setInt(4, blog.getUser().getId());
+        st.setTimestamp(5, blog.getCreated_at());
+
+        int affectedRows = st.executeUpdate();
+        if (affectedRows > 0) {
+            try (ResultSet generatedKeys = st.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    generatedId = generatedKeys.getInt(1);
+                }
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return generatedId;
+}
 
     public boolean updateBlog(Blog blog) {
         String sql = "UPDATE Blog SET title = ?, image = ?, description = ?, user_id = ? WHERE id = ?";
@@ -210,6 +280,36 @@ public List<Blog> getBlogsByTagSlug(String slug) {
                         user
                 );
                 list.add(blog);
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return list;
+}
+
+public List<Blog> searchBlogsByTitle(String keyword) {
+    List<Blog> list = new ArrayList<>();
+    String sql = """
+        SELECT id, title, image, created_at, description
+        FROM Blog
+        WHERE title LIKE ?
+        ORDER BY created_at DESC
+    """;
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        String likeKeyword = "%" + keyword + "%"; 
+        ps.setString(1, likeKeyword);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Blog b = new Blog(
+                    rs.getInt("id"),
+                    rs.getString("title"),
+                    rs.getString("image"),
+                    rs.getString("description"),
+                    rs.getTimestamp("created_at"),
+                    null // load User nếu cần
+                );
+                list.add(b);
             }
         }
     } catch (SQLException e) {

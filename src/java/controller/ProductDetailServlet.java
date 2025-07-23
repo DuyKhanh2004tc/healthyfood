@@ -95,7 +95,8 @@ public class ProductDetailServlet extends HttpServlet {
                 break;
             }
         }
-
+        DAOOrder dao2 = new DAOOrder();
+        boolean productOrdered = dao2.isProductOrdered(productId);
         request.setAttribute("productId", product.getId());
         request.setAttribute("productName", product.getName());
         request.setAttribute("description", product.getDescription());
@@ -109,7 +110,7 @@ public class ProductDetailServlet extends HttpServlet {
         request.setAttribute("rate", product.getRate());
         request.setAttribute("prevId", prevId != 0 ? prevId : p.get(p.size() - 1).getId());
         request.setAttribute("nextId", nextId != 0 ? nextId : p.get(0).getId());
-
+        request.setAttribute("productOrdered", productOrdered);
         request.getRequestDispatcher("view/productDetail.jsp").forward(request, response);
 
     }

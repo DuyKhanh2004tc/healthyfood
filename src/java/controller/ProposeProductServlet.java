@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dal.DAOCategory;
 import dal.DAOProposedProduct;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,7 +19,10 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import model.Category;
 import model.ProposedProduct;
 import model.User;
 
@@ -73,7 +77,9 @@ public class ProposeProductServlet extends HttpServlet {
         User user = (User) request.getSession().getAttribute("user");
         DAOProposedProduct dao = new DAOProposedProduct();
         List proposedProductList = dao.listProductByNutritionistId(user.getId());
-
+        DAOCategory dao2 = new DAOCategory();
+        List<Category> categoryList = dao2.getAllCategory();
+        request.setAttribute("categoryList", categoryList);
         request.setAttribute("proposedProductList", proposedProductList);
         request.getRequestDispatcher("view/proposedProduct.jsp").forward(request, response);
     }
@@ -94,9 +100,10 @@ public class ProposeProductServlet extends HttpServlet {
         String action = request.getParameter("action");
         String proposeIdStr = request.getParameter("proposedId");
         String name = request.getParameter("name");
-        String categoryName = request.getParameter("categoryName");
+        String category = request.getParameter("category");
         String description = request.getParameter("description");
         String reason = request.getParameter("reason");
+        String shelfLifestr = request.getParameter("shelfLife");
         String image = request.getParameter("image");
         DAOProposedProduct dao = new DAOProposedProduct();
 
@@ -129,11 +136,18 @@ public class ProposeProductServlet extends HttpServlet {
             ProposedProduct p = new ProposedProduct();
             p.setId(Integer.parseInt(proposeIdStr));
             p.setName(name);
-            p.setCategoryName(categoryName);
+            Category c = new Category();
+            c.setId(Integer.parseInt(category.trim()));
+            p.setCategory(c);
             p.setDescription(description);
             p.setImage(image);
             p.setNutritionist(user);
             p.setReason(reason);
+            try {
+                int shelfLife = Integer.parseInt(shelfLifestr.trim());
+                p.setShelfLife(shelfLife);
+            } catch (Exception e) {
+            }
             p.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
             p.setStatus("pending");
             dao.updateProposedProduct(p);
@@ -144,7 +158,7 @@ public class ProposeProductServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/proposeProduct");
         }
         if ("add".equals(action)) {
-             Part filePart = request.getPart("file");
+            Part filePart = request.getPart("file");
             String fileName = getFileName(filePart);
 
             String appPath = request.getServletContext().getRealPath("");
@@ -171,11 +185,18 @@ public class ProposeProductServlet extends HttpServlet {
             }
             ProposedProduct p = new ProposedProduct();
             p.setName(name);
-            p.setCategoryName(categoryName);
+            Category c = new Category();
+            c.setId(Integer.parseInt(category.trim()));
+            p.setCategory(c);
             p.setDescription(description);
             p.setImage(image);
             p.setNutritionist(user);
             p.setReason(reason);
+            try {
+                int shelfLife = Integer.parseInt(shelfLifestr.trim());
+                p.setShelfLife(shelfLife);
+            } catch (Exception e) {
+            }
             p.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
             p.setStatus("pending");
             dao.insertProposedProduct(p);

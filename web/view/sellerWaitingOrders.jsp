@@ -1,4 +1,3 @@
-<%-- view/sellerWaitingOrders.jsp --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -46,13 +45,14 @@
                                     </div>
                                 </div>
                             </div>
-                        </c:forEach>
-                    </c:when>
-                    <c:otherwise>
-                        <p class="text-center">No waiting orders.</p>
-                    </c:otherwise>
-                </c:choose>
-            </div>
+                        </div>
+                    </c:forEach>
+                </c:when>
+                <c:otherwise>
+                    <p class="text-center text-muted">No waiting orders.</p>
+                </c:otherwise>
+            </c:choose>
         </div>
-    </body>
+    </div>
+</body>
 </html>

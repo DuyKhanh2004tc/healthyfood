@@ -6,7 +6,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     Created on : Jun 24, 2025, 2:42:04 PM
     Author     : ASUS
 */
-ody {
+body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f9f9f9;
     margin: 0;
@@ -62,7 +62,7 @@ ody {
 }
 
 .form-placeOrder input[type="text"],
-.form-placeOrder input[type="email"] {
+.form-placeOrder input[type="email"],.form-placeOrder textarea {
     width: 90%;
     padding: 10px;
     border: 1px solid #ccc;

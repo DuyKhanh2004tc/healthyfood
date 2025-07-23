@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 import model.User;
@@ -96,32 +97,49 @@ public class AddAccountServlet extends HttpServlet {
             } else if (!Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", email)) {
                 request.setAttribute("emailError", "Invalid email format");
             }
-            if (name == null || name.trim().isEmpty()) {
-                request.setAttribute("nameError", "Name is required");
+            if (name == null || name.trim().isEmpty() || name.length() < 2 || name.length() > 50 || !name.matches("^[\\p{L}\\s]+$")) {
+                request.setAttribute("nameError", "Full name must be 2-50 characters and contain only letters and spaces.");
             }
+
             if (password == null || password.trim().isEmpty()) {
                 request.setAttribute("passwordError", "Password is required");
-            } else if (password.length() < 6) {
+            } else if (password.trim().length() < 6) {
                 request.setAttribute("passwordError", "Password must be at least 6 characters");
             }
-            if (phone != null && !phone.trim().isEmpty() && !Pattern.matches("^\\d{10}$", phone)) {
-                request.setAttribute("phoneError", "Phone must be 10 digits");
+
+            if (phone == null || phone.isEmpty() || !phone.matches("^(0|\\+84)[0-9]{9}$")) {
+                request.setAttribute("phoneError", "Phone number must start with 0 or +84 and contain exactly 9 digits.");
             }
+
+            Date dob = null;
             if (dobStr == null || dobStr.trim().isEmpty()) {
-                request.setAttribute("dobError", "Date of Birth is required");
+                request.setAttribute("dobError", "Date of birth is required.");
+            } else {
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    sdf.setLenient(false);
+                    java.util.Date parsedDate = sdf.parse(dobStr);
+                    dob = new Date(parsedDate.getTime());
+
+                    LocalDate birthDate = LocalDate.parse(dobStr);
+                    if (birthDate.plusYears(13).isAfter(LocalDate.now())) {
+                        request.setAttribute("dobError", "You must be at least 13 years old.");
+                    }
+                } catch (ParseException e) {
+                    request.setAttribute("dobError", "Invalid date of birth format. Use YYYY-MM-DD.");
+                }
             }
-            if (address == null || address.trim().isEmpty()) {
-                request.setAttribute("addressError", "Address is required");
+            if (address == null || address.trim().isEmpty() || address.length() < 5 || address.length() > 100) {
+                request.setAttribute("addressError", "Address must be 5-100 characters.");
             }
             if (genderStr == null || genderStr.trim().isEmpty()) {
                 request.setAttribute("genderError", "Gender is required");
             }
 
-            // Kiểm tra lỗi tổng quát trước khi parse
-            if (!request.getAttribute("emailError").equals("") || !request.getAttribute("nameError").equals("") ||
-                !request.getAttribute("passwordError").equals("") || !request.getAttribute("phoneError").equals("") ||
-                !request.getAttribute("dobError").equals("") || !request.getAttribute("addressError").equals("") ||
-                !request.getAttribute("genderError").equals("")) {
+            if (!request.getAttribute("emailError").equals("") || !request.getAttribute("nameError").equals("")
+                    || !request.getAttribute("passwordError").equals("") || !request.getAttribute("phoneError").equals("")
+                    || !request.getAttribute("dobError").equals("") || !request.getAttribute("addressError").equals("")
+                    || !request.getAttribute("genderError").equals("")) {
                 forwardToAddAccount(request, response, roleIdStr);
                 return;
             }
@@ -129,23 +147,6 @@ public class AddAccountServlet extends HttpServlet {
             DAOUser daoUser = DAOUser.INSTANCE;
             if (daoUser.checkEmailExists(email, 0)) {
                 request.setAttribute("emailError", "Email already exists");
-                forwardToAddAccount(request, response, roleIdStr);
-                return;
-            }
-
-            Date dob = null;
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                sdf.setLenient(false);
-                java.util.Date parsedDate = sdf.parse(dobStr);
-                dob = new Date(parsedDate.getTime());
-                if (dob.after(new Date(System.currentTimeMillis()))) {
-                    request.setAttribute("dobError", "Date of Birth cannot be in the future");
-                    forwardToAddAccount(request, response, roleIdStr);
-                    return;
-                }
-            } catch (ParseException e) {
-                request.setAttribute("dobError", "Invalid date format for DOB. Use YYYY-MM-DD");
                 forwardToAddAccount(request, response, roleIdStr);
                 return;
             }

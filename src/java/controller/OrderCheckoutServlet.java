@@ -88,15 +88,20 @@ public class OrderCheckoutServlet extends HttpServlet {
         User u = (User) session.getAttribute("user");
         String userName = request.getParameter("userName");
         String phone = request.getParameter("phone");
-        String address = request.getParameter("address");
+        String street = request.getParameter("street");
+        String ward = request.getParameter("ward");
+        String district = request.getParameter("district");
+        String province = request.getParameter("province");
+        String address = street + ", " + ward + ", " + district + ", " + province;
         String email = request.getParameter("email");
         String paymentMethod = request.getParameter("paymentMethod");
         String productId_raw = request.getParameter("productId");
         String quantity_raw = request.getParameter("quantity");
         String totalAmount_raw = request.getParameter("totalAmount");
+        String deliveryMessage = request.getParameter("deliveryMessage");
 
         if (request.getParameter("userName") != null && request.getParameter("phone") != null && request.getParameter("paymentMethod") != null
-                && request.getParameter("address") != null && request.getParameter("email") != null
+                && request.getParameter("email") != null
                 && request.getParameter("totalAmount") != null) {
             try {
                 List<CartItem> itemList;
@@ -147,6 +152,11 @@ public class OrderCheckoutServlet extends HttpServlet {
                 order.setReceiverName(userName);
                 order.setReceiverPhone(phone);
                 order.setShippingAddress(address);
+                if (deliveryMessage != null) {
+                    order.setDeliveryMessage(deliveryMessage);
+                } else {
+                    order.setDeliveryMessage(null);
+                }
                 OrderStatus orderStatus = new OrderStatus();
                 orderStatus.setId(1);
                 order.setStatus(orderStatus);
@@ -166,37 +176,37 @@ public class OrderCheckoutServlet extends HttpServlet {
                 }
                 if (productId_raw == null && u != null) {
                     daoCart.deleteCartItemsByUserId(u.getId());
+                } else if (productId_raw == null && u == null) {
+                    session.removeAttribute("itemList");
                 }
-                if (u == null) {                  
-                    StringBuilder content = new StringBuilder();
-                    content.append("Dear ").append(userName).append(",\n\n");
-                    content.append("Thank you for shopping with Healthy Food!\n\n");
-                    content.append("We have received your order successfully. Below are your order details:\n\n");
-                    content.append("Order ID: ").append(order.getId()).append("\n");
-                    content.append("Total Amount: $").append(order.getTotalAmount()).append("\n");
-                    content.append("Shipping Address: ").append(address).append("\n");
-                    content.append("Phone: ").append(phone).append("\n");
-                    content.append("Email: ").append(email).append("\n");
-                    content.append("Payment Method: ").append(paymentMethod).append("\n\n");
 
-                    content.append("Items Ordered:\n");
-                    for (CartItem item : itemList) {
-                        content.append("- ")
-                                .append(item.getProduct().getName())
-                                .append(" x ").append(item.getQuantity())
-                                .append(" - $").append(item.getProduct().getPrice()).append("\n");
-                    }
+                StringBuilder content = new StringBuilder();
+                content.append("Dear ").append(userName).append(",\n\n");
+                content.append("Thank you for shopping with Healthy Food!\n\n");
+                content.append("We have received your order successfully. Below are your order details:\n\n");
+                content.append("Order ID: ").append(order.getId()).append("\n");
+                content.append("Total Amount: $").append(order.getTotalAmount()).append("\n");
+                content.append("Shipping Address: ").append(address).append("\n");
+                content.append("Phone: ").append(phone).append("\n");
+                content.append("Email: ").append(email).append("\n");
+                content.append("Payment Method: ").append(paymentMethod).append("\n\n");
 
-                    content.append("\nWe will process and ship your order soon!\n\n");
-                    content.append("Best regards,\nHealthy Food Team ");
-
-                    
-                    Mail.sendMail(email, "[HealthyFood] Order Confirmation - Order #" + order.getId(), content.toString());
+                content.append("Items Ordered:\n");
+                for (CartItem item : itemList) {
+                    content.append("- ")
+                            .append(item.getProduct().getName())
+                            .append(" x ").append(item.getQuantity())
+                            .append(" - $").append(item.getProduct().getPrice()).append("\n");
                 }
+
+                content.append("\nWe will process and ship your order soon!\n\n");
+                content.append("Best regards,\nHealthy Food Team ");
+
+                Mail.sendMail(email, "[HealthyFood] Order Confirmation - Order #" + order.getId(), content.toString());
 
                 request.setAttribute("order", order);
                 request.setAttribute("itemList", itemList);
-                session.removeAttribute("itemList");
+
                 request.getRequestDispatcher("/view/orderCheckout.jsp").forward(request, response);
                 return;
             } catch (Exception e) {
