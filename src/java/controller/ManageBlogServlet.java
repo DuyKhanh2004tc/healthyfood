@@ -2,7 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-
 package controller;
 
 import dal.DAOBlog;
@@ -27,36 +26,40 @@ import model.User;
  */
 @MultipartConfig
 public class ManageBlogServlet extends HttpServlet {
-   private DAOBlog daoBlog = new DAOBlog();
+
+    private DAOBlog daoBlog = new DAOBlog();
     private DAOTag daoTag = new DAOTag();
 
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ManageBlogServlet</title>");  
+            out.println("<title>Servlet ManageBlogServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ManageBlogServlet at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet ManageBlogServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
-    } 
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
+    /**
      * Handles the HTTP <code>GET</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -64,7 +67,7 @@ public class ManageBlogServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
 
@@ -89,10 +92,10 @@ public class ManageBlogServlet extends HttpServlet {
         // Forward to nutritionBlog.jsp, which includes ManageBlog.jsp when showManageBlog is true
         request.getRequestDispatcher("/nutritionBlog").forward(request, response);
     }
-    
 
-    /** 
+    /**
      * Handles the HTTP <code>POST</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -100,7 +103,7 @@ public class ManageBlogServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         //processRequest(request, response);
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
@@ -137,8 +140,8 @@ public class ManageBlogServlet extends HttpServlet {
                 break;
         }
     }
-    
-        private void handleAddBlog(HttpServletRequest request, HttpServletResponse response, User user) 
+
+    private void handleAddBlog(HttpServletRequest request, HttpServletResponse response, User user)
             throws ServletException, IOException {
         String title = request.getParameter("title");
         String description = request.getParameter("description");
@@ -191,22 +194,39 @@ public class ManageBlogServlet extends HttpServlet {
         }
     }
 
-    private void handleDeleteBlog(HttpServletRequest request, HttpServletResponse response) 
-            throws IOException {
+    private void handleDeleteBlog(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
         String[] blogIds = request.getParameterValues("blogIds");
+        boolean success = false;
         if (blogIds != null && blogIds.length > 0) {
             for (String blogId : blogIds) {
-                daoBlog.deleteBlogById(Integer.parseInt(blogId));
+                try {
+                    success = daoBlog.deleteBlogById(Integer.parseInt(blogId));
+                    if (!success) {
+                        request.setAttribute("error", "Failed to delete blog with ID: " + blogId);
+                    }
+                } catch (NumberFormatException e) {
+                    request.setAttribute("error", "Invalid blog ID format: " + blogId);
+                }
             }
+            if (success) {
+                request.setAttribute("success", "Blogs deleted successfully");
+            }
+        } else {
+            request.setAttribute("error", "No blogs selected for deletion");
         }
-        response.sendRedirect(request.getContextPath() + "/nutritionBlog");
+        request.setAttribute("action", "deleteBlog");
+        request.setAttribute("blogList", daoBlog.getAllBlogsByNewest());
+        request.setAttribute("tagList", daoTag.listAllTag());
+        request.setAttribute("showManageBlog", true);
+        request.getRequestDispatcher("/nutritionBlog").forward(request, response);
     }
 
-    private void handleAddTag(HttpServletRequest request, HttpServletResponse response) 
+    private void handleAddTag(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         String tagName = request.getParameter("tagName");
         String description = request.getParameter("description");
-        
+
         if (tagName == null || tagName.trim().isEmpty()) {
             request.setAttribute("error", "Tag name is required");
             request.setAttribute("action", "addTag");
@@ -287,28 +307,27 @@ public class ManageBlogServlet extends HttpServlet {
         request.getRequestDispatcher("/nutritionBlog").forward(request, response);
     }
 
-    private void handleDeleteTag(HttpServletRequest request, HttpServletResponse response) 
-        throws IOException, ServletException {
-    String[] tagIds = request.getParameterValues("tagIds");
-    if (tagIds != null && tagIds.length > 0) {
-        for (String tagId : tagIds) {
-            daoTag.deleteTag(Integer.parseInt(tagId));
+    private void handleDeleteTag(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        String[] tagIds = request.getParameterValues("tagIds");
+        if (tagIds != null && tagIds.length > 0) {
+            for (String tagId : tagIds) {
+                daoTag.deleteTag(Integer.parseInt(tagId));
+            }
+            request.setAttribute("success", "Delete successfully.");
+            request.setAttribute("action", "deleteTag");
+            request.setAttribute("tagList", daoTag.listAllTag());
+            request.setAttribute("showManageBlog", true);
+            request.getRequestDispatcher("/nutritionBlog").forward(request, response);
+        } else {
+            request.setAttribute("error", "No tags selected");
+            request.setAttribute("action", "deleteTag");
+            request.setAttribute("tagList", daoTag.listAllTag());
+            request.setAttribute("showManageBlog", true);
+            request.getRequestDispatcher("/nutritionBlog").forward(request, response);
         }
-        request.setAttribute("success", "Delete successfully.");
-        request.setAttribute("action", "deleteTag");
-        request.setAttribute("tagList", daoTag.listAllTag());
-        request.setAttribute("showManageBlog", true);
-        request.getRequestDispatcher("/nutritionBlog").forward(request, response);
-    } else {
-        request.setAttribute("error", "No tags selected");
-        request.setAttribute("action", "deleteTag");
-        request.setAttribute("tagList", daoTag.listAllTag());
-        request.setAttribute("showManageBlog", true);
-        request.getRequestDispatcher("/nutritionBlog").forward(request, response);
     }
-}
 
-    
     private String getFileName(Part part) {
         String contentDisp = part.getHeader("content-disposition");
         for (String s : contentDisp.split(";")) {
@@ -318,9 +337,10 @@ public class ManageBlogServlet extends HttpServlet {
         }
         return null;
     }
-    
-    /** 
+
+    /**
      * Returns a short description of the servlet.
+     *
      * @return a String containing servlet description
      */
     @Override

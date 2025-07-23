@@ -15,7 +15,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import model.Blog;
-import model.ProposedProduct;
 import model.Tag;
 import utils.Pagination;
 
@@ -65,6 +64,7 @@ public class NutritionBlogServlet extends HttpServlet {
         DAOTag daoTag = new DAOTag(); 
         String tagSlug = request.getParameter("tag");
         String keyword = request.getParameter("keyword"); 
+        String action = request.getParameter("action");
 
         List<Blog> blogList; 
         if (tagSlug != null && !tagSlug.isEmpty()) {
@@ -77,25 +77,28 @@ public class NutritionBlogServlet extends HttpServlet {
             blogList = daoBlog.getAllBlogsByNewest(); 
         }
 
-        int page = 1; 
-        int pageSize = 6; 
+        if ("deleteBlog".equals(action)) {
+        request.setAttribute("blogList", blogList);
+    } else {
+        int page = 1;
+        int pageSize = 6;
         if (request.getParameter("page") != null) {
             try {
                 page = Integer.parseInt(request.getParameter("page"));
             } catch (NumberFormatException e) {
-                page = 1; 
+                page = 1;
             }
         }
-
         List<Blog> pagedList = Pagination.paginate(blogList, page, pageSize);
-        int totalPages = (int) Math.ceil((double) blogList.size() / pageSize); 
-
-        request.setAttribute("blogList", pagedList); 
-        request.setAttribute("tagList", daoTag.listAllTag());
-        request.setAttribute("currentPage", page); 
+        int totalPages = (int) Math.ceil((double) blogList.size() / pageSize);
+        request.setAttribute("blogList", pagedList);
+        request.setAttribute("currentPage", page);
         request.setAttribute("totalPage", totalPages);
-        request.setAttribute("keyword", keyword); 
-        request.setAttribute("tagSlug", tagSlug); 
+    }
+
+    request.setAttribute("tagList", daoTag.listAllTag());
+    request.setAttribute("keyword", keyword);
+    request.setAttribute("tagSlug", tagSlug);
 
         request.getRequestDispatcher("/view/nutritionBlog.jsp").forward(request, response); 
     }
