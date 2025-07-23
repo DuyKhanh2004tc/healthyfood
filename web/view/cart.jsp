@@ -57,7 +57,7 @@
                         </c:if>
                         <c:if test="${not empty requestScope.stockError}">
                             <div id="stockError" style="color: red; font-weight: bold;">
-                                ${sessionScope.stockError}
+                                ${requestScope.stockError}
                             </div>
                         </c:if></td>
                     <td>Total Amount:</td>
@@ -91,7 +91,7 @@
                     <td colspan="5">
                         <c:if test="${not empty requestScope.stockError}">
                             <div id="stockError" style="color: red; font-weight: bold;">
-                                ${sessionScope.stockError}
+                                ${requestScope.stockError}
                             </div>
                         </c:if></td>
                     <td>Total Amount:</td>
