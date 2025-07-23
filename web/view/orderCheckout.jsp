@@ -28,12 +28,16 @@
         %>
         <div class="order-infor"> 
             <div class ="left">
+                <%
+                    int rate = 24000;
+                    int amountVND = (int)(order.getTotalAmount() * rate);
+                %>
                 <% if (order.getPaymentMethod().equalsIgnoreCase("online")) { %>
                 <img 
                     src="https://img.vietqr.io/image/970422-0344051852-compact2.jpg
                     ?accountName=BUI%20DUY%20KHANH
                     &addInfo=OD<%= order.getId() %>%20<%= order.getReceiverName().replaceAll(" ", "-") %>%20<%= order.getReceiverPhone() %>
-                    &amount=<%= (int)order.getTotalAmount() %>
+                    &amount=<%= amountVND %>
                     &template=compact2" 
                     width="400" height="400" 
                     alt="Online Payment" />
