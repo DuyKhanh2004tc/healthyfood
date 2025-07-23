@@ -242,7 +242,7 @@
     <servlet>
         <servlet-name>SellerServlet</servlet-name>
         <servlet-class>controller.SellerServlet</servlet-class>
-         </servlet>
+    </servlet>
     <servlet>
         <servlet-name>ApproveNewProductServlet</servlet-name>
         <servlet-class>controller.ApproveNewProductServlet</servlet-class>
@@ -266,6 +266,10 @@
     <servlet>
         <servlet-name>ChatbotDataServlet</servlet-name>
         <servlet-class>controller.ChatbotDataServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RecipeTypeServlet</servlet-name>
+        <servlet-class>controllerNutritionist.RecipeTypeServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ProposeProductServlet</servlet-name>
@@ -478,7 +482,10 @@
     <servlet-mapping>
         <servlet-name>ChatbotDataServlet</servlet-name>
         <url-pattern>/chatbotdata</url-pattern>
-
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RecipeTypeServlet</servlet-name>
+        <url-pattern>/recipeType</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>
