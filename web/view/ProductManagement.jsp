@@ -14,12 +14,7 @@
     <body class="seller-page">
       
       <jsp:include page="SideBarOfSheller.jsp"></jsp:include>
-        
-           
-     
-     
-         
-         
+       
          <div class="main-content">
         <div class="container-fluid mt-4" ">
             <div class="d-flex justify-content-center" >
