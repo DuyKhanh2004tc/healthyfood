@@ -35,16 +35,22 @@
 
         <c:when test="${requestScope.action == 'deleteBlog'}">
             <h2>Delete Blog</h2>
-            <form action="${pageContext.request.contextPath}/manageBlog" method="post">
-                <input type="hidden" name="action" value="deleteBlog">
-                <c:forEach items="${requestScope.blogList}" var="blog">
-                    <label>
-                        <input type="checkbox" name="blogIds" value="${blog.id}">
-                        ${blog.title}
-                    </label><br>
-                </c:forEach>
-                <button type="submit">Delete Selected Blogs</button>
-            </form>
+            <c:if test="${empty requestScope.blogList}">
+                <p>There are no blogs to delete.</p>
+                <p>Debug: Blog list is empty or null</p>
+            </c:if>
+            <c:if test="${not empty requestScope.blogList}">
+                <form action="${pageContext.request.contextPath}/manageBlog" method="post">
+                    <input type="hidden" name="action" value="deleteBlog">
+                    <c:forEach items="${requestScope.blogList}" var="blog">
+                        <label>
+                            <input type="checkbox" name="blogIds" value="${blog.id}">
+                            ${blog.title}
+                        </label><br>
+                    </c:forEach>
+                    <button type="submit">Delete Selected Blogs</button>
+                </form>
+            </c:if>
             <c:if test="${not empty requestScope.success && requestScope.action == 'deleteBlog'}">
                 <div style="color: green; margin-top: 10px;">
                     ${requestScope.success}

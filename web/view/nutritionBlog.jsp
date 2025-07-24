@@ -91,7 +91,7 @@
                     <div>
                         <c:choose>
                             <c:when test="${requestScope.showManageBlog == true}">
-                                <jsp:include page="manageBlog.jsp" />
+                                <jsp:include page="ManageBlog.jsp" />
                             </c:when>
                             <c:otherwise>
                                 <div class="nb-head">
