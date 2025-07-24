@@ -64,52 +64,52 @@ public class DAOBlog {
         return blogList;
 
     }
-    
+
     public List<Blog> getAllBlogsByNewest() {
-    List<Blog> blogList = new ArrayList<>();
-    String sql = "SELECT b.id, b.title, b.image, b.description, b.created_at, "
-            + "u.id AS user_id, u.name, u.email, u.password, u.phone, u.dob, u.address, u.gender, u.created_at AS user_created_at, "
-            + "r.id AS role_id, r.role_name "
-            + "FROM Blog b "
-            + "JOIN Users u ON u.id = b.user_id "
-            + "JOIN Role r ON r.id = u.role_id "
-            + "ORDER BY b.id DESC";
+        List<Blog> blogList = new ArrayList<>();
+        String sql = "SELECT b.id, b.title, b.image, b.description, b.created_at, "
+                + "u.id AS user_id, u.name, u.email, u.password, u.phone, u.dob, u.address, u.gender, u.created_at AS user_created_at, "
+                + "r.id AS role_id, r.role_name "
+                + "FROM Blog b "
+                + "JOIN Users u ON u.id = b.user_id "
+                + "JOIN Role r ON r.id = u.role_id "
+                + "ORDER BY b.id DESC";
 
-    try {
-        PreparedStatement st = con.prepareStatement(sql);
-        ResultSet rs = st.executeQuery();
-        while (rs.next()) {
-            Blog b = new Blog();
-            b.setId(rs.getInt("id"));
-            b.setTitle(rs.getString("title"));
-            b.setImage(rs.getString("image"));
-            b.setDescription(rs.getString("description"));
-            b.setCreated_at(rs.getTimestamp("created_at"));
+        try {
+            PreparedStatement st = con.prepareStatement(sql);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                Blog b = new Blog();
+                b.setId(rs.getInt("id"));
+                b.setTitle(rs.getString("title"));
+                b.setImage(rs.getString("image"));
+                b.setDescription(rs.getString("description"));
+                b.setCreated_at(rs.getTimestamp("created_at"));
 
-            User u = new User();
-            u.setId(rs.getInt("user_id"));
-            u.setName(rs.getString("name"));
-            u.setEmail(rs.getString("email"));
-            u.setPassword(rs.getString("password"));
-            u.setPhone(rs.getString("phone"));
-            u.setDob(rs.getDate("dob"));
-            u.setAddress(rs.getString("address"));
-            u.setGender(rs.getBoolean("gender"));
-            u.setCreatedAt(rs.getTimestamp("user_created_at"));
+                User u = new User();
+                u.setId(rs.getInt("user_id"));
+                u.setName(rs.getString("name"));
+                u.setEmail(rs.getString("email"));
+                u.setPassword(rs.getString("password"));
+                u.setPhone(rs.getString("phone"));
+                u.setDob(rs.getDate("dob"));
+                u.setAddress(rs.getString("address"));
+                u.setGender(rs.getBoolean("gender"));
+                u.setCreatedAt(rs.getTimestamp("user_created_at"));
 
-            Role r = new Role();
-            r.setId(rs.getInt("role_id"));
-            r.setRoleName(rs.getString("role_name"));
+                Role r = new Role();
+                r.setId(rs.getInt("role_id"));
+                r.setRoleName(rs.getString("role_name"));
 
-            u.setRole(r);
-            b.setUser(u);
-            blogList.add(b);
+                u.setRole(r);
+                b.setUser(u);
+                blogList.add(b);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return blogList;
     }
-    return blogList;
-}
 
     public Blog getBlogById(int blogId) {
         Blog blog = null;
@@ -153,30 +153,42 @@ public class DAOBlog {
         }
         return blog;
     }
-    
-    public int insertBlog(Blog blog) {
-    int generatedId = -1;
-    String sql = "INSERT INTO Blog (title, image, description, user_id, created_at) VALUES (?, ?, ?, ?, ?)";
-    try (PreparedStatement st = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-        st.setString(1, blog.getTitle());
-        st.setString(2, blog.getImage());
-        st.setString(3, blog.getDescription());
-        st.setInt(4, blog.getUser().getId());
-        st.setTimestamp(5, blog.getCreated_at());
 
-        int affectedRows = st.executeUpdate();
-        if (affectedRows > 0) {
-            try (ResultSet generatedKeys = st.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    generatedId = generatedKeys.getInt(1);
+    public int getNextBlogId() throws SQLException {
+        String sql = "SELECT MAX(id) AS max_id FROM Blog";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                int maxId = rs.getInt("max_id");
+                return maxId + 1; 
+            }
+            return 1; 
+        }
+    }
+
+    public int insertBlog(Blog blog) throws SQLException {
+        if (blog.getUser() == null || blog.getUser().getId() <= 0) {
+            throw new SQLException("Invalid user: User is null or has invalid ID.");
+        }
+        String sql = "INSERT INTO Blog (id, title, image, description, user_id, created_at) VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement st = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            st.setInt(1, blog.getId()); // Thêm dòng này
+            st.setString(2, blog.getTitle());
+            st.setString(3, blog.getImage());
+            st.setString(4, blog.getDescription());
+            st.setInt(5, blog.getUser().getId());
+            st.setTimestamp(6, blog.getCreated_at());
+            int affectedRows = st.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = st.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getInt(1);
+                    }
                 }
             }
+            throw new SQLException("Failed to insert blog: No rows affected.");
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
     }
-    return generatedId;
-}
 
     public boolean updateBlog(Blog blog) {
         String sql = "UPDATE Blog SET title = ?, image = ?, description = ?, user_id = ? WHERE id = ?";
@@ -194,57 +206,58 @@ public class DAOBlog {
         }
         return false;
     }
-public boolean deleteBlogById(int blogId) {
-    String sqlDeleteBlogTag = "DELETE FROM BlogTag WHERE blog_id = ?";
-    String sql = "DELETE FROM Blog WHERE id = ?";
-    try {
-        
-        PreparedStatement ps1 = con.prepareStatement(sqlDeleteBlogTag);
-        ps1.setInt(1, blogId);
-        ps1.executeUpdate();
-        ps1.close();
 
-        
-        PreparedStatement ps2 = con.prepareStatement(sql);
-        ps2.setInt(1, blogId);
-        int rowsAffected = ps2.executeUpdate();
-        ps2.close();
-        return rowsAffected > 0;
-    } catch (SQLException e) {
-        e.printStackTrace();
-        return false;
-    }
-}
-public List<Tag> getTagByBlogId(int blogId) {
-    List<Tag> list = new ArrayList<>();
-    String sql = "SELECT t.id, t.name, t.slug, t.description "
-               + "FROM BlogTag bt "
-               + "JOIN Tag t ON bt.tag_id = t.id "
-               + "WHERE bt.blog_id = ?";
-    try {
-        PreparedStatement ps = con.prepareStatement(sql);
-        ps.setInt(1, blogId);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            Tag tag = new Tag(
-                rs.getInt("id"),
-                rs.getString("name"),
-                rs.getString("slug"),
-                rs.getString("description")
-            );
-            list.add(tag);
+    public boolean deleteBlogById(int blogId) {
+        String sqlDeleteBlogTag = "DELETE FROM BlogTag WHERE blog_id = ?";
+        String sql = "DELETE FROM Blog WHERE id = ?";
+        try {
+
+            PreparedStatement ps1 = con.prepareStatement(sqlDeleteBlogTag);
+            ps1.setInt(1, blogId);
+            ps1.executeUpdate();
+            ps1.close();
+
+            PreparedStatement ps2 = con.prepareStatement(sql);
+            ps2.setInt(1, blogId);
+            int rowsAffected = ps2.executeUpdate();
+            ps2.close();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
-        rs.close();
-        ps.close();
-    } catch (SQLException e) {
-        status = "Error at getTagByBlogId: " + e.getMessage();
     }
-    return list;
-}
 
-public List<Blog> getBlogsByTagSlug(String slug) {
-    List<Blog> list = new ArrayList<>();
-    String sql = """
+    public List<Tag> getTagByBlogId(int blogId) {
+        List<Tag> list = new ArrayList<>();
+        String sql = "SELECT t.id, t.name, t.slug, t.description "
+                + "FROM BlogTag bt "
+                + "JOIN Tag t ON bt.tag_id = t.id "
+                + "WHERE bt.blog_id = ?";
+        try {
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, blogId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Tag tag = new Tag(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("slug"),
+                        rs.getString("description")
+                );
+                list.add(tag);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            status = "Error at getTagByBlogId: " + e.getMessage();
+        }
+        return list;
+    }
+
+    public List<Blog> getBlogsByTagSlug(String slug) {
+        List<Blog> list = new ArrayList<>();
+        String sql = """
         SELECT b.id AS blog_id, b.user_id, b.title, b.image, b.description, b.created_at,
                u.id AS user_id, u.name AS user_name, u.email, u.password, u.phone,
                u.dob, u.address, u.gender, u.created_at AS user_created_at
@@ -255,68 +268,68 @@ public List<Blog> getBlogsByTagSlug(String slug) {
         WHERE t.slug = ?
         ORDER BY b.created_at DESC
         """;
-    try (PreparedStatement ps = con.prepareStatement(sql)) {
-        ps.setString(1, slug);
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                User user = new User(
-                        rs.getInt("user_id"),
-                        rs.getString("user_name"),
-                        rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getString("phone"),
-                        rs.getDate("dob"),
-                        rs.getString("address"),
-                        rs.getBoolean("gender"),
-                        null, // Role nếu cần lấy thì join thêm
-                        rs.getTimestamp("user_created_at")
-                );
-                Blog blog = new Blog(
-                        rs.getInt("blog_id"),
-                        rs.getString("title"),
-                        rs.getString("image"),
-                        rs.getString("description"),
-                        rs.getTimestamp("created_at"),
-                        user
-                );
-                list.add(blog);
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, slug);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    User user = new User(
+                            rs.getInt("user_id"),
+                            rs.getString("user_name"),
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            rs.getString("phone"),
+                            rs.getDate("dob"),
+                            rs.getString("address"),
+                            rs.getBoolean("gender"),
+                            null, // Role nếu cần lấy thì join thêm
+                            rs.getTimestamp("user_created_at")
+                    );
+                    Blog blog = new Blog(
+                            rs.getInt("blog_id"),
+                            rs.getString("title"),
+                            rs.getString("image"),
+                            rs.getString("description"),
+                            rs.getTimestamp("created_at"),
+                            user
+                    );
+                    list.add(blog);
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return list;
     }
-    return list;
-}
 
-public List<Blog> searchBlogsByTitle(String keyword) {
-    List<Blog> list = new ArrayList<>();
-    String sql = """
+    public List<Blog> searchBlogsByTitle(String keyword) {
+        List<Blog> list = new ArrayList<>();
+        String sql = """
         SELECT id, title, image, created_at, description
         FROM Blog
         WHERE title LIKE ?
         ORDER BY created_at DESC
     """;
-    try (PreparedStatement ps = con.prepareStatement(sql)) {
-        String likeKeyword = "%" + keyword + "%"; 
-        ps.setString(1, likeKeyword);
-        try (ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                Blog b = new Blog(
-                    rs.getInt("id"),
-                    rs.getString("title"),
-                    rs.getString("image"),
-                    rs.getString("description"),
-                    rs.getTimestamp("created_at"),
-                    null // load User nếu cần
-                );
-                list.add(b);
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            String likeKeyword = "%" + keyword + "%";
+            ps.setString(1, likeKeyword);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Blog b = new Blog(
+                            rs.getInt("id"),
+                            rs.getString("title"),
+                            rs.getString("image"),
+                            rs.getString("description"),
+                            rs.getTimestamp("created_at"),
+                            null // load User nếu cần
+                    );
+                    list.add(b);
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return list;
     }
-    return list;
-}
 
     public static void main(String[] args) {
         Blog blog = DAOBlog.INSTANCE.getBlogById(1);
