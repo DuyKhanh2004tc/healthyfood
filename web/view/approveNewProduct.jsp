@@ -20,7 +20,7 @@
         <table class="proposed-table" border="1">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th>No</th>
                     <th>Image</th>
                     <th>Name</th>
                     <th>Category</br>
@@ -48,7 +48,7 @@
             <tbody>
                 <c:forEach items="${requestScope.proposedList}" var="i" varStatus="loop">
                     <tr>
-                        <td>${loop.index + 1}</td>
+                        <td>${(currentPage - 1) * 5 + loop.index + 1}</td>
                         <td>
                             <img  src="${pageContext.request.contextPath}/images/${i.image}"  width="80" alt="${i.name}">
                         </td>
