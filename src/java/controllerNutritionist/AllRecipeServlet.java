@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import model.*;
+import utils.Pagination;
 
 /**
  *
@@ -96,6 +97,21 @@ public class AllRecipeServlet extends HttpServlet {
         }
 
         List<RecipeType> typeList = dao.listAllRecipeType();
+         int page = 1;
+        int pageSize = 6;
+        if (request.getParameter("page") != null) {
+            try {
+                page = Integer.parseInt(request.getParameter("page"));
+            } catch (NumberFormatException e) {
+                page = 1;
+            }
+        }
+        List<CookingRecipe> pagedList = Pagination.paginate(recipeByProductId, page, pageSize);
+        int totalPages = (int) Math.ceil((double) recipeByProductId.size() / pageSize);
+
+        request.setAttribute("recipeList", pagedList);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
         request.setAttribute("productList", productList);
         request.setAttribute("typeList", typeList);
         request.setAttribute("cookingRecipeList", recipeByProductId);

@@ -16,7 +16,7 @@
             * {
                 margin: 0;
                 padding: 0;
-                
+
                 font-family: 'Arial', sans-serif;
             }
 
@@ -234,7 +234,7 @@
                 max-width: 300px;
                 text-align: center;
                 transition: transform 0.3s ease, box-shadow 0.3s ease;
-                
+
             }
 
             .recipe-card:hover {
@@ -314,14 +314,44 @@
                 text-decoration: none;
                 color: inherit;
             }
-.recipe-img {
-    width: 100%; /* Ensures the image takes the full width of the card */
-    height: 200px; /* Set a fixed height for consistency */
-    border-radius: 8px;
-    margin-bottom: 10px;
-    object-fit: cover; /* Ensures the image covers the area without distortion */
-    object-position: center; /* Centers the image */
-}
+            .recipe-img {
+                width: 100%; /* Ensures the image takes the full width of the card */
+                height: 200px; /* Set a fixed height for consistency */
+                border-radius: 8px;
+                margin-bottom: 10px;
+                object-fit: cover; /* Ensures the image covers the area without distortion */
+                object-position: center; /* Centers the image */
+            }
+            /* Button group for Add Recipe and Manage Recipe Type */
+            .button-group {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                margin: 20px 0;
+                align-items: center;
+                width: 80%;
+            }
+
+            .button-group a {
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #28a745;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                font-size: 16px;
+                transition: background-color 0.3s ease, transform 0.2s ease;
+            }
+
+            .button-group a:hover {
+                background-color: #218838;
+                transform: translateY(-2px);
+            }
+
+            .button-group a:focus {
+                outline: 2px solid #28a745;
+                outline-offset: 2px;
+            }
         </style>
     </head>
     <body>
@@ -342,6 +372,7 @@
                     <a href="${pageContext.request.contextPath}/updateProfile">Profile</a>
                     <a href="${pageContext.request.contextPath}/proposeProduct">Propose new product</a>                 
                     <a href="${pageContext.request.contextPath}/nutritionBlog">Manage Blog</a>
+                    <a href="${pageContext.request.contextPath}/allRecipe">Manage Cooking Recipe</a>
                     <a href="${pageContext.request.contextPath}/logout">Logout</a>
 
                 </div>
@@ -357,7 +388,12 @@
             </select>
             <button type="submit">Search</button>
         </form> 
-        <button type="button" onclick="openAddPopup()">Add Recipe</button>
+        <c:if test="${sessionScope.user.role.id == 4}">
+            <div class="button-group">
+                <button type="button" onclick="openAddPopup()">Add New Recipe</button>
+                <a href="${pageContext.request.contextPath}/recipeType">Manage Recipe Type</a>
+            </c:if>
+        </div>
         <div class="overlay" id="overlay"></div>
         <div class="popup" id="popupadd">
             <h3>Add Recipe</h3>
@@ -398,7 +434,7 @@
             </form>
         </div> 
         <div class="recipe-list">
-            <c:forEach items="${requestScope.cookingRecipeList}" var="i">
+            <c:forEach items="${requestScope.recipeList}" var="i">
                 <a href="${pageContext.request.contextPath}/recipeDetail?recipeId=${i.id}">
                     <div class="recipe-card">
                         <img class="recipe-img" src="${pageContext.request.contextPath}/images/${i.image}" alt="${name}">
@@ -407,29 +443,70 @@
                         <fmt:formatDate value="${i.createdAt}" pattern="dd/MM/yyyy" />
                     </div>
                 </a>
-            </c:forEach></div>
-    </div>
-    <script>
-        function openAddPopup() {
-            document.getElementById('popupadd').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        }
+            </c:forEach>
+        </div>
+        <div class="pagination">
+            <c:if test="${currentPage > 1}">
+                <c:url var="prevUrl" value="/allRecipe">
+                    <c:param name="page" value="${currentPage - 1}" />
+                    <c:if test="${param.productName != null}">
+                        <c:param name="productName" value="${param.productName}" />
+                    </c:if>
+                    <c:if test="${param.typeId != null}">
+                        <c:param name="typeId" value="${param.typeId}" />
+                    </c:if>
+                </c:url>
+                <a class="page-link prev-next" href="${prevUrl}">Previous</a>
+            </c:if>
 
-        function closePopup() {
-            document.getElementById('popupadd').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('productSearch').value = '';
-            filterProducts();
-        }
+            <c:forEach var="i" begin="1" end="${totalPages}">
+                <c:url var="pageUrl" value="/allRecipe">
+                    <c:param name="page" value="${i}" />
+                    <c:if test="${param.productName != null}">
+                        <c:param name="productName" value="${param.productName}" />
+                    </c:if>
+                    <c:if test="${param.typeId != null}">
+                        <c:param name="typeId" value="${param.typeId}" />
+                    </c:if>
+                </c:url>
+                <a href="${pageUrl}" class="page-link">${i}</a>
+            </c:forEach>
 
-        function filterProducts() {
-            const searchTerm = document.getElementById('productSearch').value.toLowerCase();
-            const checkboxItems = document.querySelectorAll('.checkbox-item');
-            checkboxItems.forEach(item => {
-                const label = item.querySelector('label').textContent.toLowerCase();
-                item.style.display = label.includes(searchTerm) ? 'flex' : 'none';
-            });
-        }
-    </script>            
-</body>
+            <c:if test="${currentPage < totalPages}">
+                <c:url var="nextUrl" value="/allRecipe">
+                    <c:param name="page" value="${currentPage + 1}" />
+                    <c:if test="${param.productName != null}">
+                        <c:param name="productName" value="${param.productName}" />
+                    </c:if>
+                    <c:if test="${param.typeId != null}">
+                        <c:param name="typeId" value="${param.typeId}" />
+                    </c:if>
+                </c:url>
+                <a class="page-link prev-next" href="${nextUrl}">Next</a>
+            </c:if>
+        </div>
+
+        <script>
+            function openAddPopup() {
+                document.getElementById('popupadd').style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+            }
+
+            function closePopup() {
+                document.getElementById('popupadd').style.display = 'none';
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('productSearch').value = '';
+                filterProducts();
+            }
+
+            function filterProducts() {
+                const searchTerm = document.getElementById('productSearch').value.toLowerCase();
+                const checkboxItems = document.querySelectorAll('.checkbox-item');
+                checkboxItems.forEach(item => {
+                    const label = item.querySelector('label').textContent.toLowerCase();
+                    item.style.display = label.includes(searchTerm) ? 'flex' : 'none';
+                });
+            }
+        </script>            
+    </body>
 </html>

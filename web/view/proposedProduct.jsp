@@ -363,7 +363,7 @@
                 </tr>
             </thead>
             <tbody>
-                <c:forEach items="${requestScope.proposedProductList}" var="i" varStatus="loop">
+                <c:forEach items="${requestScope.proposedList}" var="i" varStatus="loop">
                     <tr>
                         <td>${(currentPage - 1) * 5 + loop.index + 1}</td>
                         <td>
@@ -450,7 +450,7 @@
                 <c:if test="${currentPage > 1}">
                     <c:url var="prevUrl" value="/proposeProduct">
                         <c:param name="page" value="${currentPage - 1}" />
-                        
+
                         <c:if test="${param.productName != null}">
                             <c:param name="keyword" value="${param.productName}" />
                         </c:if>
@@ -466,7 +466,7 @@
                 <c:forEach var="i" begin="1" end="${totalPages}">
                     <c:url var="pageUrl" value="/proposeProduct">
                         <c:param name="page" value="${i}" />
-                        
+
                         <c:if test="${param.keyword != null}">
                             <c:param name="keyword" value="${param.productName}" />
                         </c:if>
@@ -480,9 +480,9 @@
                     <a href="${pageUrl}" class="page-link">${i}</a>
                 </c:forEach>
                 <c:if test="${currentPage < totalPages}">
-                    <c:url var="nextUrl" value="/approve">
+                    <c:url var="nextUrl" value="/proposeProduct">
                         <c:param name="page" value="${currentPage + 1}" />
-                        
+
                         <c:if test="${param.productName != null}">
                             <c:param name="keyword" value="${param.productName}" />
                         </c:if>

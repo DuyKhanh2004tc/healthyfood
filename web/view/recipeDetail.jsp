@@ -318,7 +318,7 @@ form button[type="button"]:focus,
                             if (pro != null && !pro.isEmpty()) {
                                 for (Product p : pro) {
                         %>
-                            <span>- <%= p.getName() %></span>
+                           <a href="${pageContext.request.contextPath}/productDetail?productId=<%= p.getId()%>" ><span>- <%= p.getName() %></span></a> 
                         <%
                                 }
                             }

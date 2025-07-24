@@ -283,6 +283,34 @@ public void updateCookingRecipe(CookingRecipe recipe) {
         status = "Error: " + e.getMessage();
     }
 }
+public void updateRecipeTypeById(int typeId, String newName) {
+    String sql = "UPDATE Recipe_Type SET name = ? WHERE id = ?";
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, newName);
+        ps.setInt(2, typeId);
+        ps.executeUpdate();
+    } catch (SQLException e) {
+        status = "Error: " + e.getMessage();
+    }
+}
+public void addRecipeType(String name) {
+    String sql = "INSERT INTO Recipe_Type (name) VALUES (?)";
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, name);
+        ps.executeUpdate();
+    } catch (SQLException e) {
+        status = "Error: " + e.getMessage();
+    }
+}
+public void deleteRecipeTypeById(int typeId) {
+    String sql = "DELETE FROM Recipe_Type WHERE id = ?";
+    try (PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, typeId);
+        ps.executeUpdate();
+    } catch (SQLException e) {
+        status = "Error: " + e.getMessage();
+    }
+}
 
     public static void main(String[] args) {
 
