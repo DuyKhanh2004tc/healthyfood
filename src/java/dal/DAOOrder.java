@@ -441,5 +441,24 @@ public class DAOOrder {
         }
         return false;
     }
+    public String getOrderStatusName(int statusId) throws SQLException {
+        String statusName = null;
+        String sql = "SELECT status_name FROM [dbo].[OrderStatus] WHERE id = ?";
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setInt(1, statusId);
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    statusName = rs.getString("status_name");
+                } else {
+                    System.out.println("No status found with ID: " + statusId + " at " + new java.util.Date());
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL Error in getOrderStatusName for statusId " + statusId + ": " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+        return statusName;
+    }
 
 }

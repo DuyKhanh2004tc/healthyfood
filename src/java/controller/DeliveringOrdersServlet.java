@@ -16,11 +16,14 @@ import model.Order;
 import model.User;
 
 public class DeliveringOrdersServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         DAOOrder dao = DAOOrder.INSTANCE;
         DAOOrderStatus daoStatus = DAOOrderStatus.INSTANCE;
+        String orderIdParam = request.getParameter("orderId");
+
         try {
             HttpSession session = request.getSession(false);
             if (session == null || session.getAttribute("user") == null) {
@@ -35,17 +38,31 @@ public class DeliveringOrdersServlet extends HttpServlet {
             }
 
             int shipperId = user.getId();
-            List<Order> deliveringOrders = dao.getOrdersByStatusIn(List.of(5)); // Delivering
-            List<Order> filteredDelivering = new ArrayList<>();
 
-            for (Order order : deliveringOrders) {
-                if (order.getShipper() != null && order.getShipper().getId() == shipperId) {
-                    order.setValidStatuses(daoStatus.getValidStatusesFor(order.getStatus().getId()));
-                    filteredDelivering.add(order);
+            if (orderIdParam != null && !orderIdParam.isEmpty()) {
+                int orderId = Integer.parseInt(orderIdParam);
+                Order order = dao.getOrderById(orderId);
+                if (order != null && order.getShipper() != null && order.getShipper().getId() == shipperId) {
+                    request.setAttribute("order", order);
+                    request.getRequestDispatcher("/view/orderDetailShipper.jsp?fromPage=delivering").forward(request, response);
+                    return;
+                } else {
+                    request.setAttribute("error", "Order not found or not assigned to you with ID: " + orderId);
                 }
-            }
+            } else {
+                List<Order> deliveringOrders = dao.getOrdersByStatusIn(List.of(5)); // Delivering
+                List<Order> filteredDelivering = new ArrayList<>();
 
-            request.setAttribute("deliveringOrders", filteredDelivering);
+                for (Order order : deliveringOrders) {
+                    if (order.getShipper() != null && order.getShipper().getId() == shipperId) {
+                        // Đảm bảo validStatuses bao gồm Cancel (status_id = 7)
+                        order.setValidStatuses(daoStatus.getValidStatusesFor(order.getStatus().getId()));
+                        filteredDelivering.add(order);
+                    }
+                }
+
+                request.setAttribute("deliveringOrders", filteredDelivering);
+            }
         } catch (SQLException e) {
             request.setAttribute("error", "Error fetching orders: " + e.getMessage());
             e.printStackTrace();

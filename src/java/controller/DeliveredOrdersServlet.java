@@ -15,12 +15,16 @@ import jakarta.servlet.http.HttpSession;
 import model.Order;
 import model.User;
 
+@WebServlet("/DeliveredOrdersServlet")
 public class DeliveredOrdersServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         DAOOrder dao = DAOOrder.INSTANCE;
         DAOOrderStatus daoStatus = DAOOrderStatus.INSTANCE;
+        String orderIdParam = request.getParameter("orderId");
+
         try {
             HttpSession session = request.getSession(false);
             if (session == null || session.getAttribute("user") == null) {
@@ -35,17 +39,30 @@ public class DeliveredOrdersServlet extends HttpServlet {
             }
 
             int shipperId = user.getId();
-            List<Order> deliveredOrders = dao.getOrdersByStatusIn(List.of(6)); // Delivered
-            List<Order> filteredDelivered = new ArrayList<>();
 
-            for (Order order : deliveredOrders) {
-                if (order.getShipper() != null && order.getShipper().getId() == shipperId) {
-                    order.setValidStatuses(daoStatus.getValidStatusesFor(order.getStatus().getId()));
-                    filteredDelivered.add(order);
+            if (orderIdParam != null && !orderIdParam.isEmpty()) {
+                int orderId = Integer.parseInt(orderIdParam);
+                Order order = dao.getOrderById(orderId);
+                if (order != null && order.getShipper() != null && order.getShipper().getId() == shipperId) {
+                    request.setAttribute("order", order);
+                    request.getRequestDispatcher("/view/orderDetailShipper.jsp?fromPage=delivered").forward(request, response);
+                    return;
+                } else {
+                    request.setAttribute("error", "Order not found or not assigned to you with ID: " + orderId);
                 }
-            }
+            } else {
+                List<Order> deliveredOrders = dao.getOrdersByStatusIn(List.of(6)); // Delivered
+                List<Order> filteredDelivered = new ArrayList<>();
 
-            request.setAttribute("deliveredOrders", filteredDelivered);
+                for (Order order : deliveredOrders) {
+                    if (order.getShipper() != null && order.getShipper().getId() == shipperId) {
+                        order.setValidStatuses(daoStatus.getValidStatusesFor(order.getStatus().getId()));
+                        filteredDelivered.add(order);
+                    }
+                }
+
+                request.setAttribute("deliveredOrders", filteredDelivered);
+            }
         } catch (SQLException e) {
             request.setAttribute("error", "Error fetching orders: " + e.getMessage());
             e.printStackTrace();

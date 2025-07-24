@@ -74,7 +74,10 @@
                     <a href="${pageContext.request.contextPath}/SellerWaitingOrders" class="back-link">Back to Waiting Orders</a>
                 </c:when>
                 <c:when test="${param.fromPage eq 'delivering'}">
-                    <a href="${pageContext.request.contextPath}/SellerDeliveringOrders" class="back-link">Back to Delivering Orders</a>
+                    <a href="${pageContext.request.contextPath}/DeliveringOrders" class="back-link">Back to Delivering Orders</a>
+                </c:when>
+                <c:when test="${param.fromPage eq 'delivered'}">
+                    <a href="${pageContext.request.contextPath}/DeliveredOrders" class="back-link">Back to Delivered Orders</a>
                 </c:when>
                 <c:when test="${param.fromPage eq 'canceled'}">
                     <a href="${pageContext.request.contextPath}/SellerCanceledOrders" class="back-link">Back to Canceled Orders</a>
