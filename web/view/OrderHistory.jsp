@@ -125,7 +125,7 @@
                     <tbody>
                         <c:forEach var="order" items="${orders}" varStatus="loop">
                             <tr>
-                                <td>${loop.index + 1}</td>
+                                <td>${(currentPage - 1) * 15 + loop.index + 1}</td>
                                 <td><fmt:formatDate value="${order.orderDate}" pattern="dd-MM-yyyy HH:mm"/></td>
                                 <td><fmt:formatNumber value="${order.totalAmount}" type="currency" currencySymbol="$"/></td>
                                 <td>${order.paymentMethod}</td>

@@ -271,6 +271,10 @@
         <servlet-name>RecipeTypeServlet</servlet-name>
         <servlet-class>controllerNutritionist.RecipeTypeServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CustomerOrderHistory</servlet-name>
+        <servlet-class>controller.CustomerOrderHistory</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ProposeProductServlet</servlet-name>
         <url-pattern>/proposeProduct</url-pattern>
@@ -486,6 +490,10 @@
     <servlet-mapping>
         <servlet-name>RecipeTypeServlet</servlet-name>
         <url-pattern>/recipeType</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CustomerOrderHistory</servlet-name>
+        <url-pattern>/customerOrderHistory</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>home</welcome-file>

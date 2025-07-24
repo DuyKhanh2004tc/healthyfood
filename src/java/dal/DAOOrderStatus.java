@@ -49,7 +49,7 @@ public class DAOOrderStatus {
         boolean isValid = false;
         switch (currentStatusId) {
             case 1: // Pending Confirmation
-                isValid = (newStatusId == 2 || newStatusId == 7);
+                isValid = (newStatusId == 2 || newStatusId == 7 || newStatusId == 9);
                 break;
             case 2: // Confirmed
                 isValid = (newStatusId == 3 || newStatusId == 7);

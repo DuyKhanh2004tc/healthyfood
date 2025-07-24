@@ -15,7 +15,7 @@ import java.util.List;
 
 
 public class SellerOrderHistory extends HttpServlet {
-    private static final int PAGE_SIZE = 5;
+    private static final int PAGE_SIZE = 15;
     private DAOOrder orderDAO;
 
     @Override

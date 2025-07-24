@@ -128,7 +128,7 @@ public class ApproveNewProductServlet extends HttpServlet {
         List<ProposedProduct> pagedList = Pagination.paginate(proposedList, page, pageSize);
         int totalPages = (int) Math.ceil((double) proposedList.size() / pageSize);
 
-        request.setAttribute("proposedList", pagedList);
+        request.setAttribute("orderList", pagedList);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("categoryList", categoryList);

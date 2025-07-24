@@ -14,24 +14,35 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Cart Page</title>
         <link href="${pageContext.request.contextPath}/CSS/cart.css" rel="stylesheet" type="text/css"/>
+
     </head>
     <body>
         <jsp:include page="header.jsp"></jsp:include>
 
 
             <table class="cart-table">
-                <tr class="table-header">
-                    <th>Number</th>
-                    <th>Product</th>
-                    <th>Quantity</th>
-                    <th>In stock</th>
-                    <th>Total Price</th>
-                    <th>Shelf Life Hours</th>
-                    <th><a href="removeItem?remove=all">Remove All Items</a></th>
-                </tr>
-            <c:if test="${sessionScope.user.getRole().getId()== 3}">
-                <c:set var="totalAmount" value="0"/>
-                <c:forEach items="${requestScope.itemList}" var="i" varStatus="loop">
+                <th>Number</th>
+                <th>
+                    Product Name
+                    <a href="cart?sort=nameAsc">▲</a> | 
+                    <a href="cart?sort=nameDesc">▼</a>
+                </th>
+                <th>Quantity</th>
+                <th>In stock</th>
+                <th>
+                    Price
+                    <a href="cart?sort=priceAsc">▲</a> | 
+                    <a href="cart?sort=priceDesc">▼</a>
+                </th>
+                <th>
+                    Shelf Life Hours
+                    <a href="cart?sort=shelfAsc">▲</a> | 
+                    <a href="cart?sort=shelfDesc">▼</a>
+                </th>
+                <th><a href="removeItem?remove=all">Remove All Items</a></th>
+                <c:if test="${sessionScope.user.getRole().getId()== 3}">
+                    <c:set var="totalAmount" value="0"/>
+                    <c:forEach items="${requestScope.itemList}" var="i" varStatus="loop">
                     <tr class="cartItem">
                         <td>${loop.index + 1}</td>
                         <td>
@@ -113,10 +124,63 @@
         }      
         %>
         <c:if test="${not empty requestScope.itemList or not empty sessionScope.itemList}">
-            <form class="btnBuy" action="placeOrder" method="get">
-                <button class="card-button" type="submit" value="buy">💰 Buy</button>
+            <form class="btn-buy" action="placeOrder" method="get">
+                <button class="cart-button" type="submit" value="buy">💰 Buy</button>
             </form>
         </c:if>
+
+        <div class="newProducts-list">    
+            <h2>New Products:</h2>
+            <c:forEach items="${requestScope.newProductList}" var="o">
+                <div class="newProducts-list-card">
+                    <a href="${pageContext.request.contextPath}/productDetail?productId=${o.id}">
+                        <img class="card-img" src="${o.imgUrl}" alt="Product Image">
+                    </a>
+                    <div class="card-body">
+                        <p>Product: ${o.name}</p>
+
+                        <p>Price: ${o.price}$</p>
+                        <p>Stock: ${o.stock}</p>
+                        <p>Rating: ${o.rate}</p>
+                        <div class="stars-average">
+                            <c:set var="fullStars" value="${o.rate >= 1 ? (o.rate >= 5 ? 5 : (o.rate - o.rate % 1)) : 0}" />
+                            <c:set var="halfStar" value="${(o.rate - fullStars) >= 0.5 ? true : false}" />
+
+                            <c:forEach begin="1" end="5" var="i">
+                                <c:choose>
+                                    <c:when test="${i <= fullStars}">
+                                        <span class="star full">★</span>
+                                    </c:when>
+                                    <c:when test="${i == (fullStars + 1) && halfStar}">
+                                        <span class="star half">★</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="star empty">★</span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:forEach>
+                        </div>
+
+                    </div>
+                    <c:if test="${sessionScope.user.getRole().getId()== null ||sessionScope.user.getRole().getId()== 3 }">
+                        <div class="twoButton">
+                            <form action="cart" method="get">
+                                <input type="hidden" name="productId" value="${o.id}" />
+                                <input type="hidden" name="cartUrl" value="${pageContext.request.contextPath}/cart"" />
+                                <button class="card-button" type="submit">🛒 Add to Cart</button>
+                            </form>
+                            <form class="btnBuy" action="placeOrder" method="get">
+                                <input type="hidden" name="productId" value="${o.id}" />
+                                <input type="hidden" name="quantity" value="1" />
+                                <button class="card-button" type="submit" value="buy">💰 Buy</button>
+                            </form>
+                        </div>
+                    </c:if> 
+                </div>
+            </c:forEach>
+        </div>
+
+
 
         <jsp:include page="footer.jsp"></jsp:include>
 

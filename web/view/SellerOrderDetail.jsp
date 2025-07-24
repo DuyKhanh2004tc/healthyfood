@@ -28,6 +28,7 @@
             border-radius: 5px;
         }
         .card {
+            width: 100% !important;
             background-color: #fff;
             border: 1px solid black;
             border-radius: 7px;
@@ -125,7 +126,12 @@
 </div>
                 <!-- Back Button -->
                 <div class="back">
+                <c:if test= "${sessionScope.user.role.id == 2 || sessionScope.user.role.id == 5}">
                 <a href="SellerOrderHistory" class="btn btn-primary btn-back">Back to Order History</a>
+                </c:if>
+                <c:if test="${sessionScope.user.role.id == 3}">
+                <a href="customerOrderHistory" class="btn btn-primary btn-back">Back to Order History</a>
+                </c:if>
                 </div>
             </c:otherwise>
         </c:choose>

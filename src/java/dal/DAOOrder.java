@@ -13,6 +13,8 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DAOOrder {
 
@@ -274,6 +276,63 @@ public class DAOOrder {
             throw e;
         }
         return details;
+    }
+
+    public List<Order> getAllOrdersByUserId(int userId) {
+        List<Order> list = new ArrayList<>();
+        String sql = "SELECT o.*, os.status_name, os.description, u.name AS user_name, "
+                + "s.name AS shipper_name, s.phone AS shipper_phone, o.delivery_message "
+                + "FROM Orders o "
+                + "JOIN OrderStatus os ON o.status_id = os.id "
+                + "LEFT JOIN Users u ON o.user_id = u.id "
+                + "LEFT JOIN Users s ON o.shipper_id = s.id "
+                + "WHERE o.user_id = ? "
+                + "ORDER BY o.order_date DESC";
+
+        try (PreparedStatement st = con.prepareStatement(sql)) {
+            st.setInt(1, userId);
+            try (ResultSet rs = st.executeQuery()) {
+                while (rs.next()) {
+                    Order order = new Order();
+                    order.setId(rs.getInt("id"));
+                    order.setUser(new User(
+                            rs.getInt("user_id"),
+                            rs.getString("user_name"),
+                            null, null, null, null, null, false, null, null
+                    ));
+                    order.setOrderDate(rs.getTimestamp("order_date"));
+                    order.setTotalAmount(rs.getDouble("total_amount"));
+                    order.setPaymentMethod(rs.getString("payment_method"));
+                    order.setStatus(new OrderStatus(
+                            rs.getInt("status_id"),
+                            rs.getString("status_name"),
+                            rs.getString("description")
+                    ));
+                    if (rs.getInt("shipper_id") != 0) {
+                        order.setShipper(new User(
+                                rs.getInt("shipper_id"),
+                                rs.getString("shipper_name"),
+                                null, null,
+                                rs.getString("shipper_phone"),
+                                null, null, false, null, null
+                        ));
+                    }
+                    order.setReceiverName(rs.getString("receiver_name"));
+                    order.setReceiverPhone(rs.getString("receiver_phone"));
+                    order.setReceiverEmail(rs.getString("receiver_email"));
+                    order.setShippingAddress(rs.getString("shipping_address"));
+                    order.setDeliveryMessage(rs.getString("delivery_message"));
+                    order.setOrderDetails(getOrderDetails(rs.getInt("id"))); // lấy chi tiết sản phẩm trong đơn
+
+                    list.add(order);
+                }
+
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     public List<Order> getAllOrders(int page, int pageSize) throws SQLException {

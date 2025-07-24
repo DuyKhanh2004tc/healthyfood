@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import model.CartItem;
 import model.Product;
@@ -67,6 +68,7 @@ public class CartServlet extends HttpServlet {
         User u = (User) session.getAttribute("user");
         DAOProduct dao = new DAOProduct();
         DAOCart daoCart = new DAOCart();
+        String cartURL = request.getParameter("cartUrl");
         String stockError = (String) session.getAttribute("stockError");
         if (stockError != null) {
             request.setAttribute("stockError", stockError);
@@ -98,7 +100,11 @@ public class CartServlet extends HttpServlet {
                             return;
                         } else {
                             dao.addToCart(userId, productId, 1);
-                            response.sendRedirect("home");
+                            if (cartURL != null && !cartURL.isEmpty()) {
+                                response.sendRedirect(cartURL);
+                            } else {
+                                response.sendRedirect("home"); // fallback
+                            }
                             return;
                         }
 
@@ -107,10 +113,11 @@ public class CartServlet extends HttpServlet {
                     e.printStackTrace();
                 }
             }
-            
-            
+
             if (u.getRole().getId() == 3) {
                 List<CartItem> itemList = daoCart.getCartItemsByUserId(u.getId());
+                String sort = request.getParameter("sort");
+                sortItemList(itemList, sort);
                 List<Product> productList = new ArrayList<>();
                 boolean outOfStock = false;
                 for (CartItem i : itemList) {
@@ -123,7 +130,7 @@ public class CartServlet extends HttpServlet {
                 if (outOfStock) {
                     request.setAttribute("stockError", "Some items in your cart are out of stock.");
                 }
-
+                request.setAttribute("newProductList", dao.getNewProduct(5));
                 request.setAttribute("productList", productList);
                 request.setAttribute("itemList", itemList);
                 request.getRequestDispatcher("/view/cart.jsp").forward(request, response);
@@ -134,6 +141,7 @@ public class CartServlet extends HttpServlet {
                 try {
                     int productId = Integer.parseInt(request.getParameter("productId"));
                     List<CartItem> itemList = (List<CartItem>) session.getAttribute("itemList");
+
                     if (itemList == null) {
                         itemList = new ArrayList<>();
                         session.setAttribute("itemList", itemList);
@@ -156,7 +164,11 @@ public class CartServlet extends HttpServlet {
                         itemList.add(item);
                     }
                     session.setAttribute("itemList", itemList);
-                    response.sendRedirect("home");
+                    if (cartURL != null && !cartURL.isEmpty()) {
+                        response.sendRedirect(cartURL);
+                    } else {
+                        response.sendRedirect("home");
+                    }
                     return;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -194,6 +206,8 @@ public class CartServlet extends HttpServlet {
             }
             List<CartItem> itemList = (List<CartItem>) session.getAttribute("itemList");
             boolean hasOutOfStock = false;
+            String sort = request.getParameter("sort");
+            sortItemList(itemList, sort);
 
             if (itemList != null) {
                 for (CartItem ci : itemList) {
@@ -208,6 +222,7 @@ public class CartServlet extends HttpServlet {
             if (hasOutOfStock) {
                 request.setAttribute("stockError", "Some items in your cart are out of stock.");
             }
+            request.setAttribute("newProductList", dao.getNewProduct(5));
             request.setAttribute("itemList", itemList);
             request.getRequestDispatcher("/view/cart.jsp").forward(request, response);
         }
@@ -237,4 +252,35 @@ public class CartServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    private void sortItemList(List<CartItem> itemList, String sort) {
+        if (sort == null || itemList == null) {
+            return;
+        }
+        switch (sort) {
+            case "idAsc":
+                itemList.sort((a, b) -> Integer.compare(a.getId(), b.getId()));
+                break;
+            case "idDesc":
+                itemList.sort((a, b) -> Integer.compare(b.getId(), a.getId())); // đảo ngược
+                break; 
+            case "nameAsc":
+                itemList.sort((a, b) -> a.getProduct().getName().compareToIgnoreCase(b.getProduct().getName()));
+                break;
+            case "nameDesc":
+                itemList.sort((a, b) -> b.getProduct().getName().compareToIgnoreCase(a.getProduct().getName()));
+                break;
+            case "priceAsc":
+                itemList.sort((a, b) -> Double.compare(a.getProduct().getPrice(), b.getProduct().getPrice()));
+                break;
+            case "priceDesc":
+                itemList.sort((a, b) -> Double.compare(b.getProduct().getPrice(), a.getProduct().getPrice()));
+                break;
+            case "shelfAsc":
+                itemList.sort((a, b) -> Double.compare(a.getProduct().getShelfLifeHours(), b.getProduct().getShelfLifeHours()));
+                break;
+            case "shelfDesc":
+                itemList.sort((a, b) -> Double.compare(b.getProduct().getShelfLifeHours(), a.getProduct().getShelfLifeHours()));
+                break;
+        }
+    }
 }

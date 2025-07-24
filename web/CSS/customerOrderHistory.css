@@ -1,0 +1,132 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Jul 24, 2025, 10:17:17 AM
+    Author     : ASUS
+*/
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4fdf4;
+    margin: 0;
+    padding: 30px;
+    color: #333;
+}
+
+
+.order-history {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+
+.order-history thead {
+    background-color: #4CAF50; /* green */
+    color: white;
+}
+
+.order-history th, .order-history td {
+    padding: 12px 15px;
+    text-align: left;
+    border: 1px solid #e0e0e0;
+}
+
+
+.order-history tbody tr:nth-child(even) {
+    background-color: #f9fff9;
+}
+
+
+.btn {
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: white;
+    transition: background-color 0.2s ease;
+}
+
+.btn-info {
+    background-color: #ff9800; /* orange */
+}
+
+.btn-info:hover {
+    background-color: #e68900;
+}
+
+
+.pagination {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.page-link {
+    display: inline-block;
+    padding: 8px 14px;
+    margin: 0 5px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.page-link:hover {
+    background-color: #43a047;
+}
+
+.prev-next {
+    background-color: #2e7d32;
+}
+
+.prev-next:hover {
+    background-color: #1b5e20;
+}
+
+td.actions {
+    text-align: center;
+    white-space: nowrap;
+}
+
+
+td.actions a {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    margin: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #fff;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.25s ease-in-out;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+
+td.actions a[href*="SellerOrderHistory"] {
+    background: linear-gradient(to right, #00b09b, #96c93d);
+}
+
+td.actions a[href*="SellerOrderHistory"]:hover {
+    filter: brightness(1.1);
+}
+
+
+td.actions a[href*="cancelOrderId"] {
+    background: #bdc3c7;
+    color: #333;
+}
+
+td.actions a[href*="cancelOrderId"]:hover {
+    background: #e74c3c;
+    color: white;
+}
