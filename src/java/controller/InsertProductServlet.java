@@ -105,7 +105,7 @@ public class InsertProductServlet extends HttpServlet {
         Category category = null;
         boolean hasError = false;
 
-        String validPattern = "^[a-zA-Z0-9\\s.,!?'\\-]*$";
+        String validPattern = "^[a-zA-Z0-9\\s.,!?'\\-()/]*$";
 
         if (name == null || name.trim().isEmpty()) {
             session.setAttribute("nameError", "Tên sản phẩm là bắt buộc.");
@@ -121,10 +121,7 @@ public class InsertProductServlet extends HttpServlet {
         if (description == null || description.trim().isEmpty()) {
             session.setAttribute("descriptionError", "Mô tả là bắt buộc.");
             hasError = true;
-        } else if (!description.matches(validPattern)) {
-            session.setAttribute("descriptionError", "Mô tả chứa ký tự đặc biệt không hợp lệ.");
-            hasError = true;
-        }
+        } 
 
         Double price = null;
         if (priceStr == null || priceStr.trim().isEmpty()) {

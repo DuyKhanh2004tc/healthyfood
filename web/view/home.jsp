@@ -25,8 +25,8 @@
                 <div class="content-left">
                     <form class ="search-form" action="search" method="get">                   
                         <input type="image" src="${pageContext.request.contextPath}/icons/search_icon.png" alt="Search" width="20" height="20">
-                        <input type="text" name="keyword" placeholder="Search for products...">
-                    </form>
+                    <input type="text" name="keyword" maxlength="30" placeholder="Search for products...">
+                </form>
                 <b>New Product:</b>
 
                 <div class="newProduct">                  
@@ -92,11 +92,11 @@
                             <b>Price Filter:</b>
                             <tr>
                                 <td>Min price:</td>
-                                <td><input type="number" name="minPrice" value="${minPrice}" min="0" max="1000" placeholder="Enter min price"></td>
+                                <td><input type="number" name="minPrice" value="${minPrice}"  min="0" max="1000" placeholder="Enter min price"></td>
                             </tr>
                             <tr>
                                 <td>Max price:</td>
-                                <td><input type="number" name="maxPrice" value="${maxPrice}" min="0" max="1000" placeholder="Enter max price"></td>
+                                <td><input type="number" name="maxPrice" value="${maxPrice}" min="0"  max="1000" placeholder="Enter max price"></td>
                             </tr>
 
                         </table>
@@ -191,33 +191,27 @@
                         </div>
                     </c:forEach>
                 </div>
+                <c:choose>
+                    <c:when test="${not empty param.keyword}">
+                        <c:set var="baseUrl" value="/search" />
+                    </c:when>
+                    <c:when test="${not empty param.minPrice or not empty param.maxPrice}">
+                        <c:set var="baseUrl" value="/pricefilter" />
+                    </c:when>
+                    <c:when test="${not empty param.categoryId}">
+                        <c:set var="baseUrl" value="/category" />
+                    </c:when>
+                    <c:when test="${not empty param.orderBy or not empty param.nameOrderBy or not empty param.rateOrderBy or not empty param.dateOrderBy}">
+                        <c:set var="baseUrl" value="/sortproduct" />
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="baseUrl" value="/home" />
+                    </c:otherwise>
+                </c:choose>
 
-
-                <div class="pagination">                                     
-                    <c:if test="${currentPage > 1}">
-                        <c:url var="prevUrl" value="/home">
-                            <c:param name="index" value="${currentPage - 1}" />
-                            <c:if test="${not empty param.keyword}">
-                                <c:param name="keyword" value="${param.keyword}" />
-                            </c:if>
-                            <c:if test="${not empty param.categoryId}">
-                                <c:param name="categoryId" value="${param.categoryId}" />
-                            </c:if>
-                            <c:if test="${not empty param.minPrice}">
-                                <c:param name="minPrice" value="${param.minPrice}" />
-                            </c:if>
-                            <c:if test="${not empty param.maxPrice}">
-                                <c:param name="maxPrice" value="${param.maxPrice}" />
-                            </c:if>
-                            <c:if test="${not empty param.orderBy}">
-                                <c:param name="orderBy" value="${param.orderBy}" />
-                            </c:if>
-                        </c:url>
-                        <a class="page-link prev-next" href="${prevUrl}">Previous</a>
-                    </c:if>
-
+                <div class="pagination">
                     <c:forEach var="i" begin="1" end="${totalPage}">
-                        <c:url var="pageUrl" value="/home">
+                        <c:url var="pageUrl" value="${baseUrl}">
                             <c:param name="index" value="${i}" />
                             <c:if test="${not empty param.keyword}">
                                 <c:param name="keyword" value="${param.keyword}" />
@@ -234,6 +228,15 @@
                             <c:if test="${not empty param.orderBy}">
                                 <c:param name="orderBy" value="${param.orderBy}" />
                             </c:if>
+                            <c:if test="${not empty param.nameOrderBy}">
+                                <c:param name="nameOrderBy" value="${param.nameOrderBy}" />
+                            </c:if>
+                            <c:if test="${not empty param.rateOrderBy}">
+                                <c:param name="rateOrderBy" value="${param.rateOrderBy}" />
+                            </c:if>
+                            <c:if test="${not empty param.dateOrderBy}">
+                                <c:param name="dateOrderBy" value="${param.dateOrderBy}" />
+                            </c:if>
                         </c:url>
                         <a class="page-link ${i == currentPage ? 'active-page' : ''}" href="${pageUrl}">
                             ${i}
@@ -241,7 +244,7 @@
                     </c:forEach>
 
                     <c:if test="${currentPage < totalPage}">
-                        <c:url var="nextUrl" value="/home">
+                        <c:url var="nextUrl" value="${baseUrl}">
                             <c:param name="index" value="${currentPage + 1}" />
                             <c:if test="${not empty param.keyword}">
                                 <c:param name="keyword" value="${param.keyword}" />
@@ -258,6 +261,15 @@
                             <c:if test="${not empty param.orderBy}">
                                 <c:param name="orderBy" value="${param.orderBy}" />
                             </c:if>
+                            <c:if test="${not empty param.nameOrderBy}">
+                                <c:param name="nameOrderBy" value="${param.nameOrderBy}" />
+                            </c:if>
+                            <c:if test="${not empty param.rateOrderBy}">
+                                <c:param name="rateOrderBy" value="${param.rateOrderBy}" />
+                            </c:if>
+                            <c:if test="${not empty param.dateOrderBy}">
+                                <c:param name="dateOrderBy" value="${param.dateOrderBy}" />
+                            </c:if>
                         </c:url>
                         <a class="page-link prev-next" href="${nextUrl}">Next</a>
                     </c:if>
@@ -268,7 +280,7 @@
 
         <c:if test="${not empty sessionScope.stockError}">
             <script>
-        alert("${sessionScope.stockError}");
+                alert("${sessionScope.stockError}");
             </script>
             <%
                 session.removeAttribute("stockError");
