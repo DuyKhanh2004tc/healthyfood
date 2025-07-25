@@ -89,8 +89,7 @@ public class LoginServlet extends HttpServlet {
                 User matchedUser = null;
 
                 for (User u : userList) {
-                    //if (u.getEmail().equals(email) && PasswordUtil.checkPassword(password, u.getPassword())) {
-                    if (u.getEmail() != null && u.getEmail().equals(email) && u.getPassword().equals(password)) {
+                    if (u.getEmail().equals(email) && PasswordUtil.checkPassword(password, u.getPassword())) {
                         matchedUser = u;
                         break;
                     }
@@ -117,7 +116,7 @@ public class LoginServlet extends HttpServlet {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                request.setAttribute("error", "An error occurred. Please try again.");
+                request.setAttribute("error", e.getMessage());
                 request.getRequestDispatcher("/view/login.jsp").forward(request, response);
             }
         }

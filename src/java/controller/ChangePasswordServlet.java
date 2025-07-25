@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.User;
+import utils.PasswordUtil;
 
 /**
  *
@@ -104,7 +105,8 @@ public class ChangePasswordServlet extends HttpServlet {
 
             String email = u.getEmail();
             String password = u.getPassword();
-
+            
+            
             boolean hasError = false;
 
             if (newPassword.equals(currentPassword)) {
@@ -119,7 +121,7 @@ public class ChangePasswordServlet extends HttpServlet {
                 request.setAttribute("error", "Password must be between 8 and 32 characters.");
                 hasError = true;
             }
-            if (currentPassword == null || !currentPassword.equals(password)) {
+            if (currentPassword == null || !PasswordUtil.checkPassword(currentPassword, u.getPassword())) {
                 request.setAttribute("error", "Incorrect current password.");
                 hasError = true;
             }
@@ -138,12 +140,14 @@ public class ChangePasswordServlet extends HttpServlet {
                 }
                 return;
             }
+            String hashedPassword = PasswordUtil.hashPassword(newPassword);
 
+            
             DAOUser dao = new DAOUser();
-            boolean updated = dao.updatePassword(email, newPassword);
+            boolean updated = dao.updatePassword(email, hashedPassword);
 
             if (updated) {
-                u.setPassword(newPassword);
+                u.setPassword(hashedPassword);
                 session.setAttribute("user", u);
                 request.setAttribute("success", "Password updated successfully.");
             } else {

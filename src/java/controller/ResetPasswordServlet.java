@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import utils.Mail;
+import utils.PasswordUtil;
 
 /**
  *
@@ -117,20 +118,18 @@ public class ResetPasswordServlet extends HttpServlet {
                 return;
             }
 
-        if (newPassword == null || confirmPassword == null
-                || !newPassword.equals(confirmPassword)) {
+        if (!newPassword.equals(confirmPassword)) {
             request.setAttribute("error", "Password and Confirm Password do not match.");
             request.getRequestDispatcher("view/resetPassword.jsp").forward(request, response);
             return;
         }
 
-        
+        String hashedPassword = PasswordUtil.hashPassword(newPassword);
 
         DAOUser dao = new DAOUser();
-        boolean updated = dao.updatePassword(email, newPassword);
+        boolean updated = dao.updatePassword(email, hashedPassword);
 
         if (updated) {
-            // Xóa session OTP
             session.removeAttribute("otp");
             session.removeAttribute("otp_time");
             session.removeAttribute("email");

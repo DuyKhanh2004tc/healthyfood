@@ -416,8 +416,8 @@ public boolean updateProfile(String name, String email, String phone, Date dob, 
 //            System.out.println(ulist.get(i).getName());
 //        }
 
-//        String email = "hoangdaogoku@gmail.com";
-//        String password = "mrbaen2012";
+//        String email = "h1@gmail.com";
+//        String password = "123456789";
 //        String hashpw = PasswordUtil.hashPassword(password);
 //        DAOUser.INSTANCE.updatePassword(email, hashpw);
     }

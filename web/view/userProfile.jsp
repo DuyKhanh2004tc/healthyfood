@@ -13,7 +13,7 @@
     </c:if>
 
     <div class="profile-page">
-        <c:if test="${sessionScope.user.getRole().getId()==2||sessionScope.user.getRole().getId()==3||sessionScope.user.getRole().getId()==5}">
+        <c:if test="${sessionScope.user.getRole().getId()==3}">
         <div class="sidebar"><div class="sidebar-title">👤 Profile</div>
             <a href="updateProfile" class="<c:if test='${pageContext.request.servletPath eq "/updateProfile"}'>active</c:if>">📄 User Profile</a>
             <a href="changePassword" class="<c:if test='${pageContext.request.servletPath eq "/changePassword"}'>active</c:if>">🔒 Change Password</a>
@@ -21,7 +21,7 @@
         </div>
         </c:if>
         
-        <c:if test="${sessionScope.user.getRole().getId()==6}">
+        <c:if test="${sessionScope.user.getRole().getId()==2||sessionScope.user.getRole().getId()==6||sessionScope.user.getRole().getId()==5}">
         <div class="sidebar"><div class="sidebar-title">👤 Profile</div>
             <a href="updateProfile" class="<c:if test='${pageContext.request.servletPath eq "/updateProfile"}'>active</c:if>">📄 User Profile</a>
             <a href="changePassword" class="<c:if test='${pageContext.request.servletPath eq "/changePassword"}'>active</c:if>">🔒 Change Password</a>

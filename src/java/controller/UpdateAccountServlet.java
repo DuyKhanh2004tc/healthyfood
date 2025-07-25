@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 import model.User;
 import model.Role;
+import utils.PasswordUtil;
 
 public class UpdateAccountServlet extends HttpServlet {
 
@@ -110,8 +111,8 @@ public class UpdateAccountServlet extends HttpServlet {
             if (password == null || password.trim().isEmpty()) {
                 request.setAttribute("passwordError", "Password is required");
                 hasError = true;
-            } else if (password.trim().length() < 6) {
-                request.setAttribute("passwordError", "Password must be at least 6 characters");
+            } else if (password.trim().length() < 8 || password.trim().length() > 32) {
+                request.setAttribute("passwordError", "Password must be between 8 and 32 characters.");
                 hasError = true;
             }
 
@@ -173,12 +174,13 @@ public class UpdateAccountServlet extends HttpServlet {
 
             boolean gender = genderStr.equals("1");
             int roleId = Integer.parseInt(roleIdStr);
+            String hashedPassword = PasswordUtil.hashPassword(password);
 
             User user = new User();
             user.setId(id);
             user.setName(name.trim());
             user.setEmail(email.trim());
-            user.setPassword(password.trim());
+            user.setPassword(hashedPassword.trim());
             user.setPhone(phone.trim());
             user.setDob(dob);
             user.setAddress(address.trim());

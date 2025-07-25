@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import model.User;
 import utils.Mail;
+import utils.PasswordUtil;
 
 /**
  *
@@ -109,7 +110,6 @@ public class RegisterServlet extends HttpServlet {
             HttpSession session = request.getSession();
 
             DAOUser dao = new DAOUser();
-            ArrayList<User> user = dao.getUser();
             
             boolean hasError = false;
 
@@ -180,14 +180,14 @@ public class RegisterServlet extends HttpServlet {
                 return;
             }
             
-            
+ 
             
             boolean genderSQL = "1".equals(gender);
 
             User customer = new User();
             customer.setName(fullName);
             customer.setEmail(email);
-            customer.setPassword(password);
+            customer.setPassword(PasswordUtil.hashPassword(password));
             customer.setPhone(phoneNumber);
             customer.setDob(dob);
             customer.setAddress(address);

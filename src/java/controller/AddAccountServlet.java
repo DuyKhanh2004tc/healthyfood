@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 import model.User;
 import model.Role;
+import utils.PasswordUtil;
 
 public class AddAccountServlet extends HttpServlet {
 
@@ -103,8 +104,8 @@ public class AddAccountServlet extends HttpServlet {
 
             if (password == null || password.trim().isEmpty()) {
                 request.setAttribute("passwordError", "Password is required");
-            } else if (password.trim().length() < 6) {
-                request.setAttribute("passwordError", "Password must be at least 6 characters");
+            } else if (password.trim().length() < 8|| password.trim().length() > 32) {
+                request.setAttribute("passwordError", "Password must be between 8 and 32 characters long.");
             }
 
             if (phone == null || phone.isEmpty() || !phone.matches("^(0|\\+84)[0-9]{9}$")) {
@@ -154,10 +155,12 @@ public class AddAccountServlet extends HttpServlet {
             boolean gender = genderStr != null && genderStr.equals("1");
             int roleId = Integer.parseInt(roleIdStr); // Sử dụng roleId từ hidden input
 
+            String hashedPassword = PasswordUtil.hashPassword(password);
+            
             User newUser = new User();
             newUser.setName(name.trim());
             newUser.setEmail(email.trim());
-            newUser.setPassword(password != null ? password.trim() : "");
+            newUser.setPassword(hashedPassword != null ? hashedPassword.trim() : "");
             newUser.setPhone(phone != null ? phone.trim() : null);
             newUser.setDob(dob);
             newUser.setAddress(address.trim());
