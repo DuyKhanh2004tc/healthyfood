@@ -122,8 +122,8 @@
                 </div>
                 <div>
                     <b>Sort By Rating:</b>
-                    <button onclick="location.href = 'sortproduct?rateOrderBy=desc'">Name: High To Low</button>
-                    <button onclick="location.href = 'sortproduct?rateOrderBy=asc'">Name: Low To High</button>
+                    <button onclick="location.href = 'sortproduct?rateOrderBy=desc'">High To Low</button>
+                    <button onclick="location.href = 'sortproduct?rateOrderBy=asc'">Low To High</button>
                 </div>
                 <div>
                     <b>Sort By Date:</b>

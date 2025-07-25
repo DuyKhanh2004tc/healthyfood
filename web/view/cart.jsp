@@ -104,7 +104,13 @@
                             <div id="stockError" style="color: red; font-weight: bold;">
                                 ${requestScope.stockError}
                             </div>
-                        </c:if></td>
+                        </c:if>
+                        <c:if test="${not empty sessionScope.stockError}">
+                            <div id="stockError" style="color: red; font-weight: bold;">
+                                ${sessionScope.stockError}
+                            </div>
+                        </c:if>
+                    </td>
                     <td>Total Amount:</td>
                     <td><fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2" minFractionDigits="2" />$</td>
                 </tr>
@@ -189,7 +195,7 @@
 
         <script>
             window.onload = function () {
-                const buyButtonForm = document.querySelector('.btnBuy');
+                const buyButtonForm = document.querySelector('form.btn-buy');
                 const stockError = document.getElementById("stockError");
                 if (buyButtonForm && stockError) {
                     buyButtonForm.addEventListener("submit", function (e) {
