@@ -73,71 +73,60 @@ public class ProposeProductServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        DAOProposedProduct dao = new DAOProposedProduct();
-        List<ProposedProduct> proposedProductList = dao.listProductByNutritionistId(user.getId());
-        DAOCategory dao2 = new DAOCategory();
-        List<Category> categoryList = dao2.getAllCategory();
-        String categoryId_raw = request.getParameter("categoryId");
-        int categoryId = 0;
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    HttpSession session = request.getSession();
+    User user = (User) session.getAttribute("user");
+    DAOProposedProduct dao = new DAOProposedProduct();
+    DAOCategory dao2 = new DAOCategory();
+    List<Category> categoryList = dao2.getAllCategory();
+    request.setAttribute("categoryList", categoryList);
 
-        if (categoryId_raw != null && !categoryId_raw.equals("0")) {
+    String categoryId_raw = request.getParameter("categoryId");
+    String status = request.getParameter("status");
+    String productName = request.getParameter("productName");
+    int page = 1;
+    int pageSize = 5;
 
-            categoryId = Integer.parseInt(categoryId_raw);
-            session.setAttribute("categoryId", categoryId);
-            proposedProductList = dao.getProposedProductByNutritionistIdAndCategoryId(user.getId(), categoryId);
-            request.setAttribute("categoryList", categoryList);
-            request.setAttribute("proposedProductList", proposedProductList);
-            request.getRequestDispatcher("view/proposedProduct.jsp").forward(request, response);
-            return;
+    if (request.getParameter("page") != null) {
+        try {
+            page = Integer.parseInt(request.getParameter("page"));
+        } catch (NumberFormatException e) {
+            page = 1;
         }
-
-        String status = request.getParameter("status");
-        if (status != null && !status.equals("all")) {
-            session.setAttribute("status", status);
-            proposedProductList = dao.getProposedProductByNutritionistIdAndStatus(user.getId(), status);
-            request.setAttribute("categoryList", categoryList);
-            request.setAttribute("proposedProductList", proposedProductList);
-            request.getRequestDispatcher("view/proposedProduct.jsp").forward(request, response);
-            return;
-        }
-        String productName = request.getParameter("productName");
-        if (productName != null && !productName.isEmpty()) {
-            List<ProposedProduct> list = new ArrayList<>();
-            for (ProposedProduct p : proposedProductList) {
-                if (p.getName().toLowerCase().contains(productName.toLowerCase())) {
-                    list.add(p);
-                }
-            }
-            proposedProductList = list;
-            request.setAttribute("categoryList", categoryList);
-            request.setAttribute("proposedProductList", proposedProductList);
-            request.getRequestDispatcher("view/proposedProduct.jsp").forward(request, response);
-            return;
-        }
-        int page = 1;
-        int pageSize = 5;
-        if (request.getParameter("page") != null) {
-            try {
-                page = Integer.parseInt(request.getParameter("page"));
-            } catch (NumberFormatException e) {
-                page = 1;
-            }
-        }
-        List<ProposedProduct> pagedList = Pagination.paginate(proposedProductList, page, pageSize);
-        int totalPages = (int) Math.ceil((double) proposedProductList.size() / pageSize);
-
-        request.setAttribute("proposedList", pagedList);
-        request.setAttribute("currentPage", page);
-        request.setAttribute("totalPages", totalPages);
-        request.setAttribute("categoryList", categoryList);
-        request.setAttribute("proposedProductList", proposedProductList);
-        request.getRequestDispatcher("view/proposedProduct.jsp").forward(request, response);
     }
 
+    List<ProposedProduct> proposedProductList = dao.listProductByNutritionistId(user.getId());
+    if (categoryId_raw != null && !categoryId_raw.equals("0")) {
+        int categoryId = Integer.parseInt(categoryId_raw);
+        session.setAttribute("categoryId", categoryId);
+        proposedProductList = dao.getProposedProductByNutritionistIdAndCategoryId(user.getId(), categoryId);
+    }
+    if (status != null && !status.equals("all")) {
+        session.setAttribute("status", status);
+        proposedProductList = dao.getProposedProductByNutritionistIdAndStatus(user.getId(), status);
+    }
+    if (productName != null && !productName.isEmpty()) {
+        List<ProposedProduct> filteredList = new ArrayList<>();
+        for (ProposedProduct p : proposedProductList) {
+            if (p.getName().toLowerCase().contains(productName.toLowerCase())) {
+                filteredList.add(p);
+            }
+        }
+        proposedProductList = filteredList;
+    }
+
+   
+    List<ProposedProduct> pagedList = Pagination.paginate(proposedProductList, page, pageSize);
+    int totalPages = (int) Math.ceil((double) proposedProductList.size() / pageSize);
+
+    // Gán dữ liệu vào request
+    request.setAttribute("proposedList", pagedList);
+    request.setAttribute("currentPage", page);
+    request.setAttribute("totalPages", totalPages);
+    
+    request.getRequestDispatcher("view/proposedProduct.jsp").forward(request, response);
+}
     /**
      * Handles the HTTP <code>POST</code> method.
      *
@@ -147,117 +136,144 @@ public class ProposeProductServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        User user = (User) request.getSession().getAttribute("user");
-        String action = request.getParameter("action");
-        String proposeIdStr = request.getParameter("proposedId");
-        String name = request.getParameter("name");
-        String category = request.getParameter("category");
-        String description = request.getParameter("description");
-        String reason = request.getParameter("reason");
-        String shelfLifestr = request.getParameter("shelfLife");
-        String image = request.getParameter("image");
-        DAOProposedProduct dao = new DAOProposedProduct();
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    request.setCharacterEncoding("UTF-8");
+    response.setContentType("text/html;charset=UTF-8");
 
+    HttpSession session = request.getSession();
+    User user = (User) session.getAttribute("user");
+    String action = request.getParameter("action");
+    String proposeIdStr = request.getParameter("proposedId");
+    String name = request.getParameter("name");
+    String categoryStr = request.getParameter("category");
+    String description = request.getParameter("description");
+    String reason = request.getParameter("reason");
+    String shelfLifeStr = request.getParameter("shelfLife");
+    String image = request.getParameter("image");
+    DAOProposedProduct dao = new DAOProposedProduct();
+
+    if ("edit".equals(action) || "add".equals(action)) {
+        // Validate required fields
+        if (name == null || name.trim().isEmpty()) {
+            request.setAttribute("error", "Name is required.");
+            response.sendRedirect(request.getContextPath() + "/proposeProduct");
+            return;
+        }
+        if (categoryStr == null || categoryStr.trim().isEmpty()) {
+            request.setAttribute("error", "Category is required.");
+            response.sendRedirect(request.getContextPath() + "/proposeProduct");
+            return;
+        }
+        if (description == null || description.trim().isEmpty()) {
+            request.setAttribute("error", "Description is required.");
+            response.sendRedirect(request.getContextPath() + "/proposeProduct");
+            return;
+        }
+        if (reason == null || reason.trim().isEmpty()) {
+            request.setAttribute("error", "Reason is required.");
+            response.sendRedirect(request.getContextPath() + "/proposeProduct");
+            return;
+        }
+        if (shelfLifeStr == null || shelfLifeStr.trim().isEmpty()) {
+            request.setAttribute("error", "Shelf life is required.");
+            response.sendRedirect(request.getContextPath() + "/proposeProduct");
+            return;
+        }
+
+        int shelfLife = 0;
+        try {
+            shelfLife = Integer.parseInt(shelfLifeStr.trim());
+            if (shelfLife <= 0) {
+                request.setAttribute("error", "Shelf life must be a positive number.");
+                response.sendRedirect(request.getContextPath() + "/proposeProduct");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            request.setAttribute("error", "Shelf life must be a valid number.");
+            response.sendRedirect(request.getContextPath() + "/proposeProduct");
+            return;
+        }
+
+        Part filePart = request.getPart("file");
+        String fileName = getFileName(filePart);
+        if (filePart != null && filePart.getSize() > 0 && (fileName == null || fileName.isEmpty())) {
+            request.setAttribute("error", "Invalid file name.");
+            response.sendRedirect(request.getContextPath() + "/proposeProduct");
+            return;
+        }
+
+        String appPath = request.getServletContext().getRealPath("");
+        File projectRoot = new File(appPath).getParentFile().getParentFile();
+        String savePath = projectRoot.getAbsolutePath() + File.separator + "build" + File.separator + "web" + File.separator + SAVE_DIR;
+
+        if (filePart != null && filePart.getSize() > 0 && fileName != null && !fileName.isEmpty()) {
+            File fileSaveDir = new File(savePath);
+            if (!fileSaveDir.exists()) {
+                fileSaveDir.mkdirs();
+            }
+
+            File saveFile = new File(savePath, fileName);
+            File parentDir = saveFile.getParentFile();
+            if (!parentDir.exists()) {
+                parentDir.mkdirs();
+            }
+
+            try (InputStream fileContent = filePart.getInputStream()) {
+                Files.copy(fileContent, saveFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                image = fileName;
+            } catch (IOException e) {
+                request.setAttribute("error", "Failed to upload image.");
+                response.sendRedirect(request.getContextPath() + "/proposeProduct");
+                return;
+            }
+        }
+
+        ProposedProduct p = new ProposedProduct();
         if ("edit".equals(action)) {
-            Part filePart = request.getPart("file");
-            String fileName = getFileName(filePart);
-
-            String appPath = request.getServletContext().getRealPath("");
-            File projectRoot = new File(appPath).getParentFile().getParentFile();
-            String savePath = projectRoot.getAbsolutePath() + File.separator + "build" + File.separator + "web" + File.separator + SAVE_DIR;
-
-            if (fileName != null && !fileName.isEmpty()) {
-                File fileSaveDir = new File(savePath);
-                if (!fileSaveDir.exists()) {
-                    fileSaveDir.mkdirs();
-                }
-
-                File saveFile = new File(savePath, fileName);
-                File parentDir = saveFile.getParentFile();
-                if (!parentDir.exists()) {
-                    parentDir.mkdirs();
-                }
-
-                try (InputStream fileContent = filePart.getInputStream()) {
-                    Files.copy(fileContent, saveFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                }
-
-                image = fileName;
-            }
-            ProposedProduct p = new ProposedProduct();
-            p.setId(Integer.parseInt(proposeIdStr));
-            p.setName(name);
-            Category c = new Category();
-            c.setId(Integer.parseInt(category.trim()));
-            p.setCategory(c);
-            p.setDescription(description);
-            p.setImage(image);
-            p.setNutritionist(user);
-            p.setReason(reason);
             try {
-                int shelfLife = Integer.parseInt(shelfLifestr.trim());
-                p.setShelfLife(shelfLife);
-            } catch (Exception e) {
+                p.setId(Integer.parseInt(proposeIdStr));
+            } catch (NumberFormatException e) {
+                request.setAttribute("error", "Invalid product ID.");
+                response.sendRedirect(request.getContextPath() + "/proposeProduct");
+                return;
             }
-            p.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
-            p.setStatus("pending");
             dao.updateProposedProduct(p);
-            response.sendRedirect(request.getContextPath() + "/proposeProduct");
-        }
-        if ("delete".equals(action)) {
-            dao.deleteProposedProductById(Integer.parseInt(proposeIdStr));
-            response.sendRedirect(request.getContextPath() + "/proposeProduct");
-        }
-        if ("add".equals(action)) {
-            Part filePart = request.getPart("file");
-            String fileName = getFileName(filePart);
-
-            String appPath = request.getServletContext().getRealPath("");
-            File projectRoot = new File(appPath).getParentFile().getParentFile();
-            String savePath = projectRoot.getAbsolutePath() + File.separator + "build" + File.separator + "web" + File.separator + SAVE_DIR;
-
-            if (fileName != null && !fileName.isEmpty()) {
-                File fileSaveDir = new File(savePath);
-                if (!fileSaveDir.exists()) {
-                    fileSaveDir.mkdirs();
-                }
-
-                File saveFile = new File(savePath, fileName);
-                File parentDir = saveFile.getParentFile();
-                if (!parentDir.exists()) {
-                    parentDir.mkdirs();
-                }
-
-                try (InputStream fileContent = filePart.getInputStream()) {
-                    Files.copy(fileContent, saveFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                }
-
-                image = fileName;
-            }
-            ProposedProduct p = new ProposedProduct();
-            p.setName(name);
-            Category c = new Category();
-            c.setId(Integer.parseInt(category.trim()));
-            p.setCategory(c);
-            p.setDescription(description);
-            p.setImage(image);
-            p.setNutritionist(user);
-            p.setReason(reason);
-            try {
-                int shelfLife = Integer.parseInt(shelfLifestr.trim());
-                p.setShelfLife(shelfLife);
-            } catch (Exception e) {
-            }
+            request.setAttribute("message", "Product updated successfully.");
+        } else {
             p.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
             p.setStatus("pending");
             dao.insertProposedProduct(p);
-            response.sendRedirect(request.getContextPath() + "/proposeProduct");
+            request.setAttribute("message", "Product added successfully.");
         }
+
+        p.setName(name);
+        Category c = new Category();
+        c.setId(Integer.parseInt(categoryStr.trim()));
+        p.setCategory(c);
+        p.setDescription(description);
+        p.setImage(image);
+        p.setNutritionist(user);
+        p.setReason(reason);
+        p.setShelfLife(shelfLife);
+
+        response.sendRedirect(request.getContextPath() + "/proposeProduct");
+        return;
     }
 
+    if ("delete".equals(action)) {
+        try {
+            dao.deleteProposedProductById(Integer.parseInt(proposeIdStr));
+            request.setAttribute("message", "Product deleted successfully.");
+        } catch (NumberFormatException e) {
+            request.setAttribute("error", "Invalid product ID.");
+        } catch (Exception e) {
+            request.setAttribute("error", "Failed to delete product.");
+        }
+        response.sendRedirect(request.getContextPath() + "/proposeProduct");
+        return;
+    }
+}
     private String getFileName(Part part) {
         String contentDisp = part.getHeader("content-disposition");
         for (String token : contentDisp.split(";")) {
