@@ -28,7 +28,7 @@
                         ${tag.name}
                     </label><br>
                 </c:forEach>
-                <button type="submit">Add Blog</button>
+                <button type="submit" name="addBlogSubmit" value="true">Add Blog</button>
             </form>
         </c:when>
 
@@ -46,7 +46,7 @@
                             ${blog.title}
                         </label><br>
                     </c:forEach>
-                    <button type="submit">Delete Selected Blogs</button>
+                    <button type="submit" name="deleteBlogSubmit" value="true">Delete Selected Blogs</button>
                 </form>
             </c:if>
         </c:when>
@@ -59,7 +59,7 @@
                 <input type="text" name="tagName" required>
                 <label>Description:</label>
                 <textarea name="description"></textarea>
-                <button type="submit">Add Tag</button>
+                 <button type="submit" name="addSubmit" value="true">Add Tag</button>
             </form>
         </c:when>
 
@@ -78,7 +78,7 @@
                 <input type="text" name="newTagName" value="${requestScope.selectedTagName}" required>
                 <label>Description:</label>
                 <textarea name="description">${requestScope.selectedTagDescription}</textarea>
-                <button type="submit">Edit Tag</button>
+                 <button type="submit" name="editSubmit" value="true">Edit Tag</button>
             </form>
         </c:when>
 
@@ -92,7 +92,7 @@
                         ${tag.name}
                     </label><br>
                 </c:forEach>
-                <button type="submit">Delete Selected Tags</button>
+                <button type="submit" name="deleteSubmit" value="true">Delete Selected Tags</button>
             </form>
         </c:when>
 

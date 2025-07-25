@@ -145,6 +145,15 @@ public class ManageBlogServlet extends HttpServlet {
         throws ServletException, IOException {
     request.setCharacterEncoding("UTF-8");
     response.setContentType("text/html;charset=UTF-8");
+    String addBlogSubmit = request.getParameter("addBlogSubmit");
+    
+    if (!"true".equals(addBlogSubmit)) {
+        request.setAttribute("action", "addBlog");
+        request.setAttribute("tagList", daoTag.listAllTag());
+        request.setAttribute("showManageBlog", true);
+        request.getRequestDispatcher("/nutritionBlog").forward(request, response);
+        return;
+    }
 
     if (request.getContentType() == null || !request.getContentType().contains("multipart/form-data")) {
         request.setAttribute("error", "Request must be multipart/form-data. Please check the form.");
@@ -207,7 +216,7 @@ public class ManageBlogServlet extends HttpServlet {
 
         try (InputStream fileContent = filePart.getInputStream()) {
             Files.copy(fileContent, saveFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            image = fileName; // Store only file name, same as BlogDetailServlet
+            image = fileName; 
         } catch (IOException e) {
             request.setAttribute("error", "Failed to upload image: " + e.getMessage());
             request.setAttribute("action", "addBlog");
@@ -279,7 +288,9 @@ private String getFileName(Part part) {
     private void handleDeleteBlog(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         String[] blogIds = request.getParameterValues("blogIds");
+        String deleteBlogSubmit = request.getParameter("deleteBlogSubmit");
         boolean success = false;
+        if ("true".equals(deleteBlogSubmit)) {
         if (blogIds != null && blogIds.length > 0) {
             for (String blogId : blogIds) {
                 try {
@@ -297,6 +308,7 @@ private String getFileName(Part part) {
         } else {
             request.setAttribute("error", "No blogs selected for deletion");
         }
+        }        
         request.setAttribute("action", "deleteBlog");
         request.setAttribute("blogList", daoBlog.getAllBlogsByNewest());
         request.setAttribute("tagList", daoTag.listAllTag());
@@ -307,39 +319,40 @@ private String getFileName(Part part) {
     private void handleAddTag(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         String tagName = request.getParameter("tagName");
-        String description = request.getParameter("description");
+    String description = request.getParameter("description");
+    String addSubmit = request.getParameter("addSubmit");
 
+    if ("true".equals(addSubmit)) {
         if (tagName == null || tagName.trim().isEmpty()) {
             request.setAttribute("error", "Tag name is required");
-            request.setAttribute("action", "addTag");
-            request.setAttribute("tagList", daoTag.listAllTag());
-            request.setAttribute("showManageBlog", true);
-            request.getRequestDispatcher("/nutritionBlog").forward(request, response);
-            return;
-        }
-
-        String slug = tagName.toLowerCase().replaceAll("\\s+", "-");
-        Tag tag = new Tag();
-        tag.setName(tagName);
-        tag.setSlug(slug);
-        tag.setDescription(description != null ? description : "");
-
-        if (daoTag.insertTag(tag)) {
-            response.sendRedirect(request.getContextPath() + "/nutritionBlog");
         } else {
-            request.setAttribute("error", "Failed to add tag");
-            request.setAttribute("action", "addTag");
-            request.setAttribute("tagList", daoTag.listAllTag());
-            request.setAttribute("showManageBlog", true);
-            request.getRequestDispatcher("/nutritionBlog").forward(request, response);
+            String slug = tagName.toLowerCase().replaceAll("\\s+", "-");
+            Tag tag = new Tag();
+            tag.setName(tagName);
+            tag.setSlug(slug);
+            tag.setDescription(description != null ? description : "");
+
+            if (daoTag.insertTag(tag)) {
+                response.sendRedirect(request.getContextPath() + "/nutritionBlog");
+                return;
+            } else {
+                request.setAttribute("error", "Failed to add tag");
+            }
         }
     }
+    
+    request.setAttribute("action", "addTag");
+    request.setAttribute("tagList", daoTag.listAllTag());
+    request.setAttribute("showManageBlog", true);
+    request.getRequestDispatcher("/nutritionBlog").forward(request, response);
+  }
 
     private void handleEditTag(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         String tagIdStr = request.getParameter("tagId");
         String newTagName = request.getParameter("newTagName");
         String description = request.getParameter("description");
+        String editSubmit = request.getParameter("editSubmit");
 
         request.setAttribute("action", "editTag");
         request.setAttribute("tagList", daoTag.listAllTag());
@@ -351,13 +364,8 @@ private String getFileName(Part part) {
         }
 
         int tagId;
-        try {
-            tagId = Integer.parseInt(tagIdStr);
-        } catch (NumberFormatException e) {
-            request.setAttribute("error", "Invalid tag ID");
-            request.getRequestDispatcher("/nutritionBlog").forward(request, response);
-            return;
-        }
+        tagId = Integer.parseInt(tagIdStr);
+
 
         Tag tag = daoTag.getTagById(tagId);
         if (tag == null) {
@@ -365,14 +373,12 @@ private String getFileName(Part part) {
             request.getRequestDispatcher("/nutritionBlog").forward(request, response);
             return;
         }
-
-        // Điền sẵn form với thông tin tag
+     
         request.setAttribute("selectedTagId", tagId);
         request.setAttribute("selectedTagName", tag.getName());
         request.setAttribute("selectedTagDescription", tag.getDescription() != null ? tag.getDescription() : "");
 
-        // Nếu có newTagName, thực hiện cập nhật tag
-        if (newTagName != null && !newTagName.trim().isEmpty()) {
+        if ("true".equals(editSubmit)&&newTagName != null && !newTagName.trim().isEmpty()) {
             String slug = newTagName.toLowerCase().replaceAll("\\s+", "-");
             tag.setName(newTagName);
             tag.setSlug(slug);
@@ -392,24 +398,24 @@ private String getFileName(Part part) {
     private void handleDeleteTag(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         String[] tagIds = request.getParameterValues("tagIds");
+    String deleteSubmit = request.getParameter("deleteSubmit");
+    
+    if ("true".equals(deleteSubmit)) {
         if (tagIds != null && tagIds.length > 0) {
             for (String tagId : tagIds) {
                 daoTag.deleteTag(Integer.parseInt(tagId));
             }
             request.setAttribute("success", "Delete successfully.");
-            request.setAttribute("action", "deleteTag");
-            request.setAttribute("tagList", daoTag.listAllTag());
-            request.setAttribute("showManageBlog", true);
-            request.getRequestDispatcher("/nutritionBlog").forward(request, response);
         } else {
             request.setAttribute("error", "No tags selected");
-            request.setAttribute("action", "deleteTag");
-            request.setAttribute("tagList", daoTag.listAllTag());
-            request.setAttribute("showManageBlog", true);
-            request.getRequestDispatcher("/nutritionBlog").forward(request, response);
         }
     }
-
+    
+    request.setAttribute("action", "deleteTag");
+    request.setAttribute("tagList", daoTag.listAllTag());
+    request.setAttribute("showManageBlog", true);
+    request.getRequestDispatcher("/nutritionBlog").forward(request, response);
+}
 
 
     /**
