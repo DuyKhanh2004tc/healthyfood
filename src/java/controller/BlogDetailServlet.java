@@ -41,7 +41,7 @@ public class BlogDetailServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     private final String SAVE_DIR = "images";
-    
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -100,7 +100,7 @@ public class BlogDetailServlet extends HttpServlet {
         List<Tag> tag = dao.getTagByBlogId(blogId);
         DAOTag daoTag = new DAOTag();
         List<Tag> tagList = daoTag.listAllTag();
-                
+
         request.setAttribute("blogId", blog.getId());
         request.setAttribute("title", blog.getTitle());
         request.setAttribute("description", blog.getDescription());
@@ -111,7 +111,7 @@ public class BlogDetailServlet extends HttpServlet {
         request.setAttribute("nextId", nextId != 0 ? nextId : b.get(0).getId());
         request.setAttribute("blog", blog);
         request.setAttribute("tag", tag);
-        request.setAttribute("tagList",tagList );
+        request.setAttribute("tagList", tagList);
         request.getRequestDispatcher("view/blogDetail.jsp").forward(request, response);
     }
 
@@ -124,73 +124,112 @@ public class BlogDetailServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        response.setContentType("text/html;charset=UTF-8");
+   protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    request.setCharacterEncoding("UTF-8");
+    response.setContentType("text/html;charset=UTF-8");
 
-        String action = request.getParameter("action");
-        User user = (User) request.getSession().getAttribute("user");
-        DAOBlog dao = new DAOBlog();
-        int blogId = Integer.parseInt(request.getParameter("blogId"));
+    String action = request.getParameter("action");
+    User user = (User) request.getSession().getAttribute("user");
+    DAOBlog dao = new DAOBlog();
+    int blogId;
+    try {
+        blogId = Integer.parseInt(request.getParameter("blogId"));
+    } catch (NumberFormatException e) {
+        request.setAttribute("error", "Invalid blog ID.");
+        doGet(request, response);
+        return;
+    }
+
+    if ("editBlog".equals(action)) {
         String title = request.getParameter("title");
         String description = request.getParameter("description");
         String image = request.getParameter("image");
-      
-        if ("editBlog".equals(action)) {
-            String[] tagIdstr = request.getParameterValues("chooseTag");
-          
-            Part filePart = request.getPart("file");
-            String fileName = getFileName(filePart);
+        String[] tagIdstr = request.getParameterValues("chooseTag");
 
-            String appPath = request.getServletContext().getRealPath("");
-            File projectRoot = new File(appPath).getParentFile().getParentFile();
-            String savePath = projectRoot.getAbsolutePath() + File.separator + "build" + File.separator + "web" + File.separator + SAVE_DIR;
+        Part filePart = request.getPart("file");
+        String fileName = getFileName(filePart);
 
-            if (fileName != null && !fileName.isEmpty()) {
-                File fileSaveDir = new File(savePath);
-                if (!fileSaveDir.exists()) {
-                    fileSaveDir.mkdirs();
-                }
+        String appPath = request.getServletContext().getRealPath("");
+        File projectRoot = new File(appPath).getParentFile().getParentFile();
+        String savePath = projectRoot.getAbsolutePath() + File.separator + "build" + File.separator + "web" + File.separator + SAVE_DIR;
 
-                File saveFile = new File(savePath, fileName);
-                File parentDir = saveFile.getParentFile();
-                if (!parentDir.exists()) {
-                    parentDir.mkdirs();
-                }
+        if (filePart != null && filePart.getSize() > 0 && fileName != null && !fileName.isEmpty()) {
+            File fileSaveDir = new File(savePath);
+            if (!fileSaveDir.exists()) {
+                fileSaveDir.mkdirs();
+            }
 
-                try (InputStream fileContent = filePart.getInputStream()) {
-                    Files.copy(fileContent, saveFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                }
+            File saveFile = new File(savePath, fileName);
+            File parentDir = saveFile.getParentFile();
+            if (!parentDir.exists()) {
+                parentDir.mkdirs();
+            }
 
+            try (InputStream fileContent = filePart.getInputStream()) {
+                Files.copy(fileContent, saveFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 image = fileName;
-            }       
-            Blog blog = new Blog();
-            blog.setId(blogId);
-            blog.setTitle(title);
-            blog.setDescription(description);
-            blog.setImage(image);
-            blog.setUser(user);
-            blog.setCreated_at(new java.sql.Timestamp(System.currentTimeMillis()));
-            
+            } catch (IOException e) {
+                request.setAttribute("error", "Failed to upload image.");
+                response.sendRedirect(request.getContextPath() + "/blogDetail?blogId=" + blogId);
+                return;
+            }
+        }
+
+        if (title == null || title.trim().isEmpty()) {
+            request.setAttribute("error", "Title is incorrect.");
+            response.sendRedirect(request.getContextPath() + "/blogDetail?blogId=" + blogId);
+            return;
+        }
+        if (tagIdstr == null || tagIdstr.length == 0) {
+            request.setAttribute("error", "Please choose the tag.");
+            response.sendRedirect(request.getContextPath() + "/blogDetail?blogId=" + blogId);
+            return;
+        }
+        if (description == null || description.trim().isEmpty()) {
+            request.setAttribute("error", "Description is incorrect.");
+            response.sendRedirect(request.getContextPath() + "/blogDetail?blogId=" + blogId);
+            return;
+        }
+
+        Blog blog = new Blog();
+        blog.setId(blogId);
+        blog.setTitle(title);
+        blog.setDescription(description);
+        blog.setImage(image);
+        blog.setUser(user);
+        blog.setCreated_at(new java.sql.Timestamp(System.currentTimeMillis()));
+
+        try {
             dao.updateBlog(blog);
-            
             DAOTag tag = new DAOTag();
             tag.deleteBlogTag(blogId);
-            for (String tagId:tagIdstr) {
+            for (String tagId : tagIdstr) {
                 int tagIdInt = Integer.parseInt(tagId);
-                  tag.insertBlogTag(blogId, tagIdInt);
+                tag.insertBlogTag(blogId, tagIdInt);
             }
-            response.sendRedirect(request.getContextPath() + "/blogDetail?blogId=" + blogId);
+            request.setAttribute("message", "Blog updated successfully.");
+        } catch (Exception e) {
+            request.setAttribute("error", "Failed to update blog.");
         }
+        response.sendRedirect(request.getContextPath() + "/blogDetail?blogId=" + blogId);
+        return;
+    }
 
-        if ("deleteBlog".equals(action)) {
-              DAOTag tag = new DAOTag();
+    if ("deleteBlog".equals(action)) {
+        try {
+            DAOTag tag = new DAOTag();
             tag.deleteBlogTag(blogId);
             dao.deleteBlogById(blogId);
+            request.setAttribute("message", "Blog deleted successfully.");
+            response.sendRedirect(request.getContextPath() + "/nutritionBlog");
+        } catch (Exception e) {
+            request.setAttribute("error", "Failed to delete blog.");
             response.sendRedirect(request.getContextPath() + "/nutritionBlog");
         }
+        return;
     }
+}
 
     private String getFileName(Part part) {
         String contentDisp = part.getHeader("content-disposition");
