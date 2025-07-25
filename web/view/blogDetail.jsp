@@ -218,26 +218,28 @@
             }
 
             .blog-actions button.edit {
-                background-color: #15803d; 
+                background-color: #15803d;
                 color: #fff;
             }
 
             .blog-actions button.edit:hover {
-                background-color: #166534; 
+                background-color: #166534;
                 transform: translateY(-2px);
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             }
 
             .blog-actions button.delete {
-                background-color: #dd0000; 
+                background-color: #dd0000;
                 color: #fff;
             }
 
             .blog-actions button.delete:hover {
-                background-color: #dc2626; 
+                background-color: #dc2626;
                 transform: translateY(-2px);
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             }
+            .success-message { color: green; margin-bottom: 1rem; }
+.error-message { color: red; margin-bottom: 1rem; }
         </style>
     </head>
     <body>
@@ -261,10 +263,10 @@
                 </div>
             </div>
         </c:if>
-        
+
         <div class="main-content">
             <div class="container">
-                <!-- Navigation Buttons -->
+
                 <div class="nav-buttons">
                     <c:choose>
                         <c:when test="${not empty prevId}">
@@ -285,7 +287,23 @@
                 </div>
 
                 <div class="blog-content">
-                    <img src="${pageContext.request.contextPath}/images/${image}" alt="${title}">
+                   <img src="${pageContext.request.contextPath}/images/${image}" alt="${title}">
+    <% 
+        String message = (String) request.getAttribute("message");
+        if (message != null) {
+    %>
+        <p class="success-message"><%= message %></p>
+    <% 
+            request.removeAttribute("message");
+        }
+        String error = (String) request.getAttribute("error");
+        if (error != null) {
+    %>
+        <p class="error-message" style="color: red;"><%= error %></p>
+    <% 
+            request.removeAttribute("error");
+        }
+    %>
                     <h3>${title}</h3>
                     <p> 
                         <%
@@ -300,7 +318,7 @@
                         %>
                     </p>
                     <div class="meta">
-                         <fmt:formatDate value="${created_at}" pattern="dd/MM/yyyy" />
+                        <fmt:formatDate value="${created_at}" pattern="dd/MM/yyyy" />
                         <span class="author">By ${createBy}</span>
                     </div>
                     <p class="description">${description}</p>
