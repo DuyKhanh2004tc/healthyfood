@@ -126,61 +126,127 @@ public class AllRecipeServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        User user = (User) request.getSession().getAttribute("user");
-        String image = request.getParameter("image");
-        String name = request.getParameter("name");
-        String[] productIdstr = request.getParameterValues("chooseProduct");
-        String typeIdStr = request.getParameter("typeId");
-        String description = request.getParameter("description");
-        Part filePart = request.getPart("file");
-        DAORecipe dao = new DAORecipe();
-        List<CookingRecipe> recipeList = dao.listAllCookingRecipe();
-        String fileName = getFileName(filePart);
+  @Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    request.setCharacterEncoding("UTF-8");
+    response.setContentType("text/html;charset=UTF-8");
 
-        String appPath = request.getServletContext().getRealPath("");
-        File projectRoot = new File(appPath).getParentFile().getParentFile();
-        String savePath = projectRoot.getAbsolutePath() + File.separator + "build" + File.separator + "web" + File.separator + SAVE_DIR;
+    User user = (User) request.getSession().getAttribute("user");
+    String image = request.getParameter("image");
+    String name = request.getParameter("name");
+    String[] productIdstr = request.getParameterValues("chooseProduct");
+    String typeIdStr = request.getParameter("typeId");
+    String description = request.getParameter("description");
+    Part filePart = request.getPart("file");
+    DAORecipe dao = new DAORecipe();
 
-        if (fileName != null && !fileName.isEmpty()) {
-            File fileSaveDir = new File(savePath);
-            if (!fileSaveDir.exists()) {
-                fileSaveDir.mkdirs();
+    if (name == null || name.trim().isEmpty()) {
+        request.setAttribute("error", "Name is required.");
+        response.sendRedirect(request.getContextPath() + "/allRecipe");
+        return;
+    }
+    if (typeIdStr == null || typeIdStr.trim().isEmpty()) {
+        request.setAttribute("error", "Type is required.");
+        response.sendRedirect(request.getContextPath() + "/allRecipe");
+        return;
+    }
+    if (description == null || description.trim().isEmpty()) {
+        request.setAttribute("error", "Description is required.");
+        response.sendRedirect(request.getContextPath() + "/allRecipe");
+        return;
+    }
+    if (productIdstr == null || productIdstr.length == 0) {
+        request.setAttribute("error", "At least one product must be selected.");
+        response.sendRedirect(request.getContextPath() + "/allRecipe");
+        return;
+    }
+
+    int typeId = 0;
+    try {
+        typeId = Integer.parseInt(typeIdStr.trim());
+        if (typeId <= 0) {
+            request.setAttribute("error", "Invalid type ID.");
+            response.sendRedirect(request.getContextPath() + "/allRecipe");
+            return;
+        }
+    } catch (NumberFormatException e) {
+        request.setAttribute("error", "Type ID must be a valid number.");
+        response.sendRedirect(request.getContextPath() + "/allRecipe");
+        return;
+    }
+
+    List<Integer> productId = new ArrayList<>();
+    for (String id : productIdstr) {
+        try {
+            int pid = Integer.parseInt(id.trim());
+            if (pid <= 0) {
+                request.setAttribute("error", "Invalid product ID.");
+                response.sendRedirect(request.getContextPath() + "/allRecipe");
+                return;
             }
+            productId.add(pid);
+        } catch (NumberFormatException e) {
+            request.setAttribute("error", "Invalid product ID format.");
+            response.sendRedirect(request.getContextPath() + "/allRecipe");
+            return;
+        }
+    }
 
-            File saveFile = new File(savePath, fileName);
-            File parentDir = saveFile.getParentFile();
-            if (!parentDir.exists()) {
-                parentDir.mkdirs();
-            }
+    String fileName = getFileName(filePart);
+    if (filePart != null && filePart.getSize() > 0 && (fileName == null || fileName.isEmpty())) {
+        request.setAttribute("error", "Invalid file name.");
+        response.sendRedirect(request.getContextPath() + "/allRecipe");
+        return;
+    }
 
-            try (InputStream fileContent = filePart.getInputStream()) {
-                Files.copy(fileContent, saveFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            }
+    String appPath = request.getServletContext().getRealPath("");
+    File projectRoot = new File(appPath).getParentFile().getParentFile();
+    String savePath = projectRoot.getAbsolutePath() + File.separator + "build" + File.separator + "web" + File.separator + SAVE_DIR;
 
+    if (filePart != null && filePart.getSize() > 0 && fileName != null && !fileName.isEmpty()) {
+        File fileSaveDir = new File(savePath);
+        if (!fileSaveDir.exists()) {
+            fileSaveDir.mkdirs();
+        }
+
+        File saveFile = new File(savePath, fileName);
+        File parentDir = saveFile.getParentFile();
+        if (!parentDir.exists()) {
+            parentDir.mkdirs();
+        }
+
+        try (InputStream fileContent = filePart.getInputStream()) {
+            Files.copy(fileContent, saveFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             image = fileName;
+        } catch (IOException e) {
+            request.setAttribute("error", "Failed to upload image.");
+            response.sendRedirect(request.getContextPath() + "/allRecipe");
+            return;
         }
-        CookingRecipe cook = new CookingRecipe();
-        cook.setImage(image);
-        cook.setName(name);
-        cook.setDescription(description);
-        cook.setNutritionist(user);
-        cook.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
-        RecipeType type = new RecipeType();
-        type.setId(Integer.parseInt(typeIdStr));
-        cook.setType(type);
-        recipeList.add(cook);
-        List<Integer> productId = new ArrayList<>();
-        for (String s : productIdstr) {
-            productId.add(Integer.parseInt(s.trim()));
-        }
+    }
 
+   
+    CookingRecipe cook = new CookingRecipe();
+    cook.setImage(image);
+    cook.setName(name);
+    cook.setDescription(description);
+    cook.setNutritionist(user);
+    cook.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
+    RecipeType type = new RecipeType();
+    type.setId(typeId);
+    cook.setType(type);
+
+    try {
         dao.insertCookingRecipe(cook);
         dao.insertCookingRecipeProduct(cook.getId(), productId);
-        response.sendRedirect(request.getContextPath() + "/allRecipe");
+        request.setAttribute("message", "Recipe added successfully.");
+    } catch (Exception e) {
+        request.setAttribute("error", "Failed to add recipe.");
     }
+
+    response.sendRedirect(request.getContextPath() + "/allRecipe");
+}
 
     private String getFileName(Part part) {
         String contentDisp = part.getHeader("content-disposition");
