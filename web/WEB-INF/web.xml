@@ -84,7 +84,7 @@
         <servlet-class>controller.UpdateAccountServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ProductServlet</servlet-name>
+        <servlet-name>SortProductServlet</servlet-name>
         <servlet-class>controller.SortProductServlet</servlet-class>
     </servlet>
     <servlet>
