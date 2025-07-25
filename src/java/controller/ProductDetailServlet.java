@@ -136,7 +136,7 @@ public class ProductDetailServlet extends HttpServlet {
             productId = Integer.parseInt(productIdStr);
         } catch (NumberFormatException e) {
             request.setAttribute("error", "Invalid product ID.");
-            doGet(request, response);
+            response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productIdStr);
             return;
         }
 
@@ -146,7 +146,7 @@ public class ProductDetailServlet extends HttpServlet {
 
         if (product == null) {
             request.setAttribute("error", "Product not found.");
-            doGet(request, response);
+            response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
             return;
         }
         if ("comment".equals(action)) {
@@ -161,7 +161,7 @@ public class ProductDetailServlet extends HttpServlet {
 
             if (ratingStr == null || ratingStr.trim().isEmpty()) {
                 request.getSession().setAttribute("errorFeedback", "Please select a rating.");
-                doGet(request, response);
+                response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
                 return;
             }
 
@@ -170,7 +170,7 @@ public class ProductDetailServlet extends HttpServlet {
                 rate = Double.parseDouble(ratingStr);
             } catch (NumberFormatException e) {
                 request.getSession().setAttribute("errorFeedback", "Invalid rating value.");
-                doGet(request, response);
+                response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
                 return;
             }
 
@@ -193,7 +193,7 @@ public class ProductDetailServlet extends HttpServlet {
                 feedbackId = Integer.parseInt(feedbackIdStr);
             } catch (NumberFormatException e) {
                 request.getSession().setAttribute("errorFeedback", "Invalid feedback ID.");
-                doGet(request, response);
+                response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
                 return;
             }
 
@@ -217,8 +217,14 @@ public class ProductDetailServlet extends HttpServlet {
             feedbackId = Integer.parseInt(feedbackIdStr);
             if (ratingStr == null || ratingStr.trim().isEmpty()) {
                 request.getSession().setAttribute("errorFeedback", "Please select a rating.");
-                doGet(request, response);
+                response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
                 return;
+            }
+            if (content == null || content.trim().isEmpty()) {
+                request.getSession().setAttribute("errorFeedback", "Incorrect comment.");
+                response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
+                return;
+
             }
             double rate = Double.parseDouble(ratingStr);
             Feedback feedback = new Feedback();
@@ -242,12 +248,12 @@ public class ProductDetailServlet extends HttpServlet {
                 number = Integer.parseInt(numberStr);
                 if (number <= 0) {
                     request.getSession().setAttribute("error", "Quantity must be greater than 0.");
-                    doGet(request, response);
+                    response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
                     return;
                 }
             } catch (NumberFormatException e) {
                 request.getSession().setAttribute("error", "Invalid quantity.");
-                doGet(request, response);
+                response.sendRedirect(request.getContextPath() + "/productDetail?productId=" + productId);
                 return;
             }
             if ("add".equals(action)) {
@@ -295,13 +301,13 @@ public class ProductDetailServlet extends HttpServlet {
                 if (user == null) {
                     String url = request.getContextPath() + "/placeOrder?productId=" + productId + "&quantity=" + number;
                     response.sendRedirect(url);
-                   return;
+                    return;
                 } else {
                     String url = request.getContextPath() + "/placeOrder?productId=" + productId + "&quantity=" + number;
                     response.sendRedirect(url);
                     return;
                 }
-              
+
             }
         }
         doGet(request, response);
