@@ -204,11 +204,11 @@
             }
             .twoButtonPopup{
                 display: flex;
-                
+
             }
             .twoButtonEdit{
                 display: flex;
-               
+
             }
             .productCart{
                 width: 500px;
@@ -383,7 +383,6 @@
                                     <button class="cardP-button" type="submit" name= "action"value="buy">💰 Buy</button>
                                 </div>
                             </form>
-
                         </c:if> 
                     </div>
                 </div>
@@ -391,20 +390,19 @@
                 <p class="error">Product not found.</p>
                 <% } %>
             </div>
-
             <div class="feedback-list">
                 <%
                               String errorf = (String) session.getAttribute("errorFeedback");
                               if (errorf != null) {
                 %>
-                <p class="error"><%= errorf %></p>
-                <% session.removeAttribute("errorf");}   %>
+                <p class="error"><%= errorf %></p>                           
+                <% session.removeAttribute("errorFeedback");}   %>
                 <%
        String messagef = (String) session.getAttribute("messageFeedback");
        if (messagef != null) {
                 %>
                 <p class="success"><%= messagef %></p>
-                <% session.removeAttribute("messagef");  } %> 
+                <% session.removeAttribute("messageFeedback");  } %> 
                 <%
                     ArrayList<Feedback> feedback = (ArrayList<Feedback>) request.getAttribute("feedbackList");
                     User sessionUser = (User) session.getAttribute("user");
@@ -444,18 +442,18 @@
                         <input type="hidden" name="productId" value="<%= productId %>">
                         <input type="hidden" name="feedbackId" id="feedbackId">
                         <input type="hidden" name="action" value="editFeedback">
-                       <div class="stars" >
-                                <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
-                                <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
-                                <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
-                                <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
-                                <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
-                            </div>
+                        <div class="stars" >
+                            <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+                            <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+                            <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+                            <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+                            <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+                        </div>
 
                         <textarea id="feedbackText" name="content" placeholder="Enter your feedback here..." required></textarea>
                         <div class="twoButtonPopup">
-                        <button type="submit" class="button">Save</button>
-                        <button type="button" class="button" onclick="closePopup()">Cancel</button>
+                            <button type="submit" class="button">Save</button>
+                            <button type="button" class="button" onclick="closePopup()">Cancel</button>
                         </div>
                     </form>
                 </div>
@@ -464,7 +462,7 @@
                     <form method="post" action="${pageContext.request.contextPath}/productDetail">
                         <input type="hidden" name="productId" value="<%= productId %>">
                         <c:if test="${sessionScope.user.role.id == 3&&productOrdered == true}">
-                           <div class="stars" >
+                            <div class="stars" >
                                 <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
                                 <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
                                 <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
