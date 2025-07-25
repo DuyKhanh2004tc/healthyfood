@@ -288,6 +288,22 @@ form button[type="button"]:focus,
 
         <div class="main-content">
             <div class="container">
+                <%
+                    String message = (String) request.getAttribute("message");
+                    if (message != null) {
+                %>
+                    <p style="color: green; text-align: center; margin-bottom: 10px;"><%= message %></p>
+                <%
+                        request.removeAttribute("message");
+                    }
+                    String error = (String) request.getAttribute("error");
+                    if (error != null) {
+                %>
+                    <p style="color: red; text-align: center; margin-bottom: 10px;"><%= error %></p>
+                <%
+                        request.removeAttribute("error");
+                    }
+                %>
                 <div class="nav-buttons">
                     <c:choose>
                         <c:when test="${not empty prevId}">
