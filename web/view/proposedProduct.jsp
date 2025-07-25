@@ -334,6 +334,22 @@
             </form> 
             <button type="button" onclick="openAddPopup()">Add new propose product</button>
         </div>
+                <% 
+        String message = (String) request.getAttribute("message");
+        if (message != null) {
+    %>
+        <p class="success-message" style="color: green; text-align: center; margin-bottom: 10px;"><%= message %></p>
+    <% 
+            request.removeAttribute("message");
+        }
+        String error = (String) request.getAttribute("error");
+        if (error != null) {
+    %>
+        <p class="error-message" style="color: red; text-align: center; margin-bottom: 10px;"><%= error %></p>
+    <% 
+            request.removeAttribute("error");
+        }
+    %>
         <table border="1">
             <thead>
                 <tr>
@@ -446,56 +462,52 @@
             </form>
         </div>
         <div class="pagination">
-            <div class="pagination">
-                <c:if test="${currentPage > 1}">
-                    <c:url var="prevUrl" value="/proposeProduct">
-                        <c:param name="page" value="${currentPage - 1}" />
-
-                        <c:if test="${param.productName != null}">
-                            <c:param name="keyword" value="${param.productName}" />
-                        </c:if>
-                        <c:if test="${sessionScope.categoryId != null}">
-                            <c:param name="categoryId" value="${sessionScope.categoryId}" />
-                        </c:if>
-                        <c:if test="${sessionScope.status != null}">
-                            <c:param name="status" value="${sessionScope.status}" />
-                        </c:if>
-                    </c:url>
-                    <a class="page-link prev-next" href="${prevUrl}">Previous</a>
-                </c:if>
-                <c:forEach var="i" begin="1" end="${totalPages}">
-                    <c:url var="pageUrl" value="/proposeProduct">
-                        <c:param name="page" value="${i}" />
-
-                        <c:if test="${param.keyword != null}">
-                            <c:param name="keyword" value="${param.productName}" />
-                        </c:if>
-                        <c:if test="${sessionScope.categoryId != null}">
-                            <c:param name="categoryId" value="${sessionScope.categoryId}" />
-                        </c:if>
-                        <c:if test="${sessionScope.status != null}">
-                            <c:param name="status" value="${sessionScope.status}" />
-                        </c:if>
-                    </c:url>
-                    <a href="${pageUrl}" class="page-link">${i}</a>
-                </c:forEach>
-                <c:if test="${currentPage < totalPages}">
-                    <c:url var="nextUrl" value="/proposeProduct">
-                        <c:param name="page" value="${currentPage + 1}" />
-
-                        <c:if test="${param.productName != null}">
-                            <c:param name="keyword" value="${param.productName}" />
-                        </c:if>
-                        <c:if test="${sessionScope.categoryId != null}">
-                            <c:param name="categoryId" value="${sessionScope.categoryId}" />
-                        </c:if>
-                        <c:if test="${sessionScope.status != null}">
-                            <c:param name="status" value="${sessionScope.status}" />
-                        </c:if>
-                    </c:url>
-                    <a class="page-link prev-next" href="${nextUrl}">Next</a>
-                </c:if>
-            </div>
+    <c:if test="${currentPage > 1}">
+        <c:url var="prevUrl" value="/proposeProduct">
+            <c:param name="page" value="${currentPage - 1}" />
+            <c:if test="${not empty param.productName}">
+                <c:param name="productName" value="${param.productName}" />
+            </c:if>
+            <c:if test="${not empty param.categoryId}">
+                <c:param name="categoryId" value="${param.categoryId}" />
+            </c:if>
+            <c:if test="${not empty param.status}">
+                <c:param name="status" value="${param.status}" />
+            </c:if>
+        </c:url>
+        <a class="page-link prev-next" href="${prevUrl}">Previous</a>
+    </c:if>
+    <c:forEach var="i" begin="1" end="${totalPages}">
+        <c:url var="pageUrl" value="/proposeProduct">
+            <c:param name="page" value="${i}" />
+            <c:if test="${not empty param.productName}">
+                <c:param name="productName" value="${param.productName}" />
+            </c:if>
+            <c:if test="${not empty param.categoryId}">
+                <c:param name="categoryId" value="${param.categoryId}" />
+            </c:if>
+            <c:if test="${not empty param.status}">
+                <c:param name="status" value="${param.status}" />
+            </c:if>
+        </c:url>
+        <a href="${pageUrl}" class="page-link ${i == currentPage ? 'active' : ''}">${i}</a>
+    </c:forEach>
+    <c:if test="${currentPage < totalPages}">
+        <c:url var="nextUrl" value="/proposeProduct">
+            <c:param name="page" value="${currentPage + 1}" />
+            <c:if test="${not empty param.productName}">
+                <c:param name="productName" value="${param.productName}" />
+            </c:if>
+            <c:if test="${not empty param.categoryId}">
+                <c:param name="categoryId" value="${param.categoryId}" />
+            </c:if>
+            <c:if test="${not empty param.status}">
+                <c:param name="status" value="${param.status}" />
+            </c:if>
+        </c:url>
+        <a class="page-link prev-next" href="${nextUrl}">Next</a>
+    </c:if>
+</div>          
         </div>
         <script>
             function openPopup(proposedId, image, name, categoryId, description, reason, shelfLife) {
