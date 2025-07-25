@@ -4,6 +4,7 @@ import dal.DAOOrder;
 import dal.DAOOrderStatus;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -48,7 +49,10 @@ public class SellerCanceledOrdersServlet extends HttpServlet {
                     request.setAttribute("error", "Order not found with ID: " + orderId);
                 }
             } else {
-                List<Order> canceledOrders = dao.getOrdersByStatusIn(List.of(7)); // Canceled
+                List<Integer> statusIds = new ArrayList<>();
+                statusIds.add(7); // Canceled
+                statusIds.add(9); // Customer Cancelled
+                List<Order> canceledOrders = dao.getOrdersByStatusIn(statusIds);
                 request.setAttribute("canceledOrders", canceledOrders);
             }
         } catch (SQLException e) {
