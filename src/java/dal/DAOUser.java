@@ -9,6 +9,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import model.Role;
+import utils.PasswordUtil;
 
 public class DAOUser {
 
@@ -410,9 +411,14 @@ public boolean updateProfile(String name, String email, String phone, Date dob, 
 
     
     public static void main(String[] args) {
-        ArrayList<User> ulist = DAOUser.INSTANCE.getUsersByRoleId(6);
-        for (int i = 0; i < ulist.size(); i++) {
-            System.out.println(ulist.get(i).getName());
-        }
+//        ArrayList<User> ulist = DAOUser.INSTANCE.getUsersByRoleId(6);
+//        for (int i = 0; i < ulist.size(); i++) {
+//            System.out.println(ulist.get(i).getName());
+//        }
+
+//        String email = "hoangdaogoku@gmail.com";
+//        String password = "mrbaen2012";
+//        String hashpw = PasswordUtil.hashPassword(password);
+//        DAOUser.INSTANCE.updatePassword(email, hashpw);
     }
 }
