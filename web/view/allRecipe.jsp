@@ -378,6 +378,22 @@
                 </div>
             </div>
         </c:if>
+        <% 
+        String message = (String) request.getAttribute("message");
+        if (message != null) {
+        %>
+        <p class="success-message" style="color: green; text-align: center; margin-bottom: 10px;"><%= message %></p>
+        <% 
+                request.removeAttribute("message");
+            }
+            String error = (String) request.getAttribute("error");
+            if (error != null) {
+        %>
+        <p class="error-message" style="color: red; text-align: center; margin-bottom: 10px;"><%= error %></p>
+        <% 
+                request.removeAttribute("error");
+            }
+        %>
         <form method="get" action="${pageContext.request.contextPath}/allRecipe">
             <input type="text" value="${param.productName}" placeholder="Search product name" name="productName"/>    
             <select name="typeId">
