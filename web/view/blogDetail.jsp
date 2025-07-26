@@ -285,25 +285,25 @@
                         </c:otherwise>
                     </c:choose>
                 </div>
-
-                <div class="blog-content">
-                   <img src="${pageContext.request.contextPath}/images/${image}" alt="${title}">
-    <% 
-        String message = (String) request.getAttribute("message");
+ <% 
+        String message = (String) session.getAttribute("message");
         if (message != null) {
     %>
         <p class="success-message"><%= message %></p>
     <% 
             request.removeAttribute("message");
         }
-        String error = (String) request.getAttribute("error");
-        if (error != null) {
+        String errorf = (String) session.getAttribute("error");
+        if (errorf != null) {
     %>
-        <p class="error-message" style="color: red;"><%= error %></p>
+        <p class="error-message" style="color: red;"><%= errorf %></p>
     <% 
             request.removeAttribute("error");
         }
     %>
+                <div class="blog-content">
+                   <img src="${pageContext.request.contextPath}/images/${image}" alt="${title}">
+   
                     <h3>${title}</h3>
                     <p> 
                         <%
