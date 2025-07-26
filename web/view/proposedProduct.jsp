@@ -335,19 +335,19 @@
             <button type="button" onclick="openAddPopup()">Add new propose product</button>
         </div>
                 <% 
-        String message = (String) request.getAttribute("message");
+        String message = (String) session.getAttribute("message");
         if (message != null) {
     %>
         <p class="success-message" style="color: green; text-align: center; margin-bottom: 10px;"><%= message %></p>
     <% 
-            request.removeAttribute("message");
+            session.removeAttribute("message");
         }
-        String error = (String) request.getAttribute("error");
+        String error = (String) session.getAttribute("error");
         if (error != null) {
     %>
         <p class="error-message" style="color: red; text-align: center; margin-bottom: 10px;"><%= error %></p>
     <% 
-            request.removeAttribute("error");
+            session.removeAttribute("error");
         }
     %>
         <table border="1">
@@ -440,7 +440,7 @@
             <form id="addProduct" method="post" enctype="multipart/form-data" action="${pageContext.request.contextPath}/proposeProduct">
                 <input type="hidden" name="action" value="add">
                 <p>Image</p>
-                <input type="file" name="file" accept="image/*" />
+                <input type="file" name="file" accept="image/*" required=""/>
                 <p>Name</p>
                 <input type="text" name="name" placeholder="Enter name here..." required>
                 <p>Category Name</p>
