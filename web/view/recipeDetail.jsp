@@ -289,19 +289,19 @@ form button[type="button"]:focus,
         <div class="main-content">
             <div class="container">
                 <%
-                    String message = (String) request.getAttribute("message");
+                    String message = (String) session.getAttribute("message");
                     if (message != null) {
                 %>
                     <p style="color: green; text-align: center; margin-bottom: 10px;"><%= message %></p>
                 <%
-                        request.removeAttribute("message");
+                        session.removeAttribute("message");
                     }
-                    String error = (String) request.getAttribute("error");
+                    String error = (String) session.getAttribute("error");
                     if (error != null) {
                 %>
                     <p style="color: red; text-align: center; margin-bottom: 10px;"><%= error %></p>
                 <%
-                        request.removeAttribute("error");
+                        session.removeAttribute("error");
                     }
                 %>
                 <div class="nav-buttons">
