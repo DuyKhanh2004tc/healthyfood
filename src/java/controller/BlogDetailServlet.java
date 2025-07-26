@@ -170,24 +170,24 @@ public class BlogDetailServlet extends HttpServlet {
                 Files.copy(fileContent, saveFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 image = fileName;
             } catch (IOException e) {
-                request.setAttribute("error", "Failed to upload image.");
+                request.getSession().setAttribute("error", "Failed to upload image.");
                 response.sendRedirect(request.getContextPath() + "/blogDetail?blogId=" + blogId);
                 return;
             }
         }
 
         if (title == null || title.trim().isEmpty()) {
-            request.setAttribute("error", "Title is incorrect.");
+            request.getSession().setAttribute("error", "Title is incorrect.");
             response.sendRedirect(request.getContextPath() + "/blogDetail?blogId=" + blogId);
             return;
         }
         if (tagIdstr == null || tagIdstr.length == 0) {
-            request.setAttribute("error", "Please choose the tag.");
+            request.getSession().setAttribute("error", "Please choose the tag.");
             response.sendRedirect(request.getContextPath() + "/blogDetail?blogId=" + blogId);
             return;
         }
         if (description == null || description.trim().isEmpty()) {
-            request.setAttribute("error", "Description is incorrect.");
+            request.getSession().setAttribute("error", "Description is incorrect.");
             response.sendRedirect(request.getContextPath() + "/blogDetail?blogId=" + blogId);
             return;
         }
@@ -208,9 +208,9 @@ public class BlogDetailServlet extends HttpServlet {
                 int tagIdInt = Integer.parseInt(tagId);
                 tag.insertBlogTag(blogId, tagIdInt);
             }
-            request.setAttribute("message", "Blog updated successfully.");
+            request.getSession().setAttribute("message", "Blog updated successfully.");
         } catch (Exception e) {
-            request.setAttribute("error", "Failed to update blog.");
+            request.getSession().setAttribute("error", "Failed to update blog.");
         }
         response.sendRedirect(request.getContextPath() + "/blogDetail?blogId=" + blogId);
         return;
@@ -221,10 +221,10 @@ public class BlogDetailServlet extends HttpServlet {
             DAOTag tag = new DAOTag();
             tag.deleteBlogTag(blogId);
             dao.deleteBlogById(blogId);
-            request.setAttribute("message", "Blog deleted successfully.");
+            request.getSession().setAttribute("message", "Blog deleted successfully.");
             response.sendRedirect(request.getContextPath() + "/nutritionBlog");
         } catch (Exception e) {
-            request.setAttribute("error", "Failed to delete blog.");
+            request.getSession().setAttribute("error", "Failed to delete blog.");
             response.sendRedirect(request.getContextPath() + "/nutritionBlog");
         }
         return;
