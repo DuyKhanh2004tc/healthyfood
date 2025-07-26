@@ -91,24 +91,30 @@ public class SortProductServlet extends HttpServlet {
         }
 
         List<Product> sortedList;
-        if (orderByRate != null) {
-            sortedList = (categoryId == 0) ? dao.getRatingSorted(orderByRate) : dao.getRatingSortedByCategoryId(orderByRate,categoryId);
+        if (orderByRate != null && !orderByRate.isEmpty()) {
+            sortedList = (categoryId == 0)
+                    ? dao.getRatingSorted(orderByRate)
+                    : dao.getRatingSortedByCategoryId(orderByRate, categoryId);
             request.setAttribute("rateOrderBy", orderByRate);
-        } else if (orderByName != null) {
+        } else if (orderByName != null && !orderByName.isEmpty()) {
             sortedList = (categoryId == 0)
                     ? dao.getNameSorted(orderByName)
-                    : dao.getNameSortedByCategoryId(orderByName,categoryId );
+                    : dao.getNameSortedByCategoryId(orderByName, categoryId);
             request.setAttribute("nameOrderBy", orderByName);
-        } else if (orderByPrice != null) {
+        } else if (orderByPrice != null && !orderByPrice.isEmpty()) {
             sortedList = (categoryId == 0)
                     ? dao.getPriceSorted(orderByPrice)
                     : dao.getPriceSortedByCategoryId(orderByPrice, categoryId);
             request.setAttribute("orderBy", orderByPrice);
-        } else {
+        } else if (orderByDate != null && !orderByDate.isEmpty()) {
             sortedList = (categoryId == 0)
                     ? dao.getTimeSorted(orderByDate)
                     : dao.getTimeSortedByCategoryId(orderByDate, categoryId);
             request.setAttribute("dateOrderBy", orderByDate);
+        } else {
+            sortedList = (categoryId == 0)
+                    ? dao.getAllProduct()
+                    : dao.getProductByCategory(categoryId);
         }
 
         int pageSize = 12;
