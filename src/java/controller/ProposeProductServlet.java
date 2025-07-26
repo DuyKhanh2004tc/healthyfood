@@ -154,29 +154,29 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
     DAOProposedProduct dao = new DAOProposedProduct();
 
     if ("edit".equals(action) || "add".equals(action)) {
-        // Validate required fields
+       
         if (name == null || name.trim().isEmpty()) {
-            request.setAttribute("error", "Name is required.");
+            request.getSession().setAttribute("error", "Name is required.");
             response.sendRedirect(request.getContextPath() + "/proposeProduct");
             return;
         }
         if (categoryStr == null || categoryStr.trim().isEmpty()) {
-            request.setAttribute("error", "Category is required.");
+            request.getSession().setAttribute("error", "Category is required.");
             response.sendRedirect(request.getContextPath() + "/proposeProduct");
             return;
         }
         if (description == null || description.trim().isEmpty()) {
-            request.setAttribute("error", "Description is required.");
+            request.getSession().setAttribute("error", "Description is required.");
             response.sendRedirect(request.getContextPath() + "/proposeProduct");
             return;
         }
         if (reason == null || reason.trim().isEmpty()) {
-            request.setAttribute("error", "Reason is required.");
+            request.getSession().setAttribute("error", "Reason is required.");
             response.sendRedirect(request.getContextPath() + "/proposeProduct");
             return;
         }
         if (shelfLifeStr == null || shelfLifeStr.trim().isEmpty()) {
-            request.setAttribute("error", "Shelf life is required.");
+            request.getSession().setAttribute("error", "Shelf life is required.");
             response.sendRedirect(request.getContextPath() + "/proposeProduct");
             return;
         }
@@ -185,12 +185,12 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         try {
             shelfLife = Integer.parseInt(shelfLifeStr.trim());
             if (shelfLife <= 0) {
-                request.setAttribute("error", "Shelf life must be a positive number.");
+                request.getSession().setAttribute("error", "Shelf life must be a positive number.");
                 response.sendRedirect(request.getContextPath() + "/proposeProduct");
                 return;
             }
         } catch (NumberFormatException e) {
-            request.setAttribute("error", "Shelf life must be a valid number.");
+            request.getSession().setAttribute("error", "Shelf life must be a valid number.");
             response.sendRedirect(request.getContextPath() + "/proposeProduct");
             return;
         }
@@ -198,7 +198,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         Part filePart = request.getPart("file");
         String fileName = getFileName(filePart);
         if (filePart != null && filePart.getSize() > 0 && (fileName == null || fileName.isEmpty())) {
-            request.setAttribute("error", "Invalid file name.");
+            request.getSession().setAttribute("error", "Invalid file name.");
             response.sendRedirect(request.getContextPath() + "/proposeProduct");
             return;
         }
@@ -223,31 +223,14 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
                 Files.copy(fileContent, saveFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 image = fileName;
             } catch (IOException e) {
-                request.setAttribute("error", "Failed to upload image.");
+                request.getSession().setAttribute("error", "Failed to upload image.");
                 response.sendRedirect(request.getContextPath() + "/proposeProduct");
                 return;
             }
         }
 
         ProposedProduct p = new ProposedProduct();
-        if ("edit".equals(action)) {
-            try {
-                p.setId(Integer.parseInt(proposeIdStr));
-            } catch (NumberFormatException e) {
-                request.setAttribute("error", "Invalid product ID.");
-                response.sendRedirect(request.getContextPath() + "/proposeProduct");
-                return;
-            }
-            dao.updateProposedProduct(p);
-            request.setAttribute("message", "Product updated successfully.");
-        } else {
-            p.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
-            p.setStatus("pending");
-            dao.insertProposedProduct(p);
-            request.setAttribute("message", "Product added successfully.");
-        }
-
-        p.setName(name);
+           p.setName(name);
         Category c = new Category();
         c.setId(Integer.parseInt(categoryStr.trim()));
         p.setCategory(c);
@@ -257,6 +240,24 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         p.setReason(reason);
         p.setShelfLife(shelfLife);
 
+        if ("edit".equals(action)) {
+            try {
+                p.setId(Integer.parseInt(proposeIdStr));
+            } catch (NumberFormatException e) {
+                request.getSession().setAttribute("error", "Invalid product ID.");
+                response.sendRedirect(request.getContextPath() + "/proposeProduct");
+                return;
+            }
+            dao.updateProposedProduct(p);
+            request.getSession().setAttribute("message", "Product updated successfully.");
+        } else {
+            p.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
+            p.setStatus("pending");
+            dao.insertProposedProduct(p);
+            request.getSession().setAttribute("message", "Product added successfully.");
+        }
+
+     
         response.sendRedirect(request.getContextPath() + "/proposeProduct");
         return;
     }
@@ -264,11 +265,11 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
     if ("delete".equals(action)) {
         try {
             dao.deleteProposedProductById(Integer.parseInt(proposeIdStr));
-            request.setAttribute("message", "Product deleted successfully.");
+            request.getSession().setAttribute("message", "Product deleted successfully.");
         } catch (NumberFormatException e) {
             request.setAttribute("error", "Invalid product ID.");
         } catch (Exception e) {
-            request.setAttribute("error", "Failed to delete product.");
+            request.getSession().setAttribute("error", "Failed to delete product.");
         }
         response.sendRedirect(request.getContextPath() + "/proposeProduct");
         return;
