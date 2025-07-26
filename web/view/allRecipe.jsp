@@ -379,19 +379,19 @@
             </div>
         </c:if>
         <% 
-        String message = (String) request.getAttribute("message");
-        if (message != null) {
+        String mess = (String) session.getAttribute("message");
+        if (mess != null) {
         %>
-        <p class="success-message" style="color: green; text-align: center; margin-bottom: 10px;"><%= message %></p>
+        <p class="success-message" style="color: green; text-align: center; margin-bottom: 10px;"><%= mess %></p>
         <% 
-                request.removeAttribute("message");
+                session.removeAttribute("message");
             }
-            String error = (String) request.getAttribute("error");
-            if (error != null) {
+            String err = (String) session.getAttribute("error");
+            if (err != null) {
         %>
-        <p class="error-message" style="color: red; text-align: center; margin-bottom: 10px;"><%= error %></p>
+        <p class="error-message" style="color: red; text-align: center; margin-bottom: 10px;"><%= err %></p>
         <% 
-                request.removeAttribute("error");
+                session.removeAttribute("error");
             }
         %>
         <form method="get" action="${pageContext.request.contextPath}/allRecipe">
@@ -416,7 +416,7 @@
             <form method="post" enctype="multipart/form-data" action="${pageContext.request.contextPath}/allRecipe">
                 <input type="hidden" name="action" value="add">
                 <p>Image</p>
-                <input type="file" name="file" accept="image/*" />
+                <input type="file" name="file" accept="image/*"  required=""/>
                 <p>Name</p>
                 <input type="text" name="name" placeholder="Enter name here..." required>
                 <p>Product in Cooking Recipe</p>
