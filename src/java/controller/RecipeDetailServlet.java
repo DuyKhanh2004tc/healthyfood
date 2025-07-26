@@ -140,22 +140,22 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
     if ("editRecipe".equals(action)) {
 
         if (name == null || name.trim().isEmpty()) {
-            request.setAttribute("error", "Name is required.");
+            request.getSession().setAttribute("error", "Name is required.");
             response.sendRedirect(request.getContextPath() + "/recipeDetail?recipeId=" + recipeId);
             return;
         }
         if (typeIdStr == null || typeIdStr.trim().isEmpty()) {
-            request.setAttribute("error", "Type is required.");
+            request.getSession().setAttribute("error", "Type is required.");
             response.sendRedirect(request.getContextPath() + "/recipeDetail?recipeId=" + recipeId);
             return;
         }
         if (description == null || description.trim().isEmpty()) {
-            request.setAttribute("error", "Description is required.");
+            request.getSession().setAttribute("error", "Description is required.");
             response.sendRedirect(request.getContextPath() + "/recipeDetail?recipeId=" + recipeId);
             return;
         }
         if (productIdstr == null || productIdstr.length == 0) {
-            request.setAttribute("error", "At least one product must be selected.");
+            request.getSession().setAttribute("error", "At least one product must be selected.");
             response.sendRedirect(request.getContextPath() + "/recipeDetail?recipeId=" + recipeId);
             return;
         }
@@ -164,12 +164,12 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         try {
             typeId = Integer.parseInt(typeIdStr.trim());
             if (typeId <= 0) {
-                request.setAttribute("error", "Invalid type ID.");
+                request.getSession().setAttribute("error", "Invalid type ID.");
                 response.sendRedirect(request.getContextPath() + "/recipeDetail?recipeId=" + recipeId);
                 return;
             }
         } catch (NumberFormatException e) {
-            request.setAttribute("error", "Type ID must be a valid number.");
+            request.getSession().setAttribute("error", "Type ID must be a valid number.");
             response.sendRedirect(request.getContextPath() + "/recipeDetail?recipeId=" + recipeId);
             return;
         }
@@ -179,13 +179,13 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             try {
                 int pid = Integer.parseInt(id.trim());
                 if (pid <= 0) {
-                    request.setAttribute("error", "Invalid product ID.");
+                    request.getSession().setAttribute("error", "Invalid product ID.");
                     response.sendRedirect(request.getContextPath() + "/recipeDetail?recipeId=" + recipeId);
                     return;
                 }
                 productId.add(pid);
             } catch (NumberFormatException e) {
-                request.setAttribute("error", "Invalid product ID format.");
+                request.getSession().setAttribute("error", "Invalid product ID format.");
                 response.sendRedirect(request.getContextPath() + "/recipeDetail?recipeId=" + recipeId);
                 return;
             }
@@ -194,7 +194,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         Part filePart = request.getPart("file");
         String fileName = getFileName(filePart);
         if (filePart != null && filePart.getSize() > 0 && (fileName == null || fileName.isEmpty())) {
-            request.setAttribute("error", "Invalid file name.");
+            request.getSession().setAttribute("error", "Invalid file name.");
             response.sendRedirect(request.getContextPath() + "/recipeDetail?recipeId=" + recipeId);
             return;
         }
@@ -219,7 +219,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
                 Files.copy(fileContent, saveFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 image = fileName;
             } catch (IOException e) {
-                request.setAttribute("error", "Failed to upload image.");
+                request.getSession().setAttribute("error", "Failed to upload image.");
                 response.sendRedirect(request.getContextPath() + "/recipeDetail?recipeId=" + recipeId);
                 return;
             }
@@ -251,7 +251,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         try {
             dao.deleteCookingRecipeProduct(recipeId);
             dao.deleteCookingRecipe(recipeId);
-            request.setAttribute("message", "Recipe deleted successfully.");
+            request.getSession().setAttribute("message", "Recipe deleted successfully.");
             response.sendRedirect(request.getContextPath() + "/allRecipe");
         } catch (Exception e) {
             request.setAttribute("error", "Failed to delete recipe.");
