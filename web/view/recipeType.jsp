@@ -273,9 +273,22 @@ p[style*="color: red"] {
             </div>
         </c:if>
     <h2>Recipe Type Management</h2>
-    <c:if test="${not empty errorMessage}">
-        <p style="color: red;">${errorMessage}</p>
-    </c:if>
+     <%
+                    String message = (String) session.getAttribute("message");
+                    if (message != null) {
+                %>
+                    <p style="color: green; text-align: center; margin-bottom: 10px;"><%= message %></p>
+                <%
+                        session.removeAttribute("message");
+                    }
+                    String error = (String) session.getAttribute("error");
+                    if (error != null) {
+                %>
+                    <p style="color: red; text-align: center; margin-bottom: 10px;"><%= error %></p>
+                <%
+                        session.removeAttribute("error");
+                    }
+                %>
     <button type="button" onclick="openAddPopup()">Add New Type</button>
     <c:choose>
         <c:when test="${empty typeList}">
