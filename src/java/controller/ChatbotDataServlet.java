@@ -62,36 +62,42 @@ public class ChatbotDataServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        DAOProduct daoProduct = new DAOProduct();
-        DAOCategory daoCategory = new DAOCategory();
-        DAOBlog daoBlog = new DAOBlog();
-        List<Product> productList = daoProduct.getAllProduct();
-        List<Category> categoryList = daoCategory.getAllCategory();
-        List<Blog> blogList = daoBlog.getAllBlog();
-        
-        StringBuilder sb = new StringBuilder("Product List:\n");
-        for (Product p : productList) {
-            sb.append("- Name: ").append(p.getName()).append("\n")
-                    .append("  Description: ").append(p.getDescription()).append("\n")
-                    .append("  Price: ").append(p.getPrice()).append("đ\n")
-                    .append("  In Stock: ").append(p.getStock()).append("\n")
-                    .append("  Shelf Life Hours: ").append(p.getShelfLifeHours()).append(" giờ\n")
-                    .append("  Rating: ").append(p.getRate()).append("\n")
-                    .append("  In Category: ").append(p.getCategory().getName()).append("\n\n");
+        response.setContentType("text/plain;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            DAOProduct daoProduct = new DAOProduct();
+            DAOCategory daoCategory = new DAOCategory();
+            DAOBlog daoBlog = new DAOBlog();
+            List<Product> productList = daoProduct.getAllProduct();
+            List<Category> categoryList = daoCategory.getAllCategory();
+            List<Blog> blogList = daoBlog.getAllBlog();
+
+            StringBuilder sb = new StringBuilder("Product List:\n");
+            for (Product p : productList) {
+                sb.append("- Name: ").append(p.getName()).append("\n")
+                        .append("  Description: ").append(p.getDescription()).append("\n")
+                        .append("  Price: ").append(p.getPrice()).append("đ\n")
+                        .append("  In Stock: ").append(p.getStock()).append("\n")
+                        .append("  Shelf Life Hours: ").append(p.getShelfLifeHours()).append(" giờ\n")
+                        .append("  Rating: ").append(p.getRate()).append("\n")
+                        .append("  In Category: ").append(p.getCategory().getName()).append("\n\n");
+            }
+
+            sb.append("Category List:\n");
+            for (Category c : categoryList) {
+                sb.append("- ").append(c.getName()).append(": ").append(c.getId()).append("\n\n");
+            }
+
+            sb.append("Blog List:\n");
+            for (Blog b : blogList) {
+                sb.append("- Blog Name: ").append(b.getTitle()).append("\n")
+                        .append("Content: ").append(b.getDescription()).append("\n\n");
+            }
+
+            out.write(sb.toString());
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("Lỗi: Không thể truy cập dữ liệu từ cơ sở dữ liệu.");
         }
-        sb.append("Category List:\n");
-        for (Category c : categoryList) {
-            sb.append("- ").append(c.getName()).append(": ").append(c.getId()).append("\n\n");
-        }
-        sb.append("Blog List:\n");
-        for(Blog b : blogList){
-            sb.append("- Blog Name:").append(b.getTitle()).append("\n")
-                    .append("Content:").append(b.getDescription());
-        }
-        
-        
-        response.setContentType("text/plain");
-        response.getWriter().write(sb.toString());
     }
 
     /**

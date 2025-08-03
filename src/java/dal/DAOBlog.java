@@ -60,6 +60,7 @@ public class DAOBlog {
                 blogList.add(b);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
         }
         return blogList;
 
